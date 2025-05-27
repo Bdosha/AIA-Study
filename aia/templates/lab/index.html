@@ -1,0 +1,96 @@
+{% extends "lab/base.html" %}
+{% load static %}
+
+{% block head %}
+    <title>Лабораторные работы по Кибернетике и теории ситем</title>
+{% endblock head %}
+
+{% block content %}
+    <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'img/hands.png' %} "
+                     class="d-block w-100" alt="..." height="auto" width="auto"
+                style="margin-top: 100px; margin-bottom: 100px">
+
+            </div>
+
+        </div>
+    </div>
+    <div style="text-align: center">
+
+        <h2 style="color:black">Добро пожаловать на сайт для выполнения ЛР по кибернетике!</h2>
+        <p style="color:black">Ниже представлены все доступные работы - не затягивайте с их выполнением</p>
+    </div>
+    <div class="container my-1">
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-success">All boxes matter</strong>
+                        <h3 class="mb-0">Чёрный ящик</h3>
+                        <p class="card-text mb-auto">Вам нужно провести опыты и узнать, какие функции скрыты внутри
+                            системы</p>
+                        <a href="systems/" class="stretched-link">Перейти</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="250" height="250"
+                             src="https://sun9-35.userapi.com/impg/A_RVxJi0H79zyS68MQkuGEgvRx4ZUF5R--MSVg/m8LjI1i6MqI.jpg?size=600x600&quality=95&sign=bcd32d2ee371646e94f8a0fd115f0abd&c_uniq_tag=jOMRpzVV2k-2SaexaXzfUvvAC7EZd7n3dEEhKrVQVmk&type=album"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary">Отрицательно = хорошо</strong>
+                        <h3 class="mb-0">Обратная связь</h3>
+                        <p class="mb-auto">Добейтесь наилучшего значения функции, ориентируясь на разные данные</p>
+                        <a href="feedback/" class="stretched-link">Перейти</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="250" height="250"
+                             src="https://static.tildacdn.com/tild6537-3366-4435-b130-343530633464/_.png" alt="">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-info">Дядя легуривовщик!</strong>
+                        <h3 class="mb-0">Регулирование</h3>
+                        <p class="card-text mb-auto">Подбери коэффициенты для настройки PID регулятора</p>
+                        <a href="regulation/" class="stretched-link">Перейти</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="250" height="250"
+                             src="https://qwertynetworks.com/uploads/files/d/f/a/1/f/dfa1f079966e9742f4cbb895f797bb63.jpg"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-danger">Да знаю я о WASD</strong>
+                        <h3 class="mb-0">Управление</h3>
+                        <p class="mb-auto">Помогите космическому кораблю добраться домой!</p>
+                        <a href="control/" class="stretched-link">Перейти</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="250" height="250"
+                             src="https://v8.1c.ru/upload/products/fresh/kornevaya/1c-predprinimatel.png" alt="">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+{% endblock content %}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Формулы Тейлора и Маклорена</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/v_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/v_math.css' %}">
+</head>
+<body>
+    <div class="background">
+        <div class="particles"></div>
+    </div>
+    <div id="canvas-container"></div>
+
+    <div class="theory-content">
+        <h1>Формулы Тейлора и Маклорена</h1>
+        <div class="neon-line"></div>
+
+        <video autoplay loop muted playsinline>
+            <source src="{% static 'video/taylor.mp4' %}" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+
+        <p><strong>Формула Тейлора с остатком Пеано</strong></p>
+        <p>Для функции \( f(x) \), дифференцируемой \( n \) раз в точке \( a \):
+        \[
+        f(x) = \sum_{k=0}^n \frac{f^{(k)}(a)}{k!}(x-a)^k + o((x-a)^n)
+        \]
+        </p>
+
+        <p><strong>Ключевые особенности</strong></p>
+        <ul>
+            <li>Локальная аппроксимация в окрестности точки \( a \)</li>
+            <li>Остаток стремится к нулю быстрее, чем \( (x-a)^n \)</li>
+            <li>Не требует знания производных высших порядков вне точки \( a \)</li>
+        </ul>
+
+        <p><strong>Применение</strong></p>
+        <ol>
+            <li>В математическом анализе:
+                <ul>
+                    <li>Вычисление пределов</li>
+                    <li>Исследование локального поведения функций</li>
+                    <li>Анализ асимптотики</li>
+                </ul>
+            </li>
+            <li>В программировании:
+                <ul>
+                    <li>Быстрые приближенные вычисления в реальном времени (игры, графика)</li>
+                    <li>Оптимизация вычислений в ограниченных областях</li>
+                </ul>
+            </li>
+        </ol>
+
+        <p><strong>Пример оценки погрешности при аппроксимации</strong></p>
+        <pre><code>
+// Быстрое приближение экспоненты в шейдерах
+float fastExp(float x) {
+    return 1.0 + x + x*x*0.5 + x*x*x*0.166667;
+}
+        </code></pre>
+
+        <p><strong>Формула Тейлора с остатком Лагранжа</strong></p>
+        <p>Для функции \( f(x) \), имеющей \( (n+1) \)-ую производную на \( [a,x] \):
+        \[
+        f(x) = \sum_{k=0}^n \frac{f^{(k)}(a)}{k!}(x-a)^k + \frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}
+        \]
+        где \( c \in (a,x) \)
+        </p>
+
+        <p><strong>Ключевые особенности</strong></p>
+        <ul>
+            <li>Точное представление с явным остаточным членом</li>
+            <li>Позволяет оценить максимальную погрешность</li>
+            <li>Требует информации о поведении производной на всем интервале</li>
+        </ul>
+
+        <p><strong>Применение</strong></p>
+        <ol>
+            <li>В математическом анализе:
+                <ul>
+                    <li>Доказательство сходимости рядов</li>
+                    <li>Оценка погрешности численных методов</li>
+                    <li>Теоретический анализ функций</li>
+                </ul>
+            </li>
+            <li>В программировании:
+                <ul>
+                    <li>Научные вычисления с гарантированной точностью</li>
+                    <li>Финансовые расчеты и криптография</li>
+                </ul>
+            </li>
+        </ol>
+
+        <p><strong>Пример использования формулы Лагранжа в Python</strong></p>
+        <pre><code>
+def precise_sin(x, n_terms=5):
+    result = 0.0
+    for k in range(n_terms):
+        term = ((-1)**k * x**(2*k+1)) / math.factorial(2*k+1)
+        result += term
+    max_error = x**(2*n_terms+3) / math.factorial(2*n_terms+3)
+    return result, max_error
+        </code></pre>
+
+        <p><strong>Ряд Маклорена</strong>
+                <p><strong>Ряд Маклорена</strong></p>
+        <p>Ряд Маклорена — это частный случай формулы Тейлора, когда точка разложения \( a = 0 \):
+        \[
+        f(x) = \sum_{k=0}^{\infty} \frac{f^{(k)}(0)}{k!} x^k
+        \]
+        Это выражение часто используется для аппроксимации функций в окрестности нуля.</p>
+
+        <p><strong>Пример использования ряда Маклорена</strong></p>
+        <pre><code>
+// Аппроксимация функции sin(x) с помощью ряда Маклорена
+float maclaurinSin(float x, int n_terms) {
+    float result = 0.0;
+    for (int i = 0; i < n_terms; i++) {
+        float term = pow(-1, i) * pow(x, 2*i+1) / factorial(2*i+1);
+        result += term;
+    }
+    return result;
+}
+        </code></pre>
+
+        <p><strong>Применение ряда Маклорена</strong></p>
+        <ul>
+            <li>В вычислительных задачах, где точка разложения близка к нулю.</li>
+            <li>Для быстрого приближения тригонометрических функций и экспоненты в реальном времени.</li>
+            <li>В анализе сигналов и обработке данных, где используется приближенная модель.</li>
+        </ul>
+
+        <p><strong>Ошибки и ограничения</strong></p>
+        <ul>
+            <li>Ряды Тейлора и Маклорена могут не сходиться для некоторых функций.</li>
+            <li>Необходимо учитывать порядок производных при оценке погрешности.</li>
+            <li>Для функции с резкими изменениями в окрестности точки разложения погрешность может быть велика.</li>
+        </ul>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='/visuphi/'">На главную</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        // Three.js анимация (аналогичная главной странице)
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(window.innerWidth < 768 ? 10 : 15, 0);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x0057B7,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.4
+        });
+        const icosahedron = new THREE.Mesh(geometry, material);
+        scene.add(icosahedron);
+
+        camera.position.z = window.innerWidth < 768 ? 25 : 40;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            icosahedron.rotation.x += 0.005;
+            icosahedron.rotation.y += 0.008;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth/window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends "lab/base.html" %}
+
+{% load static %}
+
+{% block head %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Лабораторная работа по кибернетике и теории систем № 1: Чёрный ящик</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа№ 1: чёрный ящик</title>
+    <link rel="stylesheet" href="{% static "styles/black_box.css" %}">
+    <script defer="" src="{% static "scripts/black_box.js" %}"></script>
+{% endblock head %}
+
+{% block content %}
+
+
+    <div id="mainContainer" class="box">
+        <div class="system-selection-container">
+
+            <div id="description" class="description-box" style="display: block;">
+                <h3>{{ text }}</h3></div> <!-- Скрываем описание по умолчанию -->
+        </div>
+
+        <!-- Секция визуализации -->
+        <div style="display: flex;">
+            <div class="visualization-output-container" style="flex: auto">
+                <!-- Вход -->
+                <div class="input-container" style="width: 400px">
+                    <label for="inputSlider" class="input-label">Вход: {{ inout.0 }}</label>
+                    <input type="range" id="inputSlider" min='{{ slider.0 }}' max="{{ slider.1 }}" step="{{ slider.2 }}"
+                           value="{{ slider.3 }}" oninput="updateSliderValue()">
+                    <span id="sliderValue"></span>
+                    <button id="submitButton" onclick="applyInput('{{ kbu.0 }}', '{{ kbu.1 }}', '{{ kbu.2 }}')"
+                            style="border-radius: 20px">
+                        Преобразовать
+                    </button>
+
+                    <img src="{% static "img/arr.png" %}" alt="Стрелка Вход-Изображение"
+                         style="width: 30px; height: auto;  transform: rotate(90deg) ">
+                    <img src="{{ photo }}" alt="Стрелка Вход-Изображение"
+                         style="width: 150px; height: auto; border-radius: 20px;border: 5px solid #1f1f1f;
+">
+                    <img src="{% static "img/arr.png" %}" alt="Стрелка Вход-Изображение"
+                         style="width: 30px; height: auto;  transform: rotate(90deg) ">
+                </div>
+
+
+            </div>
+        </div>
+        <div style="flex-direction: row">
+
+            <div class="output-box">
+                <label for="outputValue" class="output-label">Выход: {{ inout.1 }}</label>
+                <div id="outputValue" class="output-display">-</div>
+            </div>
+
+        </div>
+
+    </div>
+    <div id="mainContainer" class="box">
+        <div id="resultsSection" class="big-table">
+            <h3>Результаты измерений:</h3>
+            <form id="tableForm" method="POST" action=""
+                  style="align-items: center; justify-content: center; display: flex; flex-direction: column;">
+                {% csrf_token %}
+                <table id="resultsTable">
+                    <thead>
+                    <tr id="inputRow">
+                        <th>Вход:</th>
+                    </tr>
+                    <tr id="outputRow">
+                        <th>Выход:</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <br>
+                <input type="hidden" name="table_data" id="tableDataInput"/>
+                <br>
+                <button type="submit" id="submitBtn" style="border-radius: 20px">Построить график</button>
+                <br>
+            </form>
+
+            <script>
+                document.getElementById('tableForm').addEventListener('submit', function (event) {
+                    // Останавливаем отправку формы, чтобы сначала обработать данные
+                    event.preventDefault();
+
+                    // Собираем данные из таблицы
+                    let tableData = [];
+                    let csv_data = [];
+
+                    // Get each row data
+                    let rows = document.getElementsByTagName('tr');
+                    for (let i = 0; i < rows.length; i++) {
+
+                        // Get each column data
+                        let cols = rows[i].querySelectorAll('td,th');
+
+                        // Stores each csv row data
+                        let csvrow = [];
+                        for (let j = 0; j < cols.length; j++) {
+
+                            // Get the text data of each cell
+                            // of a row and push it to csvrow
+                            csvrow.push(cols[j].innerHTML);
+                        }
+
+                        // Combine each column value with comma
+                        csv_data.push(csvrow.join(","));
+                    }
+
+                    // Combine each row data with new line character
+                    csv_data = csv_data.join('\n');
+                    console.log(csv_data)
+                    // Записываем данные в скрытое поле формы
+                    document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
+
+                    // После этого отправляем форму
+                    this.submit();
+                });
+            </script>
+        </div>
+    </div>
+
+{% endblock content %}

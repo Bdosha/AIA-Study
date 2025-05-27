@@ -1,0 +1,829 @@
+/* Общие стили */
+:root {
+    --border-radius: 12px;
+    --shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 20px;
+    transition: var(--transition);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Явно укажем, что канвас не должен масштабироваться или сжимать шрифты */
+canvas {
+    transform: none !important;
+    font-stretch: normal !important;
+    box-sizing: border-box;
+    pointer-events: auto !important;
+}
+
+/* Шапка сайта */
+header {
+    background: var(--primary-bg);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: var(--transition);
+}
+
+/* Контейнер */
+.container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    box-sizing: border-box;
+}
+
+/* Переключатель тем */
+.theme-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+    gap: 8px; /* Добавлено */
+    flex-wrap: wrap; /* Добавлено */
+}
+
+.theme-switcher label {
+    color: inherit;
+    font-weight: 500;
+    white-space: nowrap; /* Добавлено */
+    margin-right: 0; /* Изменено с 8px */
+}
+
+#theme-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--secondary-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: var(--transition);
+    width: auto;
+    min-width: 130px;
+}
+
+/* Вкладки */
+.tab-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.tab-button {
+    padding: 8px 16px;
+    margin: 0 4px;
+    border: none;
+    border-radius: 6px;
+    background: var(--secondary-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.tab-button:hover {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.tab-button.active {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    font-weight: 600;
+    border: 2px solid var(--border);
+}
+
+.tab-content {
+    position: relative;
+}
+
+.tab-pane {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tab-pane.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Заголовки */
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    margin: 10px 0;
+}
+
+h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5em;
+    margin: 20px 0 15px;
+}
+
+h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3em;
+    margin: 15px 0 10px;
+}
+
+h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1em;
+    margin: 10px 0 8px;
+}
+
+/* Панель управления */
+.control-panel {
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: slideIn 0.5s ease-out forwards;
+    background: var(--secondary-bg);
+}
+
+.input-section {
+    margin: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.input-section label {
+    font-weight: 500;
+    margin-right: 8px;
+    align-self: center;
+    color: var(--text-color);
+}
+
+input[type="number"], select {
+    width: 90px;
+    padding: 8px;
+    margin: 0 5px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: 1px solid var(--border);
+    background: var(--secondary-bg);
+    color: var(--text-color);
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.strategy-select {
+    width: 130px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: var(--transition), transform 0.2s ease;
+    background: var(--accent);
+    color: #ffffff;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--secondary-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.modal-content h3 {
+    margin: 0 0 15px;
+    color: var(--text-color);
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--secondary-bg);
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+
+.modal-content p {
+    margin: 10px 0;
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    padding: 8px 16px;
+    font-size: 0.9em;
+}
+
+#matrix-fill-confirm, #iterative-fill-confirm {
+    background: var(--accent);
+}
+
+#matrix-fill-cancel, #iterative-fill-cancel {
+    background: var(--border);
+}
+
+/* Таблица */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px auto;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--secondary-bg);
+}
+
+th, td {
+    border: 1px solid var(--border);
+    padding: 12px;
+    text-align: center;
+    transition: var(--transition);
+    color: var(--text-color);
+}
+
+th {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    border-radius: 0;
+    background: var(--table-header-bg);
+}
+
+th:first-child {
+    border-top-left-radius: 8px;
+}
+
+th:last-child {
+    border-top-right-radius: 8px;
+}
+
+tr:last-child td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+tr:last-child td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+td input[type="text"] {
+    width: 50px;
+    padding: 6px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    background: var(--table-cell-bg);
+    color: var(--text-color);
+}
+
+td.nash {
+    font-weight: bold;
+    animation: highlightNash 1s ease-in-out;
+    border: 5px solid #ff6200 !important;
+}
+
+/* Цвета выигрышей в таблице */
+.payoff-a {
+    color: var(--player-a-color);
+    transition: color 0.3s ease;
+}
+
+.payoff-b {
+    color: var(--player-b-color);
+    transition: color 0.3s ease;
+}
+
+/* Цвета заголовков стратегий в таблицах ввода */
+.player-a-header {
+    color: #3b82f6 !important; /* Синий для игрока A */
+    transition: color 0.3s ease;
+}
+
+.player-b-header {
+    color: #ef4444 !important; /* Красный для игрока B */
+    transition: color 0.3s ease;
+}
+
+/* Применение цветов к заголовкам в таблицах ввода */
+#matrix-input th:where(:not(:empty)) {
+    color: var(--text-color); /* По умолчанию цвет текста */
+}
+
+#matrix-input th:where(:not(:empty)):where(:nth-child(1)) {
+    color: #3b82f6 !important; /* Синий для строк (A) */
+}
+
+#matrix-input th:where(:not(:empty)):where(:nth-child(n+2)) {
+    color: #ef4444 !important; /* Красный для столбцов (B) */
+}
+
+#iterative-matrix-input th:where(:not(:empty)) {
+    color: var(--text-color); /* По умолчанию цвет текста */
+}
+
+#iterative-matrix-input th:where(:not(:empty)):where(:nth-child(1)) {
+    color: #3b82f6 !important; /* Синий для строк (A) */
+}
+
+#iterative-matrix-input th:where(:not(:empty)):where(:nth-child(n+2)) {
+    color: #ef4444 !important; /* Красный для столбцов (B) */
+}
+
+/* График */
+#iterative-chart, #iterative-results {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards 0.4s;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    min-height: 600px !important;
+    box-sizing: border-box;
+    display: none;
+    position: relative;
+    background: var(--secondary-bg);
+}
+
+#strategyChart, #balanceChart {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 500px !important;
+    display: block !important;
+    box-sizing: border-box;
+    pointer-events: auto !important;
+}
+
+#iterative-results #balanceChart {
+    min-width: unset !important;
+    height: 800px !important;
+}
+
+/* Добавляем стили для #matrix-chart */
+#matrix-chart {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards 0.4s;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    min-height: 600px !important;
+    box-sizing: border-box;
+    display: none;
+    position: relative;
+    background: var(--secondary-bg);
+}
+
+#matrixChart {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 500px !important;
+    display: block !important;
+    box-sizing: border-box;
+    pointer-events: auto !important;
+}
+
+/* Увеличение шрифта для подписей графика */
+.chartjs-tooltip {
+    font-size: 14px !important;
+    padding: 8px !important;
+}
+
+/* Матрица на вкладке "Матрица" */
+#matrix-input {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards 0.2s;
+    overflow-x: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    display: block !important;
+    background: var(--secondary-bg);
+}
+
+#matrix-input table {
+    width: auto !important;
+    min-width: unset !important;
+    margin: 0 auto;
+}
+
+#matrix-input td input[type="text"] {
+    width: 45px !important;
+    padding: 5px !important;
+}
+
+/* Матрица и результаты итеративной игры */
+#iterative-matrix-input {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards 0.2s;
+    overflow-x: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    display: block !important;
+    justify-content: center;
+    background: var(--secondary-bg);
+}
+
+#iterative-matrix-input table {
+    width: auto !important;
+    min-width: unset !important;
+    margin: 0 auto;
+}
+
+/* Уточняем размеры ячеек и полей ввода */
+#iterative-matrix-input td input[type="text"] {
+    width: 45px !important;
+    padding: 5px !important;
+}
+
+/* Панель управления для итеративных игр */
+#iterative-controls {
+    display: block !important;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: slideIn 0.5s ease-out forwards;
+    background: var(--secondary-bg);
+}
+
+/* Таблицы в iterative-results */
+#iterative-results table {
+    width: 100% !important;
+    min-width: 280px !important;
+    margin-top: 15px !important;
+}
+
+#iterative-results th, #iterative-results td {
+    padding: 8px !important;
+    min-width: 90px !important;
+}
+
+/* Справочная информация */
+#info-section, #iterative-info-section {
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards 0.4s;
+    box-sizing: border-box;
+    background: var(--secondary-bg);
+}
+
+/* Анимации */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes highlightNash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Тёмная тема */
+body.dark {
+    --primary-bg: #0d1117;
+    --secondary-bg: #1c2526;
+    --text-color: #e0e0e0;
+    --accent: #7f8fa6;
+    --border: #4b5563;
+    --table-header-bg: #2d3748;
+    --table-cell-bg: #232b38;
+    --player-a-color: #3b82f6;
+    --player-b-color: #ef4444;
+    background: linear-gradient(to bottom, var(--primary-bg), #161b22);
+    color: var(--text-color);
+}
+
+body.dark .container {
+    background: var(--secondary-bg);
+}
+
+body.dark header {
+    background: linear-gradient(to bottom, #161b22, #0d1117);
+}
+
+body.dark h1, body.dark h2, body.dark h3, body.dark h4 {
+    color: var(--text-color);
+}
+
+/* Светлая тема */
+body.light {
+    --primary-bg: #f5f5f5;
+    --secondary-bg: #ffffff;
+    --text-color: #1a3c34;
+    --accent: #166534;
+    --border: #d1d5db;
+    --table-header-bg: #e5e7eb;
+    --table-cell-bg: #f9fafb;
+    --player-a-color: #166534;
+    --player-b-color: #ea580c;
+    background: linear-gradient(to bottom, var(--primary-bg), #e5e7eb);
+    color: var(--text-color);
+}
+
+body.light .container {
+    background: var(--secondary-bg);
+}
+
+body.light header {
+    background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+}
+
+body.light h1, body.light h2, body.light h3, body.light h4 {
+    color: var(--text-color);
+}
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  /* Общие корректировки */
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    padding: 10px;
+  }
+
+  /* Шапка */
+  header {
+    padding: 15px;
+    font-size: 0.9em;
+  }
+
+  /* Вкладки */
+  .tab-nav {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .tab-button {
+    font-size: 0.8em;
+    padding: 6px 12px;
+    margin: 2px;
+  }
+
+  /* Панели управления */
+  .control-panel, #iterative-controls {
+    padding: 10px;
+  }
+
+  .input-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .input-section label {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+
+  input[type="number"], select {
+    width: 100% !important;
+    max-width: 100%;
+    margin: 4px 0;
+  }
+
+  /* Таблицы */
+  table {
+    font-size: 0.8em;
+  }
+
+  td input[type="text"] {
+    width: 40px !important;
+    padding: 4px !important;
+  }
+
+  /* Графики */
+  #matrix-chart, #iterative-chart, #iterative-results {
+    padding: 10px;
+    min-height: 400px !important;
+  }
+
+  #matrixChart, #balanceChart, #strategyChart {
+    height: 300px !important;
+  }
+
+  /* Модальные окна */
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  /* Текстовые блоки */
+  h1 { font-size: 1.5em; }
+  h2 { font-size: 1.3em; }
+  h3 { font-size: 1.1em; }
+  
+  /* Исправление горизонтального скролла */
+  #matrix-input, #iterative-matrix-input {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Кнопки */
+  button {
+    width: 100%;
+    margin: 4px 0;
+    padding: 8px;
+  }
+  
+  /* Стратегии в итеративных играх */
+  .strategy-select {
+    width: 100% !important;
+    margin: 4px 0;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+  td input[type="text"] {
+    width: 35px !important;
+    font-size: 0.7em;
+  }
+  
+  table {
+    font-size: 0.7em;
+  }
+  
+  #matrixChart, #balanceChart, #strategyChart {
+    height: 250px !important;
+  }
+}
+/* Исправление обрезания текста в выборе темы */
+.theme-switcher {
+    gap: 10px;
+    align-items: center;
+}
+
+.theme-switcher label {
+    white-space: nowrap;
+    min-width: max-content;
+}
+
+/* Центрирование кнопки "Рассчитать" */
+#calculate-btn {
+    display: block;
+    margin: 25px auto;
+    padding: 12px 24px;
+    font-size: 1.1em;
+    width: max-content;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .theme-switcher {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    
+    #theme-select {
+        width: 140px !important;
+    }
+    
+    #calculate-btn {
+        width: 90%;
+        max-width: 300px;
+    }
+}
+/* Адаптация графиков для мобильных устройств */
+@media (max-width: 768px) {
+    /* Общие стили для всех графиков */
+    #matrix-chart,
+    #iterative-chart,
+    #iterative-results {
+        padding: 10px;
+        margin: 10px 0;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    /* Основные графики (матрица и баланс) */
+    #matrixChart,
+    #balanceChart {
+        height: 60vw !important; /* Пропорционально ширине экрана */
+        min-height: 300px !important;
+        max-height: 500px !important;
+    }
+
+    /* График стратегий */
+    #strategyChart {
+        height: 80vw !important; /* Более высокий для лучшей читаемости */
+        min-height: 350px !important;
+        max-height: 600px !important;
+    }
+
+    /* Адаптация подписей */
+    .chartjs-tooltip {
+        font-size: 12px !important;
+        padding: 6px !important;
+    }
+
+    /* Легенда графиков */
+    .chartjs-legend {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    /* Мелкие экраны (менее 480px) */
+    @media (max-width: 480px) {
+        #matrixChart,
+        #balanceChart {
+            height: 70vw !important;
+        }
+
+        #strategyChart {
+            height: 90vw !important;
+        }
+
+        /* Уменьшаем отступы */
+        #matrix-chart,
+        #iterative-chart,
+        #iterative-results {
+            padding: 5px;
+        }
+    }
+}

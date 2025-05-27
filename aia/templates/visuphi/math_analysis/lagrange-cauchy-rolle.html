@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Теоремы Ролля, Коши и Лагранжа</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;700&display=swap"
+          rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/v_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/v_math.css' %}">
+</head>
+<body>
+<div class="background">
+    <div class="particles"></div>
+</div>
+<div id="canvas-container"></div>
+
+<div class="theory-content">
+    <h1>Теоремы Ролля, Коши и Лагранжа</h1>
+    <div class="neon-line"></div>
+
+    <h2>Теорема Ролля</h2>
+    <p><strong>Формулировка:</strong><br>
+        Пусть функция \( f(x) \) удовлетворяет условиям:
+    <ol>
+        <li>непрерывна на отрезке \( [a; b] \),</li>
+        <li>дифференцируема в интервале \( (a; b) \),</li>
+        <li>\( f(a) = f(b) \).</li>
+    </ol>
+    Тогда существует точка \( \xi \in (a; b) \), такая что \( f'(\xi) = 0 \).
+    </p>
+
+    <video autoplay loop muted playsinline>
+        <source src="{% static 'video/proiz.mp4' %}" type="video/mp4">
+        Ваш браузер не поддерживает видео.
+    </video>
+
+    <p><strong>Доказательство:</strong><br>
+        По теореме Вейерштрасса, непрерывная на \( [a; b] \) функция достигает своих наибольшего \( M \) и наименьшего
+        \( m \) значений.</p>
+
+    <p>Если \( m = M \), то \( f(x) \equiv \text{const} \) на \( [a; b] \), и тогда \( f'(x) = 0 \) для всех \( x \in
+        (a; b) \).</p>
+
+    <p>Если \( m < M \), то, так как \( f(a) = f(b) \), хотя бы один из экстремумов достигается в некоторой точке \( \xi
+        \in (a; b) \). По малой теореме Ферма о производной в точке экстремума имеем \( f'(\xi) = 0 \).</p>
+    <h2>Обобщённая теорема Коши</h2>
+
+    <p><strong>Формулировка:</strong><br>
+        Пусть даны функции \( y = f(x) \), \( y = g(x) \), определённые на отрезке \( [a; b] \), имеющие непрерывные
+        производные до порядка \( n+1 \) на интервале \( (a; b) \), причём:
+    <ol>
+        <li>\( f(a) = f'(a) = \dots = f^{(n)}(a) = 0 \) (производные в точке \( a \) — правые),</li>
+        <li>\( g(a) = g'(a) = \dots = g^{(n)}(a) = 0 \),</li>
+        <li>\( g^{(k)}(x) \neq 0 \) для всех \( x \in (a; b) \) и \( k = 0, 1, 2, \dots, n, n+1 \).</li>
+    </ol>
+    Тогда существует точка \( c \in (a; b) \), для которой выполняется равенство:
+    \[
+    \frac{f(b)}{g(b)} = \frac{f^{(n+1)}(c)}{g^{(n+1)}(c)}.
+    \]
+    </p>
+
+    <video autoplay loop muted playsinline>
+        <source src="{% static 'video/cauchy.mp4' %}" type="video/mp4">
+        Ваш браузер не поддерживает видео.
+    </video>
+
+    <p><strong>Доказательство:</strong></p>
+    <ol>
+        <li>По теореме Коши существует точка \( c_1 \in (a; b) \), для которой
+            \[
+            \frac{f(b)}{g(b)} = \frac{f'(c_1)}{g'(c_1)},
+            \]
+            так как \( f(a) = g(a) = 0 \).
+        </li>
+
+        <li>Применим теорему Коши к \( f'(x) \) и \( g'(x) \) на \( [a; c_1] \). Существует точка \( c_2 \in (a; c_1)
+            \), такая что
+            \[
+            \frac{f'(c_1)}{g'(c_1)} = \frac{f''(c_2)}{g''(c_2)}.
+            \]
+        </li>
+
+        <li>Повторяя процесс \( n \) раз, получим:
+            \[
+            \frac{f(b)}{g(b)} = \frac{f^{(n)}(c_n)}{g^{(n)}(c_n)},
+            \]
+            где \( c_n \in (a; c_{n-1}) \).
+        </li>
+
+        <li>Наконец, применяя теорему Коши к \( f^{(n)}(x) \) и \( g^{(n)}(x) \) на \( [a; c_n] \), получим точку \( c
+            \in (a; c_n) \), такую что
+            \[
+            \frac{f^{(n)}(c_n)}{g^{(n)}(c_n)} = \frac{f^{(n+1)}(c)}{g^{(n+1)}(c)}.
+            \]
+        </li>
+    </ol>
+
+    <p>Следовательно,
+        \[
+        \frac{f(b)}{g(b)} = \frac{f^{(n+1)}(c)}{g^{(n+1)}(c)},
+        \]
+        что и требовалось доказать.</p>
+    <h2>Теорема Коши о среднем значении для производных</h2>
+
+    <p><strong>Формулировка:</strong><br>
+        Если функции \( y = f(x) \) и \( y = g(x) \) удовлетворяют условиям:
+    <ol>
+        <li>непрерывны на отрезке \( [a; b] \);</li>
+        <li>дифференцируемы в каждой точке интервала \( (a; b) \);</li>
+        <li>\( g'(x) \neq 0 \) на интервале \( (a; b) \);</li>
+    </ol>
+    то существует точка \( c \in (a; b) \), такая что:
+    \[
+    \frac{f(b) - f(a)}{g(b) - g(a)} = \frac{f'(c)}{g'(c)}.
+    \]
+    </p>
+
+    <p><strong>Доказательство:</strong></p>
+    <ol>
+        <li>Покажем, что \( g(a) \neq g(b) \). Предположим противное: если \( g(a) = g(b) \), то по теореме Ролля
+            существует точка \( c \in (a; b) \), такая что \( g'(c) = 0 \), что противоречит условию 3.
+        </li>
+
+        <li>Рассмотрим вспомогательную функцию:
+            \[
+            \phi(x) = (g(b) - g(a))f(x) - (f(b) - f(a))g(x)
+            \]
+        </li>
+
+        <li>Проверим, что \( \phi(a) = \phi(b) \):
+            \[
+            \phi(b) - \phi(a) = (g(b) - g(a))(f(b) - f(a)) - (f(b) - f(a))(g(b) - g(a)) = 0
+            \]
+        </li>
+
+        <li>Функция \( \phi(x) \) удовлетворяет условиям теоремы Ролля, поэтому существует точка \( c \in (a; b) \),
+            такая что:
+            \[
+            \phi'(c) = (g(b) - g(a))f'(c) - (f(b) - f(a))g'(c) = 0
+            \]
+        </li>
+
+        <li>Из этого равенства:
+            \[
+            \frac{f(b) - f(a)}{g(b) - g(a)} = \frac{f'(c)}{g'(c)},
+            \]
+            что и требовалось доказать.
+        </li>
+    </ol>
+
+    <h3>Пример</h3>
+
+    <p>Пусть:
+    <ol>
+        <li>\( f(x) \) — дифференцируема на полуоси \( [a; +\infty) \);</li>
+        <li>Существует предел: \( \lim\limits_{x\to\infty} f'(x) = 0 \).</li>
+    </ol>
+    Докажем, что:
+    \[
+    \lim\limits_{x\to\infty} \frac{f(x)}{x} = 0.
+    \]
+    </p>
+
+    <p><strong>Доказательство:</strong></p>
+    <p>
+        Из условия:
+        \[
+        \forall \epsilon > 0\ \exists x_0:\ \forall x > x_0 \Rightarrow |f'(x)| < \frac{\epsilon}{2}
+        \]
+        Применим теорему Лагранжа на отрезке \( [x_0, x] \):
+        \[
+        \exists c \in (x_0, x):\ \frac{f(x) - f(x_0)}{x - x_0} = f'(c)
+        \]
+        Отсюда:
+        \[
+        f(x) = f'(c)(x - x_0) + f(x_0)
+        \]
+        Разделим обе части на \( x \):
+        \[
+        \frac{f(x)}{x} = f'(c)\left(1 - \frac{x_0}{x}\right) + \frac{f(x_0)}{x}
+        \]
+    </p>
+
+    <p>Выберем \( x \) достаточно большим, чтобы:
+        \[
+        \left|\frac{f(x_0)}{x}\right| < \frac{\epsilon}{2}
+        \]
+        Тогда:
+        \[
+        \left|\frac{f(x)}{x}\right| \leq |f'(c)| + \left|\frac{f(x_0)}{x}\right| < \frac{\epsilon}{2} +
+        \frac{\epsilon}{2} = \epsilon
+        \]
+    </p>
+
+    <p>Следовательно:
+        \[
+        \lim\limits_{x\to\infty} \frac{f(x)}{x} = 0.
+        \]</p>
+
+    <h2>Теорема Лагранжа</h2>
+
+    <p><strong>Формулировка:</strong><br>
+        Пусть функция \( f(x) \) непрерывна на отрезке \( [a;b] \) и дифференцируема на интервале \( (a;b) \). Тогда
+        существует точка \( \xi \in (a;b) \), такая что:
+        \[
+        f(b) - f(a) = f'(\xi) \cdot (b - a)
+        \]
+    </p>
+
+    <p><strong>Доказательство:</strong></p>
+    <p>Рассмотрим вспомогательную функцию:
+        \[
+        F(x) = f(x) - \frac{f(b) - f(a)}{b - a} \cdot (x - a)
+        \]
+        Она удовлетворяет условиям теоремы Ролля:
+    <ul>
+        <li>\( F(x) \) непрерывна на \( [a; b] \), так как \( f(x) \) непрерывна</li>
+        <li>\( F(x) \) дифференцируема на \( (a; b) \), так как \( f(x) \) дифференцируема</li>
+        <li>\( F(a) = f(a) \), \( F(b) = f(a) \), значит \( F(a) = F(b) \)</li>
+    </ul>
+    По теореме Ролля найдётся \( \xi \in (a;b) \), такая что \( F'(\xi) = 0 \). Вычислим:
+    \[
+    F'(x) = f'(x) - \frac{f(b) - f(a)}{b - a} \Rightarrow f'(\xi) = \frac{f(b) - f(a)}{b - a}
+    \]
+    что и требовалось доказать.
+    </p>
+
+    <h3>Различные формы записи</h3>
+
+    <ul>
+        <li><strong>Геометрическая интерпретация:</strong> найдётся касательная, параллельная хорде между точками \( (a,
+            f(a)) \) и \( (b, f(b)) \).
+        </li>
+
+        <li><strong>Через параметр \( \theta \):</strong><br>
+            Пусть \( 0 < \theta < 1 \), тогда
+            \[
+            \xi = a + \theta \cdot (b - a)
+            \]
+        </li>
+
+        <li><strong>Формула конечных приращений:</strong>
+            \[
+            f(x + \Delta x) - f(x) = f'(x + \theta \cdot \Delta x) \cdot \Delta x \quad \text{где } 0 < \theta < 1
+            \]
+        </li>
+    </ul>
+
+    <h2>Следствия</h2>
+
+    <h3>О постоянной функции</h3>
+    <p><strong>Формулировка:</strong><br>
+        Если \( f'(x) = 0 \) на промежутке \( X \), то \( f(x) = \text{const} \) на \( X \).
+    </p>
+    <p><strong>Доказательство:</strong><br>
+        Возьмём \( a \in X \). Для любого \( x \in X \):
+        \[
+        f(x) - f(a) = f'(\xi)(x - a) = 0 \Rightarrow f(x) = f(a)
+        \]
+    </p>
+
+    <h3>О связи одностороннего предела с односторонней производной</h3>
+    <p><strong>Формулировка:</strong><br>
+        Если \( f \) непрерывна на \( [a,b] \), дифференцируема на \( (a,b) \), и
+        \[
+        \lim_{x \to a+0} f'(x) = K,
+        \]
+        то правосторонняя производная \( f'_+(a) \) существует и равна \( K \).
+    </p>
+
+    <p><strong>Доказательство:</strong><br>
+        \[
+        f'_+(a) = \lim_{\Delta x \to 0+} \frac{f(a + \Delta x) - f(a)}{\Delta x}
+        \]
+        По формуле конечных приращений:
+        \[
+        = \lim_{\Delta x \to 0+} f'(a + \theta \cdot \Delta x) = K
+        \]
+    </p>
+
+    <h3>О характере точек разрыва производной</h3>
+    <p><strong>Формулировка:</strong><br>
+        У производной функции не может быть точек разрыва первого рода.
+    </p>
+
+    <p><strong>Доказательство:</strong><br>
+        Пусть в точке существует оба односторонних предела производной, но они не равны — противоречие, так как это
+        означало бы существование разных односторонних производных, но по предыдущему следствию они должны совпадать с
+        пределами производной. Следовательно, производная непрерывна в этой точке.
+    </p>
+</div>
+
+<button class="back-button" onclick="window.location.href='/visuphi/'">На главную</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script>
+    // Three.js анимация
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({alpha: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const geometry = new THREE.IcosahedronGeometry(window.innerWidth < 768 ? 10 : 15, 0);
+    const material = new THREE.MeshBasicMaterial({
+        color: 0x0057B7,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.4
+    });
+    const icosahedron = new THREE.Mesh(geometry, material);
+    scene.add(icosahedron);
+
+    camera.position.z = window.innerWidth < 768 ? 25 : 40;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        icosahedron.rotation.x += 0.005;
+        icosahedron.rotation.y += 0.008;
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>

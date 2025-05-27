@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль колебаний</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/v_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/v_math.css' %}">
+</head>
+<body>
+    <div class="background">
+        <div class="particles"></div>
+    </div>
+    <div id="canvas-container"></div>
+
+    <div class="theory-content">
+        <h1>Функция модуля колебаний</h1>
+        <div class="neon-line"></div>
+
+        <video autoplay loop muted playsinline>
+            <source src="{% static 'video/module.mp4' %}" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+
+        <p>
+Если функция \( f \) непрерывна на отрезке, то это означает, что для любой точки \( x \) этого отрезка и для любого числа \( \varepsilon > 0 \) найдётся такое число \( \delta > 0 \) (зависящее от точки \( x \) и числа \( \varepsilon \)), что для всех точек \( x' \) отрезка, для которых
+</p>
+
+<p>\[ |x' - x| < \delta, \]</p>
+
+<p>выполняется неравенство</p>
+
+<p>\[ |f(x') - f(x)| < \varepsilon. \]</p>
+
+<p>
+Если число \( \delta \) можно выбрать не зависящим от точки \( x \), то функция \( f \) называется <strong>равномерно непрерывной</strong>.
+</p>
+
+<h2>Определение</h2>
+<p>
+Функция \( f \), заданная на отрезке \( [a, b] \), называется <strong>равномерно непрерывной</strong> на нём, если для любого \( \varepsilon > 0 \) существует такое \( \delta > 0 \), что для любых двух точек \( x, x' \in [a, b] \), таких что \( |x' - x| < \delta \), выполняется неравенство \( |f(x') - f(x)| < \varepsilon \).
+</p>
+
+<h3>Формулировка в символах</h3>
+
+<p>
+Обычная непрерывность:
+</p>
+
+<p>
+\[
+\forall x \in [a, b] \quad \forall \varepsilon > 0 \quad \exists \delta > 0 \quad \forall x' \in [a, b], \quad |x' - x| < \delta \Rightarrow |f(x') - f(x)| < \varepsilon
+\]
+</p>
+
+<p>
+Равномерная непрерывность:
+</p>
+
+<p>
+\[
+\forall \varepsilon > 0 \quad \exists \delta > 0 \quad \forall x, x' \in [a, b], \quad |x' - x| < \delta \Rightarrow |f(x') - f(x)| < \varepsilon
+\]
+</p>
+
+<h2>Примеры</h2>
+
+<ol>
+    <li>
+        <strong>Функция \( f(x) = x \)</strong> равномерно непрерывна на всей числовой оси \( \mathbb{R} \).<br>
+        При \( \delta = \varepsilon \):
+        \[
+        |f(x') - f(x)| = |x' - x| < \delta = \varepsilon
+        \]
+    </li>
+    <li>
+        <strong>Функция \( f(x) = x^2 \)</strong> не является равномерно непрерывной на \( \mathbb{R} \).<br>
+        \[
+        \lim_{x \to \infty} \left[(x + h)^2 - x^2\right] = \infty
+        \]
+        При любом \( \delta > 0 \) можно выбрать \( x \), что
+        \[
+        |x' - x| < \delta, \quad \text{но} \quad |f(x') - f(x)| > \varepsilon
+        \]
+    </li>
+</ol>
+
+<p>Ясно, что всякая равномерно непрерывная функция на отрезке непрерывна на нём. Обратное также верно.</p>
+
+<h2>Теорема Кантора</h2>
+<p><strong>Теорема:</strong> Функция, непрерывная на отрезке, равномерно непрерывна на нём.</p>
+
+<h3>Доказательство (от противного):</h3>
+<p>
+Предположим, что \( f \) непрерывна, но не равномерно непрерывна. Тогда существует \( \varepsilon_0 > 0 \), при котором для любого \( \delta > 0 \) существуют \( x, x' \in [a, b] \), такие что
+</p>
+
+<p>\[
+|x' - x| < \delta, \quad \text{но} \quad |f(x') - f(x)| \geq \varepsilon_0
+\]</p>
+
+<p>Возьмём \( \delta = \frac{1}{n} \). Тогда найдутся последовательности \( x_n \), \( x_n' \), что</p>
+
+<p>\[
+|x_n' - x_n| < \frac{1}{n}, \quad |f(x_n') - f(x_n)| \geq \varepsilon_0
+\]</p>
+
+<p>Из \( \{x_n\} \) можно выделить подпоследовательность \( x_{n_k} \to x_0 \in [a, b] \). Тогда и \( x_{n_k}' \to x_0 \), и по непрерывности:</p>
+
+<p>\[
+f(x_{n_k}) \to f(x_0), \quad f(x_{n_k}') \to f(x_0)
+\Rightarrow f(x_{n_k}') - f(x_{n_k}) \to 0
+\]</p>
+
+<p>Противоречие с \( |f(x_{n_k}') - f(x_{n_k})| \geq \varepsilon_0 \). Теорема доказана.</p>
+
+<h2>Колебания функции</h2>
+
+<p>
+Условие равномерной непрерывности можно переформулировать через <strong>колебания функции</strong>.
+</p>
+
+<p><strong>Определение:</strong> Колебание функции \( f \) на отрезке \( [a, b] \):
+\[
+\omega(f; [a, b]) = \sup_{x, x' \in [a, b]} |f(x) - f(x')|
+\]
+</p>
+
+<h3>Эквивалентное условие равномерной непрерывности:</h3>
+<p>
+Функция \( f \) равномерно непрерывна на \( [a, b] \) тогда и только тогда, когда
+\[
+\lim_{\delta \to 0} \sup_{\substack{x, x' \in [a, b] \\ |x - x'| < \delta}} |f(x) - f(x')| = 0
+\]
+</p>
+    </div>
+    
+
+    <button class="back-button" onclick="window.location.href='/visuphi/'">На главную</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        // Three.js анимация
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(window.innerWidth < 768 ? 10 : 15, 0);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x0057B7,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.4
+        });
+        const icosahedron = new THREE.Mesh(geometry, material);
+        scene.add(icosahedron);
+
+        camera.position.z = window.innerWidth < 768 ? 25 : 40;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            icosahedron.rotation.x += 0.005;
+            icosahedron.rotation.y += 0.008;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth/window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

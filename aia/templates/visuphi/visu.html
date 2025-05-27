@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учебный портал</title>
+    <link rel="stylesheet" href="{% static 'styles/v_styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background">
+        <div class="particles"></div>
+    </div>
+    <div id="canvas-container"></div>
+
+{#    <header>#}
+{#        <h1 class="site-title">Учебный портал</h1>#}
+{#        <div class="neon-line"></div>#}
+{#    </header>#}
+
+    <main class="subjects-grid">
+        <div class="subject-card" data-subject="math_analysis">Математический анализ</div>
+        <div class="subject-card" data-subject="analytical_geometry">Аналитическая геометрия</div>
+        <div class="subject-card inactive" data-subject="algorithms">Алгоритмы и структуры данных</div>
+    </main>
+
+    <div class="topics-modal" id="topicsModal">
+        <div class="topics-content" id="topicsContent"></div>
+    </div>
+
+{#    <footer class="footer">#}
+{#        <span class="footer-text">НИЯУ МИФИ</span>#}
+{#    </footer>#}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="{% static 'scripts/visu.js' %}"></script>
+</body>
+</html>

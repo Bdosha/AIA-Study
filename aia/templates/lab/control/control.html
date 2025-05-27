@@ -1,0 +1,349 @@
+{% extends "lab/base.html" %}
+
+{% load static %}
+
+{% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа №4: Управление</title>
+
+    {#    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">#}
+    <link rel="stylesheet" href="{% static "styles/control.css" %}">
+    <script defer="" src="{% static "scripts/control.js" %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+{% endblock head %}
+
+{% block content %}
+    <div id="mainContainer" class="box">
+        <h2>Подбор траектории</h2>
+        <label for="inputSlider" class="input-label" id="left">Осталось 5 попыток</label>
+
+        <div class="control">
+            <div class="controls">
+                <p id="x1Value">X1: 0</p>
+
+                <label for="x1Slider"></label><input type="range" id="x1Slider" class="form-range" min="0"
+                                                     max="149" value="0">
+            </div>
+
+            <!-- Картинка -->
+            <canvas id="imageCanvas" class="map"></canvas>
+
+            <!-- Второй ползунок X2 с ограничением от 1 до 149 -->
+            <div class="controls">
+                <label for="x2Slider"></label><input type="range" id="x2Slider" class="form-range" min="0"
+                                                     max="149" value="149">
+                <p id="x2Value">X2: 149</p>
+            </div>
+        </div>
+
+        <!-- Кнопка для расчета -->
+        <button id="button" class="btn btn-primary">Рассчитать</button>
+        <br>
+        <div id="totalPoints" class="output-box">
+            Итоговые очки: 0
+        </div>
+        <br>
+    </div>
+
+
+
+    <div id="mainContainer" class="box">
+        <div id="resultsSection" class="big-table">
+            <h3>Результаты измерений:</h3>
+            <form id="tableForm" method="POST" action=""
+                  style="align-items: center; justify-content: center; display: flex; flex-direction: column;">
+                {% csrf_token %}
+                <table id="resultsTable">
+                    <thead>
+                    <tr>
+                        <th>Номер попытки</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <td>Введенный \( X_1 \)</td>
+                    </tr>
+                    <tr>
+                        <td>Введенный \( X_2 \)</td>
+                    </tr>
+                    <tr>
+                        <td>Спасено станций</td>
+                    </tr>
+                    <tr>
+                        <td>Оставшееся топливо</td>
+                    </tr>
+                    <tr>
+                        <td>Очки</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <br>
+                <input required type="hidden" name="table_data" id="tableDataInput"/>
+                <br>
+                <p id="fio" style="display: none;">Ваше ФИО<br> <label>
+                    <input required name="text" type="text"/>
+                </label></p>
+
+                <button type="submit" id="submitBtn" style="border-radius: 20px;  display: none;">Завершить
+                </button>
+                <br>
+            </form>
+
+            <script>
+                document.getElementById('tableForm').addEventListener('submit', function (event) {
+                    // Останавливаем отправку формы, чтобы сначала обработать данные
+                    event.preventDefault();
+
+                    let csv_data = [];
+
+                    let rows = document.getElementsByTagName('tr');
+                    for (let i = 0; i < rows.length; i++) {
+
+                        // Get each column data
+                        let cols = rows[i].querySelectorAll('td,th');
+
+                        // Stores each csv row data
+                        let csvrow = [];
+                        for (let j = 0; j < cols.length; j++) {
+
+                            // Get the text data of each cell
+                            // of a row and push it to csvrow
+                            csvrow.push(cols[j].innerHTML);
+                        }
+
+                        // Combine each column value with comma
+                        csv_data.push(csvrow.join(","));
+                    }
+
+                    // Combine each row data with new line character
+                    csv_data = csv_data.join('\n');
+                    console.log(csv_data)
+                    // Записываем данные в скрытое поле формы
+                    document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
+
+                    // После этого отправляем форму
+                    this.submit();
+                });
+            </script>
+        </div>
+    </div>
+
+    <!-- Подключаем Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function addColumn(values) {
+            const table = document.getElementById("resultsTable");
+            const headerRow = table.querySelector("thead tr");
+            const rows = table.querySelectorAll("tbody tr");
+
+            // Добавляем заголовок нового столбца
+            const newHeaderCell = document.createElement("th");
+            const columnIndex = headerRow.children.length; // определение индекса для "Попытка N"
+            newHeaderCell.textContent = `Попытка ${columnIndex}`;
+
+
+            const left = document.getElementById('left');
+            let clickCount = 5 - columnIndex;
+            left.textContent = `Осталось ${clickCount} попыток `;
+
+
+            headerRow.appendChild(newHeaderCell);
+
+            // Добавляем значения в каждую строку таблицы
+            values.forEach((value, index) => {
+                const newCell = document.createElement("td");
+                newCell.textContent = value;
+                rows[index].appendChild(newCell);
+            });
+            let button = document.getElementById('button');
+
+
+            if (clickCount === 0) {
+                button.disabled = true;
+                document.getElementById("submitBtn").style.display = 'block'; // Показываем таблицу после добавления данных
+                document.getElementById("fio").style.display = 'block';
+                element.textContent = `Попыток не осталось! Введите финальное значение`;
+            }
+        }
+
+        window.onload = function () {
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            const x1Slider = document.getElementById('x1Slider');
+            const x2Slider = document.getElementById('x2Slider');
+            const button = document.getElementById('button');
+            const x1Value = document.getElementById('x1Value');
+            const x2Value = document.getElementById('x2Value');
+            const totalPoints = document.getElementById('totalPoints');
+
+            let img = new Image();
+            img.src = '{% static "img/map_small.jpg" %}';  // Загрузка изображения через Django static
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                updateLine(); // Обновляем линию сразу после загрузки изображения
+            };
+
+            // Функция для обновления линии
+            function updateLine() {
+                const x1 = parseInt(x1Slider.value);
+                const x2 = parseInt(x2Slider.value);
+
+                // Очищаем канвас и перерисовываем исходное изображение
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Рисуем линию
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(img.height - 1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = 1;
+                let err = dx - dy;
+                let x = x1;
+                let y = 0;
+
+                // Пройдем по пикселям и будем округлять по максимальному компоненту цвета
+                while (true) {
+                    const index = (y * canvas.width + x) * 4;
+                    const r = data[index];
+                    const g = data[index + 1];
+                    const b = data[index + 2];
+
+                    // Округление до максимального цвета
+                    const maxColorValue = Math.max(r, g, b);
+                    if (maxColorValue === r) {
+                        data[index] = 255; // Красный
+                        data[index + 1] = 0;
+                        data[index + 2] = 0;
+                    } else if (maxColorValue === g) {
+                        data[index] = 0; // Зеленый
+                        data[index + 1] = 255;
+                        data[index + 2] = 0;
+                    } else {
+                        data[index] = 255; // Синий
+                        data[index + 1] = 255;
+                        data[index + 2] = 255;
+                    }
+
+                    if (x === x2 && y === img.height - 1) break;
+                    const e2 = 2 * err;
+                    if (e2 > -dy) {
+                        err -= dy;
+                        x += sx;
+                    }
+                    if (e2 < dx) {
+                        err += dx;
+                        y += sy;
+                    }
+                }
+
+                // Обновляем изображение с нарисованной линией
+                ctx.putImageData(imageData, 0, 0);
+            }
+
+            // Обработчик изменения ползунков для отображения значений X1 и X2
+            x1Slider.addEventListener('input', function () {
+                x1Value.textContent = `X1: ${x1Slider.value}`;
+                updateLine(); // Обновляем линию при изменении ползунков
+            });
+            x2Slider.addEventListener('input', function () {
+                x2Value.textContent = `X2: ${x2Slider.value}`;
+                updateLine(); // Обновляем линию при изменении ползунков
+            });
+
+            // Обработчик кнопки "Рассчитать"// Функция для подсчёта очков и количества синих островов
+            button.addEventListener('click', function () {
+                const x1 = parseInt(x1Slider.value);
+                const x2 = parseInt(x2Slider.value);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                let sumRValue = 0;
+                let sumGValue = 0;
+                let sumBValue = 0;
+                let blueIslands = 0; // Счётчик синих островов
+                let insideBlueIsland = false; // Флаг для отслеживания внутри синих точек
+
+                // Рисуем линию и считаем суммы
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(canvas.height - 1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = 1;
+                let err = dx - dy;
+                let x = x1;
+                let y = 0;
+
+                while (true) {
+                    const index = (y * canvas.width + x) * 4;
+                    const r = data[index];
+                    const g = data[index + 1];
+                    const b = data[index + 2];
+
+                    // Округление до максимального цвета
+                    const maxColorValue = Math.max(r, g, b);
+                    if (maxColorValue === b) {
+                        sumBValue++;
+
+                        // Если начинается новый синий остров, увеличиваем счётчик
+                        if (!insideBlueIsland) {
+                            blueIslands++;
+                            insideBlueIsland = true; // Входим в синий остров
+                        }
+                    } else if (maxColorValue === r) {
+                        sumRValue++;
+                        insideBlueIsland = false; // Выйти из синего острова
+                    } else if (maxColorValue === g) {
+                        sumGValue++;
+                        insideBlueIsland = false; // Выйти из синего острова
+                    } else {
+                        insideBlueIsland = false; // Выйти из синего острова
+                    }
+
+                    if (x === x2 && y === canvas.height - 1) break;
+                    const e2 = 2 * err;
+                    if (e2 > -dy) {
+                        err -= dy;
+                        x += sx;
+                    }
+                    if (e2 < dx) {
+                        err += dx;
+                        y += sy;
+                    }
+                }
+
+                // Формула для расчёта очков
+                const fuel = 150 + 2 * blueIslands - sumGValue - sumRValue * 2;
+                let a;
+                let b = 0
+                if (fuel < 0) {
+                    a = 'Недолёт';
+                    b = 0
+                } else {
+                    a = fuel + (sumBValue - 4) * 8;
+                    b = a
+                }
+                const points = b;
+                totalPoints.textContent = `Итоговые очки: ${a}`;
+                totalPoints.innerHTML += `<br>Спасено станций ${blueIslands}`;
+                totalPoints.innerHTML += `<br>Оставшееся топливо ${fuel}`;
+                addColumn([x1, x2, blueIslands, fuel, points]);
+            });
+
+        };
+    </script>
+
+
+
+{% endblock content %}

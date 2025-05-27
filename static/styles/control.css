@@ -1,0 +1,272 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+
+.box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 10px;
+    max-width: 90%;
+}
+
+.system-selection-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+}
+
+.control-panel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-panel label {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.control-panel select {
+    font-size: 20px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    border: 1px solid #3d3d99;
+}
+
+/* Описание системы */
+.description-box {
+    font-size: 18px;
+    color: #333;
+    margin-left: 20px;
+    text-align: left;
+}
+
+/* Контейнер для визуализации */
+.visualization-output-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    gap: 20px;
+}
+
+/* Контейнеры для входа и выхода */
+.input-container, .output-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    gap: 5px;
+}
+
+/* Контейнеры для стрелок */
+.input-output-arrow {
+    margin: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Контейнер для изображения */
+.visualization-box {
+    margin: 0 20px;
+    text-align: center;
+}
+
+/* Уменьшение размера изображения */
+.visualization-box img {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Дизайн слайдера с градиентом */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 300px;
+    height: 12px;
+    background: linear-gradient(90deg, #00bfff 0%, #3d3d99 100%);
+    border-radius: 8px;
+    border: 2px solid #333;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #3d3d99;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.output-box {
+    background-color: #f7f7ff;
+    border: 2px solid #4e50d0;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    text-align: center;
+    width: 300px;
+    color: #333;
+}
+
+/* Секция результатов */
+#resultsSection {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Стилизация таблицы результатов */
+#resultsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+#resultsTable th:first-child, #resultsTable td:first-child {
+    background-color: #3d3d99;
+    text-align: left;
+    color: white;
+}
+
+#resultsTable th, #resultsTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+
+#resultsTable tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+#resultsTable tbody tr:nth-child(even) {
+    background-color: #f0f8ff;
+}
+
+/* Подвал */
+footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.output-arrow1 {
+    transform: scaleX(-1);
+}
+
+.big-table {
+    overflow: auto;
+    position: relative;
+}
+
+.big-table table {
+    display: inline-block;
+    vertical-align: top;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Основной контейнер */
+.control {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 170%; /* Адаптивная ширина */
+    max-width: 600px;
+    margin: 0 auto; /* Центрирование */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.controls {
+    width: 100%;
+}
+
+canvas {
+    width: 100%;
+    height: auto; /* Пропорциональное изменение высоты */
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 2px;
+    image-rendering: pixelated;
+}
+
+/* Ползунки */
+input[type="range"] {
+    width: 100%;
+    max-width: 800px; /* Ограничение ширины, чтобы совпадало с <canvas> */
+}
+
+/* Для небольших экранов */
+@media (max-width: 768px) {
+    .control {
+        width: 100%;
+    }
+
+    .controls {
+        width: 100%;
+        padding: 5px;
+    }
+
+    canvas {
+        max-width: 100%; /* Картинка занимает всю ширину */
+    }
+
+    input[type="range"] {
+        max-width: 100%; /* Ползунки подстраиваются под ширину экрана */
+    }
+}
+
+body {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+#totalPoints {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+.form-range::-webkit-slider-thumb {
+    width: 20px; /* Устанавливаем размер бегунка */
+    height: 20px; /* Устанавливаем высоту бегунка */
+    background: #007bff; /* Цвет бегунка */
+    border-radius: 50%; /* Закругленные углы для бегунка */
+    cursor: pointer;
+}
+
+.form-range::-moz-range-thumb {
+    width: 20px; /* Устанавливаем размер бегунка */
+    height: 20px; /* Устанавливаем высоту бегунка */
+    background: #007bff; /* Цвет бегунка */
+    border-radius: 50%; /* Закругленные углы для бегунка */
+    cursor: pointer;
+}

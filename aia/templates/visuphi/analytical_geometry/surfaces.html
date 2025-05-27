@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поверхности второго порядка</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/v_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/v_math.css' %}">
+</head>
+<body>
+    <div class="background">
+        <div class="particles"></div>
+    </div>
+    <div id="canvas-container"></div>
+
+    <div class="theory-content">
+        <h1>Поверхности второго порядка</h1>
+        <div class="neon-line"></div>
+        <h2>Поверхности второго порядка</h2>
+        <video autoplay loop muted playsinline>
+            <source src="{% static 'video/geometry.mp4' %}" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+
+        
+<p>Поверхности второго порядка определяются общим алгебраическим уравнением:
+\[
+Ax^2 + By^2 + Cz^2 + Dxy + Exz + Fyz + Gx + Hy + Iz + J = 0
+\]
+Однако, в зависимости от значений коэффициентов, это уравнение может представлять различные типы поверхностей. Рассмотрим основные типы и влияние параметров на их форму.</p>
+
+<h3>1. Эллипсоид</h3>
+<p><strong>Уравнение:</strong><br>
+\[
+\frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
+\]
+</p>
+<p><strong>Описание:</strong> Закрытая поверхность, похожая на сферу, но вытянутая или сплюснутая вдоль осей.</p>
+<p><strong>Влияние параметров:</strong></p>
+<ul>
+  <li>\(a, b, c\): определяют размеры эллипсоида вдоль осей \(x\), \(y\) и \(z\) соответственно.</li>
+  <li>Если \(a = b = c\), получается <strong>сфера</strong> радиуса \(a\).</li>
+  <li>Если два параметра равны (например, \(a = b\)), эллипсоид становится <strong>эллипсоидом вращения</strong> (осесимметричным) вокруг оси \(z\).</li>
+  <li>Чем больше параметр, тем "вытянутее" эллипсоид вдоль соответствующей оси.</li>
+  <li>Если один из параметров стремится к нулю, эллипсоид "сплющивается", стремясь к эллипсу в соответствующей плоскости. Например, \(c \to 0\) приводит к эллипсу в плоскости \(z = 0\):  \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\).</li>
+</ul>
+
+<h3>2. Однополостный гиперболоид</h3>
+<p><strong>Уравнение:</strong><br>
+\[
+\frac{x^2}{a^2} + \frac{y^2}{b^2} - \frac{z^2}{c^2} = 1
+\]
+</p>
+<p><strong>Описание:</strong> Двусвязная поверхность, имеющая вид "седла". Сечения плоскостями \(z = \text{const}\) являются эллипсами.</p>
+<p><strong>Влияние параметров:</strong></p>
+<ul>
+  <li>\(a, b\):  определяют размеры эллиптического сечения в плоскости \(z=0\).</li>
+  <li>\(c\): определяет "выпуклость" гиперболоида вдоль оси \(z\). Чем больше \(c\), тем более "растянут" гиперболоид вдоль оси \(z\).</li>
+  <li>Если \(a = b\), получаем <strong>однополостный гиперболоид вращения</strong> вокруг оси \(z\).</li>
+  <li>Если \(c\) стремится к нулю, гиперболоид вырождается в цилиндр: \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\).</li>
+</ul>
+
+<h3>3. Двуполостный гиперболоид</h3>
+<p><strong>Уравнение:</strong><br>
+\[
+\frac{x^2}{a^2} + \frac{y^2}{b^2} - \frac{z^2}{c^2} = -1
+\]
+</p>
+<p><strong>Описание:</strong> Состоит из двух отдельных "чаш", вытянутых вдоль оси \(z\).</p>
+<p><strong>Влияние параметров:</strong></p>
+<ul>
+  <li>\(a, b\):  определяют размеры эллиптических сечений.</li>
+  <li>\(c\):  определяет расстояние между вершинами двух полостей и "вытянутость" вдоль оси \(z\). Большее значение \(c\) увеличивает это расстояние и "вытягивает" поверхность.</li>
+  <li>Если \(a = b\), получаем <strong>двуполостный гиперболоид вращения</strong> вокруг оси \(z\).</li>
+</ul>
+
+<h3>4. Эллиптический параболоид</h3>
+<p><strong>Уравнение:</strong><br>
+\[
+\frac{x^2}{a^2} + \frac{y^2}{b^2} = 2z
+\]
+</p>
+<p><strong>Описание:</strong> Поверхность, напоминающая "тарелку". Сечения плоскостями, параллельными плоскости \(xy\), являются эллипсами. Сечения плоскостями, параллельными плоскостям \(xz\) и \(yz\), являются параболами.</p>
+<p><strong>Влияние параметров:</strong></p>
+<ul>
+  <li>\(a, b\):  определяют "растяжение" эллипсов в плоскости \(xy\). Чем больше параметр, тем более "плоский" эллипс.</li>
+  <li>Если \(a = b\), получаем <strong>параболоид вращения</strong> вокруг оси \(z\).</li>
+</ul>
+
+<h3>5. Гиперболический параболоид</h3>
+<p><strong>Уравнение:</strong><br>
+\[
+\frac{x^2}{a^2} - \frac{y^2}{b^2} = 2z
+\]
+</p>
+<p><strong>Описание:</strong> Поверхность седловидной формы. Сечения плоскостями, параллельными плоскости \(xy\), являются гиперболами. Сечения плоскостями, параллельными плоскостям \(xz\) и \(yz\), являются параболами.</p>
+<p><strong>Влияние параметров:</strong></p>
+<ul>
+  <li>\(a, b\):  определяют "растяжение" гипербол в плоскости \(xy\).</li>
+  <li>Форма "седла" определяется соотношением \(a\) и \(b\).</li>
+</ul>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='/visuphi/'">На главную</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        // Three.js анимация
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(window.innerWidth < 768 ? 10 : 15, 0);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x0057B7,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.4
+        });
+        const icosahedron = new THREE.Mesh(geometry, material);
+        scene.add(icosahedron);
+
+        camera.position.z = window.innerWidth < 768 ? 25 : 40;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            icosahedron.rotation.x += 0.005;
+            icosahedron.rotation.y += 0.008;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth/window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

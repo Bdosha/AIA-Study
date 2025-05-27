@@ -1,0 +1,86 @@
+{% extends "lab/base.html" %}
+{% load static %}
+
+{% block head %}
+    <title>Лабораторная работа №2</title>
+{% endblock head %}
+
+{% block content %}
+
+    <div class="container my-4">
+        <div class="carousel-inner" style="text-align: center">
+            <img src="{% static "img/feedbacks.png" %}"
+                 class="d-block w-100" alt="..." height="auto" width="auto" style="display: flex;
+      justify-content: center; border-radius: 20px">
+
+
+        </div>
+        <br>
+        <div style="text-align: center">
+            <h2 style="color:black">Капитан, нам срочно нужно стабилизировать температуру двигателя!</h2>
+            <p style="color:black">Скорее, выбери способ для поиска оптимума. У тебя будет всего 10 попыток, чтобы
+                выровнять показатели, иначе мы все взлетим на воздух</p>
+
+        </div>
+        <br>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-success">Алгоритмы везде...</strong>
+                        <h3 class="mb-0">Тернарный поиск</h3>
+                        <p class="card-text mb-auto">🔎 Поиск минимума через данные о значении функции в точке</p>
+                        {#<a href="https://ru.wikipedia.org/wiki/Троичный_поиск" class="stretched-link">Подробнее</a>#}
+
+                        <a href="ternary_search/" class="stretched-link">Выбрать модель</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="230" height="230"
+                             src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/GoldenSectionSearch.png/800px-GoldenSectionSearch.png
+"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-info">Дельта альфа бета штрих</strong>
+                        <h3 class="mb-0">Перебор</h3>
+                        <p class="mb-auto">📊 Поиск вершины через разность расстояний</p>
+                        {#<a href="https://education.yandex.ru/handbook/ml/article/optimizaciya-v-ml"#}
+                        {#class="stretched-link">Подробнее</a>#}
+                        <a href="simple/" class="stretched-link">Выбрать модель</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="230" height="230"
+                             src="https://dspncdn.com/a1/media/originals/da/1d/4c/da1d4c7e38b426eca93a6c2e60398a06.jpg"
+                             alt="">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-12">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-danger">Стохасти.. кто?</strong>
+                        <h3 class="mb-0">Градиентный спуск</h3>
+                        <p class="mb-auto">🦄 Метод для поиска минимумов через производную. В основном используется в
+                            машинном и глубоком обучении</p>
+                        {#<a href="https://education.yandex.ru/handbook/ml/article/optimizaciya-v-ml"#}
+                        {#class="stretched-link">Подробнее</a>#}
+                        <a href="gradient/" class="stretched-link">Выбрать модель</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="230" height="230"
+                             src="https://www.researchgate.net/profile/Matteo-Roffilli/publication/242416179/figure/fig9/AS:669404463394819@1536609869080/A-bowl-shaped-function-to-be-minimized_Q320.jpg"
+                             alt="">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

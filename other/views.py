@@ -23,11 +23,6 @@ def visuphi_topic(request, sub, topic):
     return render(request, f'visuphi/{sub}/{topic}.html')
 
 
-# Настраиваем логирование
-# logging.basicConfig(level=logging.DEBUG)
-# logger = logging.getLogger(__name__)
-
-
 @csrf_exempt
 def komi(request):
     # logger.info(f"Получен {request.method} запрос")
@@ -107,3 +102,15 @@ def komi(request):
         except Exception as e:
             # logger.error(f"Неожиданная ошибка: {e}")
             return JsonResponse({"error": f"Внутренняя ошибка: {str(e)}"}, status=500)
+
+
+def klindex(request):
+    return render(request, 'lab_kl/index.html')
+
+
+def klab(request, lab):
+    return render(request, f'lab_kl/{lab}.html')
+
+
+def klsim(request):
+    return render(request, 'lab_kl/cellular.html')

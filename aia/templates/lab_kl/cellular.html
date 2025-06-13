@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор клеточных автоматов</title>
+    <link rel="stylesheet" href="{% static 'styles/cellular.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Симулятор клеточных автоматов</h1>
+            <p>Исследуйте жизнеподобные клеточные автоматы и создавайте уникальные паттерны</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- Боковая панель управления -->
+            <aside class="sidebar">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Управление</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="controls">
+                            <button id="playBtn" class="btn btn--primary">▶ Запуск</button>
+                            <button id="pauseBtn" class="btn btn--secondary" disabled>⏸ Пауза</button>
+                            <button id="stepBtn" class="btn btn--outline">⏯ Шаг</button>
+                            <button id="resetBtn" class="btn btn--outline">🔄 Сброс</button>
+                            <button id="clearBtn" class="btn btn--outline">🗑 Очистить</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Скорость симуляции</label>
+                            <input type="range" id="speedSlider" min="1" max="10" value="5" class="form-control">
+                            <span id="speedValue">5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Правила автомата</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="form-group">
+                            <label class="form-label">Предустановленные правила</label>
+                            <select id="ruleSelect" class="form-control">
+                                <option value="">Выберите правило...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Рождение (B)</label>
+                            <input type="text" id="birthRule" placeholder="3" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Выживание (S)</label>
+                            <input type="text" id="survivalRule" placeholder="23" class="form-control">
+                        </div>
+
+                        <button id="applyRulesBtn" class="btn btn--primary btn--full-width">Применить правила</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Паттерны</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="form-group">
+                            <label class="form-label">Известные паттерны</label>
+                            <select id="patternSelect" class="form-control">
+                                <option value="">Выберите паттерн...</option>
+                            </select>
+                        </div>
+
+                        <button id="placePatternBtn" class="btn btn--secondary btn--full-width">Разместить паттерн</button>
+
+                        <div class="form-group">
+                            <label class="form-label">Случайное заполнение</label>
+                            <input type="range" id="densitySlider" min="0" max="100" value="30" class="form-control">
+                            <span id="densityValue">30%</span>
+                        </div>
+
+                        <button id="randomFillBtn" class="btn btn--outline btn--full-width">Случайное заполнение</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Инструменты</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="tool-buttons">
+                            <button id="pencilTool" class="btn btn--outline tool-btn active">✏️ Карандаш</button>
+                            <button id="eraserTool" class="btn btn--outline tool-btn">🗑️ Ластик</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Размер сетки</label>
+                            <input type="range" id="gridSizeSlider" min="20" max="100" value="50" class="form-control">
+                            <span id="gridSizeValue">50x50</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Основная область симуляции -->
+            <main class="simulation-area">
+                <div class="canvas-container">
+                    <canvas id="gameCanvas" width="600" height="600"></canvas>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Поколение:</span>
+                        <span id="generation">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Живых клеток:</span>
+                        <span id="aliveCells">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Плотность:</span>
+                        <span id="density">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Статус:</span>
+                        <span id="status" class="status status--info">Остановлено</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'scripts/cellular.js' %}"></script>
+</body>
+</html>

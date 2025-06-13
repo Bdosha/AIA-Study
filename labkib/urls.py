@@ -1,7 +1,6 @@
 from django.urls import path, include
 from labkib import views
 
-
 black_box_url = [
     path('', views.systems),
     path('<str:system>/', views.main_work),
@@ -23,7 +22,7 @@ control_url = [
     path('track/', views.get_control),
 ]
 
-urlpatterns=[
+urlpatterns = [
     path('', views.lab_index),
     path('systems/', include(black_box_url)),
     path('feedback/', include(feedback_url)),

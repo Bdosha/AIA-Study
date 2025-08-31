@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% load static %} 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор детерминированного конечного автомата</title>
+    <link rel="stylesheet" href="{% static 'styles/dfa.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Симулятор ДКА</h1>
+        </header>
+
+        <main class="workspace">
+            <!-- Секция создания матрицы переходов -->
+            <section class="matrix-section">
+                <h2>Матрица переходов</h2>
+                <div class="matrix-controls">
+                    <button id="add-state" class="btn btn-primary">Добавить состояние</button>
+                    <button id="add-symbol" class="btn btn-primary">Добавить символ</button>
+                    <button id="check-btn" class="btn btn-success">🔍 Проверить автомат</button>
+                </div>
+                
+                <div id="matrix-container">
+                    <table id="transition-matrix">
+                        <thead id="matrix-header"></thead>
+                        <tbody id="matrix-body"></tbody>
+                    </table>
+                </div>
+                
+                <div id="validation-errors" class="error-container" style="display: none;"></div>
+            </section>
+
+            <!-- Секция визуализации автомата -->
+            <section class="visualization-section">
+                <h2>Диаграмма автомата</h2>
+                <div class="canvas-container">
+                    <canvas id="automaton-canvas" width="600" height="400"></canvas>
+                </div>
+            </section>
+
+            <!-- Секция симуляции -->
+            <section class="simulation-section">
+                <h2>Симуляция выполнения</h2>
+                
+                <div class="input-section">
+                    <label for="input-string">Входная строка:</label>
+                    <input type="text" id="input-string" placeholder="Введите строку для проверки">
+                    <div id="input-display" class="input-display"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="play-btn" class="btn btn-success">▶ Запуск</button>
+                    <button id="pause-btn" class="btn btn-warning" disabled>⏸ Пауза</button>
+                    <button id="step-btn" class="btn btn-info">⏭ Шаг</button>
+                    <button id="reset-btn" class="btn btn-danger">🔄 Сброс</button>
+                </div>
+
+                <div class="speed-control">
+                    <label for="speed-slider">Скорость:</label>
+                    <input type="range" id="speed-slider" min="100" max="1900" value="1000">
+                    <span>Медленно ← → Быстро</span>
+                </div>
+
+                <div id="status" class="status-info"></div>
+                <div id="result" class="result-info"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Подключение JavaScript файлов -->
+    <script src="{% static 'scripts/dfa/dfa.js' %}"></script>
+    <script src="{% static 'scripts/dfa/matrix-editor.js' %}"></script>
+    <script src="{% static 'scripts/dfa/visualizer.js' %}"></script>
+    <script src="{% static 'scripts/dfa/simulator.js' %}"></script>
+    <script src="{% static 'scripts/dfa/app.js' %}"></script>
+</body>
+</html>

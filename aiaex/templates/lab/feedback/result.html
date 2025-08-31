@@ -1,0 +1,77 @@
+{% extends "lab/base.html" %}
+{% load static %}
+
+{% block head %}
+    <style>
+        img {
+            width: 40%; /* Установите нужную ширину картинок */
+            height: auto; /* Автоматическая высота */
+            padding: 10px; /* Промежуток между картинками */
+        }
+
+        @media screen and (max-width: 768px) {
+            img {
+                width: 100%; /* Установите нужную ширину картинок */
+                height: auto; /* Автоматическая высота */
+                padding: 10px; /* Промежуток между картинками */
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{% static "styles/result.css" %}">
+    <title>Результаты лабораторной работы</title>
+
+{% endblock head %}
+
+
+{% block content %}
+
+    <div class="container my-4">
+        <div class="row featurette d-flex justify-content-center align-items-center">
+            <div class="container">
+                <div class="row d-flex justify-content-center align-items-center">
+                    <img class="img-fluid" src="{{ filee }}" alt="График">
+                    <img class="img-fluid" src="{{ file }}" alt="График">
+                </div>
+            </div>
+            <div class="col-md-9 order-md-2">
+                {% if cool %}
+                    <h2 class="featurette-heading">Поздравляем, капитан! <span class="text-muted">Благодаря тебе нам удалось избежать трагедии!</span>
+                    </h2>
+                    <p class="lead">Итог работы: Корабль спасён, температура двигателя пришла в норму </p>
+                    <p class="lead">Идеальное значение: {{ x0 }} </p>
+                    <p class="lead">Итоговое отклонение: {{ delta }}</p>
+                    <p class="lead">Всего проверок: {{ lens }}</p>
+                    <br>
+                    <h3>Результаты измерений:</h3>
+
+                    <div id="resultsSection" class="big-table">
+
+                        <table id="resultsTable">
+                            <thead>
+                            <tr id="inputRow">
+                                <th>Вход:</th>
+                                {% for el in x %}
+                                    <th>{{ el }}</th>
+                                {% endfor %}
+                            </tr>
+                            <tr id="outputRow">
+                                <th>Выход:</th>
+                                {% for el in y %}
+                                    <th>{{ el }}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <h2 class="featurette-heading">Сожалеем, капитан... <span class="text-muted">Температура двигателя достигла критических значений</span>
+                    </h2>
+                    <p class="lead">Итог работы: Корабль не удалось спасти от катастрофы</p>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}

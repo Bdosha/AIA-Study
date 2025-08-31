@@ -34,13 +34,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'aia.urls'
+ROOT_URLCONF = 'aiaex.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "aia/templates"
+            BASE_DIR / "aiaex/templates"
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -54,7 +54,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'aia.wsgi.application'
+WSGI_APPLICATION = 'aiaex.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

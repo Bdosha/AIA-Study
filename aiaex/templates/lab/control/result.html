@@ -1,0 +1,289 @@
+{% extends "lab/base.html" %}
+{% load static %}
+
+{% block head %}
+    <style>
+
+
+        canvas {
+            width: 100%; /* Установите нужную ширину картинок */
+            height: auto; /* Пропорциональное изменение высоты */
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid black;
+            border-radius: 2px;
+            image-rendering: pixelated;
+        }
+
+        @media screen and (max-width: 768px) {
+            canvas {
+                width: 100%; /* Установите нужную ширину картинок */
+                height: auto; /* Автоматическая высота */
+                margin-top: 20px;
+                margin-bottom: 20px;
+                box-sizing: border-box;
+                border: 1px solid black;
+                border-radius: 2px;
+                image-rendering: pixelated;
+            }
+        }
+
+        #instruction {
+            display: none; /* Изначально скрыто */
+            margin-top: 10px;
+            align-items: center;
+
+        }
+
+        .toggle-btn {
+            cursor: pointer;
+            color: #333333;
+        }
+
+        #image {
+            max-width: 100%;
+            margin-bottom: 20px;
+            border-radius: 20px;
+
+        }
+
+        #text {
+            text-align: center;
+        }
+
+        #buttons {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        {#textarea {#}
+        {#    width: 100%;#}
+        {#    height: 200px;#}
+        {#    padding: 10px;#}
+        {#    font-size: 16px;#}
+        {#    line-height: 1.5;#}
+        {#    font-family: Arial, sans-serif;#}
+        {#    color: #333;#}
+        {#    background-color: #f9f9f9;#}
+        {#    border: 1px solid #ccc;#}
+        {#    border-radius: 5px;#}
+        {#    resize: none; /* Отключить изменение размера */#}
+        {#}#}
+    </style>
+    <title>Результаты лабораторной работы</title>
+
+    <link rel="stylesheet" href="{% static "styles/result.css" %}">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+    <script>
+        function toggleInstruction() {
+            const instruction = document.getElementById('instruction');
+            instruction.style.display = (instruction.style.display === 'none') ? 'block' : 'none';
+        }
+    </script>
+    <script>
+        function toggleInstruction2() {
+            const instruction = document.getElementById('codes');
+            instruction.style.display = (instruction.style.display === 'none') ? 'block' : 'none';
+        }
+    </script>
+
+{% endblock head %}
+
+
+{% block content %}
+
+    <div class="container my-4">
+        <div class="row featurette d-flex justify-content-center align-items-center">
+            <div class="col-md-9 order-md-2">
+                <h2 class="featurette-heading">Поздравляем, капитан! <span class="text-muted">Нам удалось подобрать траекторию полёта для возвращения домой!</span>
+                </h2>
+                <p class="lead">Итог работы: Корабль успешно преодолел пояс астероидов</p>
+                <p>Лучшая {{ tr }}: \( X_1 = {{ x1 }}\), \( X_2 = {{ x2 }}\), станции - \({{ sv }}\), топливо -
+                    \({{ fuel }}\), очки - \( {{ mx }}\)
+                </p>
+
+                <canvas id="imageCanvas" class="map"></canvas>
+
+                <h3>Все попытки:</h3>
+
+                <div id="resultsSection" class="big-table">
+
+                    <table id="resultsTable">
+                        <thead>
+                        <tr>
+                            <th>Номер попытки</th>
+                            {% for i in table.0 %}
+                                <th>{{ i }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr>
+                            <td>Введенный \( X_1 \)</td>
+                            {% for i in table.1 %}
+                                <td>{{ i }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>Введенный \( X_2 \)</td>
+                            {% for i in table.2 %}
+                                <td>{{ i }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>Спасено станций</td>
+                            {% for i in table.3 %}
+                                <td>{{ i }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>Оставшееся топливо</td>
+                            {% for i in table.4 %}
+                                <td>{{ i }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>Очки</td>
+                            {% for i in table.5 %}
+                                <td>{{ i }}</td>
+                            {% endfor %}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <br>
+                <h3 class="toggle-btn" onclick="toggleInstruction()">▶ Важное обращение (тык)</h3>
+
+                <div id="instruction" style="display: none">
+                    <div class="container">
+                        <h5 id="text">К-капитан... Тут такое дело... Сейчас была проведена диагностика корабля и
+                            оказалось что... Все эти неполадки во время полета произошли из-за того, что я забыла при
+                            старте установить один нам небольшой ЛабКиб-модуль... <br>Простите! Простите меня пожалуста!
+                            Я не хотела...</h5>
+                        <img id="image" src="{% static 'img/sorry.png' %}" alt="Начальная картинка">
+                        <div id="buttons">
+                            <button onclick="handleFirstOption()">Накричать</button>
+                            <button onclick="handleSecondOption()">Принять извинения</button>
+                        </div>
+                        <h3 class="toggle-btn2" onclick="toggleInstruction2()">▶ Важное обращение (тык)</h3>
+                        <label>
+<textarea readonly id="codes"  style="display: none">
+{{ tx }}</textarea>
+                        </label>
+                    </div>
+
+                    <script>
+                        function handleFirstOption() {
+                            document.getElementById('text').textContent = 'Да... Я поняла, капитан... Обещаю, что такого больше не повторится... Пожалуй я пойду...';
+                            document.getElementById('image').src = '{% static "img/sad.png" %}';
+                            document.getElementById('image').alt = 'Картинка для первого варианта';
+                            document.getElementById('buttons').innerHTML = ''; // Убираем кнопки
+                        }
+
+                        function handleSecondOption() {
+                            document.getElementById('text').textContent = 'Спасибо вам огромное... И знаете.. В честь завершения нашей миссии я подготовила для вас кое-что. Пусть это совсем мелочь, но мне было важно как-то отблагодарить вас за столь прекрасное командование! Мне многому предстоит у вас научиться';
+                            document.getElementById('image').src = '{% static "img/paper.png" %}';
+                            document.getElementById('buttons').innerHTML = '<button onclick="handleNext()">Взять отчёт</button>';
+                        }
+
+                        function handleNext() {
+                            document.getElementById('text').textContent = 'Спасибо вам огромное за эту миссию. Я обязательно расскажу Роману Викторовичу обо всех ваших подвигах! И я очень надеюсь, что мы с вами еще свидимся... Капитан {{ fio }}';
+                            document.getElementById('image').src = '{% static "img/bye.png" %}';
+                            document.getElementById('image').alt = 'Картинка перед скачиванием';
+                            const link = document.createElement('a');
+                            link.href = "{{file}}"; // Укажите путь к вашему файлу
+                            link.download = "{{file}}";
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            document.getElementById('buttons').innerHTML = ''; // Убираем кнопки
+
+                        }
+
+                    </script>
+                    <script>window.onload = function () {
+                        const canvas = document.getElementById('imageCanvas');
+                        const ctx = canvas.getContext('2d');
+
+
+                        let img = new Image();
+                        img.src = '{% static "img/map_small.jpg" %}';  // Загрузка изображения через Django static
+                        img.onload = function () {
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            ctx.drawImage(img, 0, 0);
+                            updateLine(); // Обновляем линию сразу после загрузки изображения
+                        };
+
+                        // Функция для обновления линии
+                        function updateLine() {
+                            const x1 = parseInt({{x1}});
+                            const x2 = parseInt({{x2}});
+
+                            // Очищаем канвас и перерисовываем исходное изображение
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(img, 0, 0);
+
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const data = imageData.data;
+
+                            // Рисуем линию
+                            const dx = Math.abs(x2 - x1);
+                            const dy = Math.abs(img.height - 1);
+                            const sx = x1 < x2 ? 1 : -1;
+                            const sy = 1;
+                            let err = dx - dy;
+                            let x = x1;
+                            let y = 0;
+
+                            // Пройдем по пикселям и будем округлять по максимальному компоненту цвета
+                            while (true) {
+                                const index = (y * canvas.width + x) * 4;
+                                const r = data[index];
+                                const g = data[index + 1];
+                                const b = data[index + 2];
+
+                                // Округление до максимального цвета
+                                const maxColorValue = Math.max(r, g, b);
+                                if (maxColorValue === r) {
+                                    data[index] = 255; // Красный
+                                    data[index + 1] = 0;
+                                    data[index + 2] = 0;
+                                } else if (maxColorValue === g) {
+                                    data[index] = 0; // Зеленый
+                                    data[index + 1] = 255;
+                                    data[index + 2] = 0;
+                                } else {
+                                    data[index] = 255; // Синий
+                                    data[index + 1] = 255;
+                                    data[index + 2] = 255;
+                                }
+
+                                if (x === x2 && y === img.height - 1) break;
+                                const e2 = 2 * err;
+                                if (e2 > -dy) {
+                                    err -= dy;
+                                    x += sx;
+                                }
+                                if (e2 < dx) {
+                                    err += dx;
+                                    y += sy;
+                                }
+                            }
+
+                            // Обновляем изображение с нарисованной линией
+                            ctx.putImageData(imageData, 0, 0);
+                        }
+                    }
+
+                    </script>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock content %}

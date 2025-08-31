@@ -1,0 +1,50 @@
+{% extends "lab/base.html" %}
+{% load static %}
+
+{% block head %}
+    <title>Лабораторная работа №4</title>
+{% endblock head %}
+
+{% block content %}
+
+    <div class="container my-4">
+        <div class="carousel-inner" style="text-align: center">
+            <img src="{% static "img/panic.png" %}"
+                 class="d-block w-100" alt="..." height="auto" width="auto" style="display: flex;
+      justify-content: center; border-radius: 20px">
+
+
+        </div>
+        <br>
+        <div style="text-align: center">
+            <h2 style="color:black">Капитан, на нашем пути очень плотный пояс астероидов!</h2>
+            <p style="color:black">Нужно подобрать идеальную траекторию, чтобы нам хватило топлива и мы сумели
+                эвакуировать как можно больше исследовательских станций!</p>
+
+        </div>
+        <br>
+        <div class="row mb-1">
+            <div class="col-md-12">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-info">Интересно, какого бренда этот ремешок</strong>
+                        <h3 class="mb-0">Подбор траектории</h3>
+                        <p class="mb-auto">📉 С помощью интерактивной карты вам нужно подобрать самую удачную траекторию.
+                            Толиво ограничено, а в красных зонах оно тратится быстрее чем в зеленых. Синим отмечены
+                            исследовательские станции, их нужно эвакуировать, а еще там наверняка осталось топливо для
+                            дозаправки!</p>
+                        {#<a href="https://education.yandex.ru/handbook/ml/article/optimizaciya-v-ml"#}
+                        {#class="stretched-link">Подробнее</a>#}
+                        <a href="track/" class="stretched-link">Выбрать модель</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img class="bd-placeholder-img" width="auto" height="230"
+                             src="https://jagua-tattoo.ru/wp-content/uploads/2020/01/самолетик-1.png"
+                             alt="">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,7 +1,7 @@
 from labkib import urls
 from other import views
 from django.urls import path, include
-
+from django.contrib import admin
 
 url_kl = [
     path('', views.klindex),
@@ -16,11 +16,17 @@ url_other = [
 
     path('visuphi/', views.visuphi),
     path('visuphi/<str:sub>/<str:topic>', views.visuphi_topic),
+
+    path('dfa/', views.dfa),
+
+    path('<str:custom>/', views.custom_lab),
 ]
 
 urlpatterns = [
-    path('', include(url_other)),
+
+    path('admin/', admin.site.urls),
     path('cellular/', include(url_kl)),
-    path('labkib/', include(urls.urlpatterns))
+    path('labkib/', include(urls.urlpatterns)),
+    path('', include(url_other))
 
 ]

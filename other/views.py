@@ -1,9 +1,11 @@
 import json
 import subprocess
 import os
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import CustomLabs
 
 
 # Create your views here.
@@ -12,7 +14,7 @@ def nash(request):
 
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', context={"cards": CustomLabs.objects.all()})
 
 
 def visuphi(request):
@@ -114,3 +116,18 @@ def klab(request, lab):
 
 def klsim(request):
     return render(request, 'lab_kl/cellular.html')
+
+def dfa(request):
+    return render(request, 'automata.html')
+
+def custom_lab(request, custom):
+    try:
+        print(str(CustomLabs.objects.get(url=custom).file)[26:])
+        return render(request, f'custom_labs/{str(CustomLabs.objects.get(url=custom).file)[26:]}.html')
+    except Exception as e:
+        print(str(e))
+        return JsonResponse({"error": "Custom lab not found"}, status=404)
+
+
+
+

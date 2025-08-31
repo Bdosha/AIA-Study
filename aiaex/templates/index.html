@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <main class="main-container">
+        <!-- Заголовок страницы -->
+        <div class="page-header">
+            <h1 class="page-title">Учебные материалы</h1>
+            <p class="page-subtitle">
+                Добро пожаловать в учебный центр МИФИ программы Искусственный интеллект и моделирование когнитивных
+                процессов в проектировании и разработке информационных систем
+            </p>
+        </div>
+
+        <!-- Сетка материалов -->
+        <!-- Сетка материалов -->
+        <div class="content-grid">
+
+            {% for card in cards %}
+                <div class="material-card">
+                    <div class="card-icon">{{ card.emojy }}</div>
+                    <h3 class="card-title">{{ card.name }}</h3>
+                    <p class="card-description">
+                        {{ card.description }}
+
+                    </p>
+                    <a href="/{{ card.url }}" class="card-link">Перейти к материалам</a>
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </main>
+{% endblock content %}

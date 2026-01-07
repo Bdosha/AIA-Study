@@ -1,0 +1,392 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>BODY {
+        font-family: Verdana, Tahoma, Helvetica, Arial, sans-serif;
+        font-size: 12pt;
+        color: black;
+        background: #DDFFDD;
+    }
+
+    HEADER {
+        padding: 10px;
+        margin: 10px;
+        color: white;
+        background: darkgreen;
+        text-align: center;
+        border-radius: 20px;
+        font-size: 20pt;
+    }
+
+    FOOTER {
+        color: black;
+        text-align: center;
+        font-size: 8pt;
+        padding-top: 20px;
+    }
+
+    .input {
+        font-size: 10pt;
+        border-radius: 5px;
+        border-width: 1px;
+        margin: 2px;
+    }
+    </style>
+    <title>WW Electra: Симулятор автомата Wireworld</title>
+    <script type="application/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+<header>
+    WW Electra: Симулятор автомата Wireworld
+</header>
+
+<table width="98%" height="85%" align="center" border="0">
+    <tr valign="top" height="100%">
+        <td align="center">
+            <div width="100%">
+                <svg id="CA" width="100%" height="750"></svg>
+                <br/>
+            </div>
+        </td>
+    </tr>
+    <tr valign="top" height="0">
+        <td align="center">
+            <div>
+                Ширина поля в клетках: <input class="input" type="number" min="10" max="500" name="CAFieldFidth"
+                                              value="100" onchange="setFieldWidth()"
+                                              id="CAFieldWidth"/>&nbsp;&nbsp;<input class="input" type="button"
+                                                                                    value="Стоп" id="stop"
+                                                                                    onclick="stop()"/><input
+                    class="input" type="button" value="Пуск" id="run" onclick="run()"/><input class="input"
+                                                                                              type="button"
+                                                                                              value="1 шаг" id="step"
+                                                                                              onclick="oneStep()"/><input
+                    class="input" type="button" value="Очистка" id="clear" onclick="clearCells()"/>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<footer>
+    © 2023, <a href="https://aia.expert/">ООО «А-Я эксперт»</a>
+</footer>
+</body>
+
+<script type="application/javascript">//=============================================================================
+//
+//  Проект:   WW Electra: Симулятор автомата Wireworld
+//  Компания: ООО «А-Я эксперт»
+//  Автор:    Роман Викторович Душкин
+//
+//  В проекте используется библиотека D3 (https://d3js.org/) для визуализации
+//  данных. При помощи методов этой библиотеки осуществляется работа с SVG-
+//  контейнером, в котором осуществляется симуляция работы клеточного автомата.
+//
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// Константы
+//-----------------------------------------------------------------------------
+const svgWidth = Math.round(window.screen.width * 0.98);  // Ширина поля в пикселах.
+const svgHeight = 600;                                     // Высота поля в пикселах.
+
+const fieldColor = '#333333';    // Цвет поля.
+const conductorColor = 'gold';       // Цвет проводника.
+const eHeadColor = 'blue';  // Цвет головы электрона.
+const eTailColor = 'red';       // Цвет хвоста электрона.
+
+//-----------------------------------------------------------------------------
+// Глобальные переменные
+//-----------------------------------------------------------------------------
+var cellSize;             // Текущий размер клетки.
+var nofCells = 100;     // Ширина решётки в клетках.
+var nofCellsHeight;       // Высота решётки в клетках.
+var cellStates = [];      // Массив для представления состояний клеток автомата.
+var runningFlag = false;  // Флаг того, что симуляция запущена.
+
+// Механизм для асинхронного запуска эволюции клеточного автомата.
+var running = d3.interval(function () {
+    return 0
+}, 10000);
+
+//-----------------------------------------------------------------------------
+// Инициализация клеточного автомата и всех необходимых для его
+// функционирования элементов
+//-----------------------------------------------------------------------------
+
+// Инициализация поля клеточного автомата.
+d3.select("#CA")
+    .attr('height', svgHeight)
+    .attr('width', svgWidth);
+
+// Расчёт значений глобальных переменных.
+updateGlobalVars();
+
+// Установка кнопок.
+updateControls();
+
+// Инициализация массива состояний клеток.
+initializeField();
+
+// Отрисовка первичного поля временной диаграммы клеточного автомата.
+drawCAField();
+
+//-----------------------------------------------------------------------------
+// Определения функций
+//-----------------------------------------------------------------------------
+
+// Актуализация значений глобальных переменных.
+function updateGlobalVars() {
+    cellSize = svgWidth / nofCells;
+    nofCellsHeight = Math.round(svgHeight / cellSize);
+}
+
+// Инициализация клеток поля.
+// Значения:
+//   0 — поле.
+//   1 — проводник.
+//   2 — голова электрона.
+//   3 — хвост электрона.
+function initializeField() {
+    for (let i = 0; i < nofCells; i++) {
+        cellStates[i] = [];
+        for (let j = 0; j < nofCellsHeight; j++) {
+            cellStates[i][j] = 0;
+        }
+    }
+}
+
+// Отрисовка поля клеточного автомата.
+function drawCAField() {
+    const svg = d3.select('#CA');
+    svg.selectAll('*').remove();
+
+    for (let i = 0; i < nofCells; i++) {
+        for (let j = 0; j < nofCellsHeight; j++) {
+            svg.append('rect')
+                .attr('id', 'CACell_' + i + '_' + j)
+                .attr('class', 'cell')
+                .attr('x', i * cellSize)
+                .attr('y', j * cellSize)
+                .attr('width', cellSize)
+                .attr('height', cellSize)
+                .attr('stroke', 'darkgray')
+                .attr('fill', getCellColor(i, j))
+                .on('click', flipCellState)
+                .on('mouseover', handleMouseOver)
+                .on('mouseout', handleMouseOut);
+        }
+    }
+}
+
+// Возвращает цвет клетки в зависимости от её состояния.
+function getCellColor(x, y) {
+    const state = cellStates[x][y];
+    if (state === 0) {
+        return fieldColor;
+    } else if (state === 1) {
+        return conductorColor;
+    } else if (state === 2) {
+        return eHeadColor;
+    } else {
+        return eTailColor;
+    }
+}
+
+// Инверсия целевого состояния клетки при нажатии на неё мышью.
+function flipCellState() {
+    if (!runningFlag) {
+        const cellId = this.getAttribute('id');
+        const [_, i, j] = cellId.split('_');
+
+        cellStates[i][j] = (cellStates[i][j] + 1) % 4;
+
+        d3.select(this).attr('fill', getCellColor(i, j));
+    }
+}
+
+// Отрисовка красной рамки вокруг изображения клетки при наведении на неё
+// мышью.
+function handleMouseOver() {
+    if (!runningFlag) {
+        d3.select(this).attr('stroke', '#FF4040');
+    }
+}
+
+// Удаление красной рамки вокруг изображения клетки при снятии с неё мыши.
+function handleMouseOut() {
+    if (!runningFlag) {
+        d3.select(this).attr('stroke', 'darkgray');
+    }
+}
+
+// Установка размера ширины поля, на котором эволюционирует клеточный автомат.
+function setFieldWidth() {
+    // Получение нового числа клеток на SVG-контейнере.
+    const newNofCells = parseInt(document.getElementById("CAFieldWidth").value, 10);
+
+    // Расчёт нового размера клетки.
+    const newCellSize = svgWidth / newNofCells;
+
+    // Получение нового количества клеток по вертикали.
+    const newNowCellsHeight = svgHeight / newCellSize
+
+    // Если новое количество клеток больше старого, то:
+    if (newNofCells > nofCells) {
+        // На сколько клеток увеличить массив.
+        const expansionHeight = newNowCellsHeight - nofCellsHeight;
+
+        // Расширение уже имеющихся строк массива, заполнение их мёртвыми клетками.
+        for (let i = 0; i < nofCells; i++) {
+            for (let j = 0; j < expansionHeight; j++) {
+                cellStates[i].push(0);
+            }
+        }
+
+        // Добавление новый строк массива и инициализация их мёртвыми клектами.
+        for (let i = nofCells; i < newNofCells; i++) {
+            cellStates[i] = [];
+            for (let j = 0; j < newNowCellsHeight; j++) {
+                cellStates[i][j] = 0;
+            }
+        }
+    }
+    // Если же новое количество клеток меньше старого, то:
+    else if (newNofCells < nofCells) {
+        // На сколько клеток уменьшить массив.
+        const reductionHeight = nofCellsHeight - newNowCellsHeight;
+
+        // Удаление лишних клеток из строк массива.
+        for (let i = 0; i < nofCells; i++) {
+            cellStates[i].splice(-reductionHeight);
+        }
+
+        // Удаление лишних строк массива.
+        cellStates.splice(newNofCells);
+    }
+
+    nofCells = newNofCells;
+    updateGlobalVars();
+
+    drawCAField();
+}
+
+// Очиска всех клеток первичной конфигурации.
+function clearCells() {
+    for (let i = 0; i < nofCells; i++) {
+        for (let j = 0; j < nofCellsHeight; j++) {
+            cellStates[i][j] = 0;
+        }
+    }
+
+    generation = 0;
+    drawCAField();
+}
+
+// Установка задержки между отрисовкой шагов эволюции клеточного автомата.
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Один шаг эволюции клеточного автомата.
+async function oneStep(sleepTime = 0) {
+    // Создание копии массива состояний клеток.
+    const newCellStates = JSON.parse(JSON.stringify(cellStates));
+
+    // Выполнение эволюции для каждой клетки.
+    for (let i = 0; i < nofCells; i++) {
+        for (let j = 0; j < nofCellsHeight; j++) {
+            const neighbors = countHeadNeighbors(i, j);
+            const currentState = cellStates[i][j];
+
+            // Применение правил игры «Жизнь» для определения состояния клеток
+            // на следующем шаге.
+            if (currentState === 1 && (neighbors === 1 || neighbors === 2)) {
+                newCellStates[i][j] = 2;
+            } else if (currentState === 2) {
+                newCellStates[i][j] = 3;
+            } else if (currentState === 3) {
+                newCellStates[i][j] = 1;
+            }
+        }
+    }
+
+    // Апдейт текущих состояний клеток рассчитанными.
+    cellStates = newCellStates;
+
+    // Перерисовка поля клеточного автомата.
+    drawCAField();
+
+    // Небольшая задержка по времени, чтобы не было очень быстрой отрисовки.
+    await sleep(sleepTime);
+}
+
+// Подсчёт количества живых соседей клетки с предположением того, что поле
+// находится на торе.
+function countHeadNeighbors(x, y) {
+    let count = 0;
+
+    // Определение сдвигов для поиска соседей в обоих размерностях.
+    const offsets = [-1, 0, 1];
+
+    // Итерация по всем соседним клеткам...
+    for (let xOffset of offsets) {
+        for (let yOffset of offsets) {
+            // Пропуск целевой клетки, для которой считается окрестность.
+            if (xOffset === 0 && yOffset === 0) {
+                continue;
+            }
+
+            // Вычисление координат соседних клеток с учётом тороидальности пространства.
+            const neighborX = (x + xOffset + nofCells) % nofCells;
+            const neighborY = (y + yOffset + nofCellsHeight) % nofCellsHeight;
+
+            // Добавление состояния соседней клетки к результату.
+            if (cellStates[neighborX][neighborY] === 2) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
+// Запуск постепенной эволюции клеточного автомата по кнопке «Пуск».
+function run() {
+    runningFlag = true;
+    updateControls();
+
+    running = d3.interval(oneStep, 1);
+}
+
+// Остановка эволюции клеточного автомата (кнопка «Стоп»).
+function stop() {
+    try {
+        running.stop();
+    } catch {
+    }
+
+    runningFlag = false;
+    updateControls();
+}
+
+// Функция для делания кнопок контрольной панели доступными и недоступными.
+function updateControls() {
+    if (runningFlag) {
+        document.getElementById('CAFieldWidth').disabled = true;
+        document.getElementById('stop').disabled = false;
+        document.getElementById('run').disabled = true;
+        document.getElementById('step').disabled = true;
+        document.getElementById('clear').disabled = true;
+    } else {
+        document.getElementById('CAFieldWidth').disabled = false;
+        document.getElementById('stop').disabled = true;
+        document.getElementById('run').disabled = false;
+        document.getElementById('step').disabled = false;
+        document.getElementById('clear').disabled = false;
+    }
+}
+</script>
+
+</html>

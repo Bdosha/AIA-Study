@@ -6,7 +6,8 @@ from django.urls import path, include
 url_kl = [
     path('', views.klindex),
     path('raw/', views.klindex_raw),
-    path('sim', views.klsim),
+    path('sim/', views.klsim),
+    path('sim/raw/', views.klsim_raw),
     path('<str:lab>/', views.klab),
     path('raw/<str:lab>/', views.klab_raw),
 ]
@@ -39,6 +40,10 @@ url_other = [
     # Конечные автоматы (DFA)
     path('dfa/', views.dfa),
     path('dfa/raw/', views.dfa_raw),
+    
+    # Фазовые портреты
+    path('phase/', views.phase_portrait),
+    path('phase/raw/', views.phase_portrait_raw),
 ]
 
 urlpatterns = [

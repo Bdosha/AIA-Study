@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>Бильярдный компьютер — симуляция обратимых вычислений</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="app-header">
+    <div class="title">
+      <h1>Бильярдный компьютер — симуляция обратимых вычислений</h1>
+      <p class="subtitle">НИЯУ МИФИ · Кафедра 22 «Кибернетика» · 2025</p>
+    </div>
+    <div class="header-actions">
+      <button id="aboutBtn" class="ghost" title="О модуле">?</button>
+      <button id="themeToggle" class="ghost" aria-label="Переключить тему" title="Тема"></button>
+    </div>
+  </header>
+
+  <nav class="menubar" aria-label="Главное меню">
+    <div class="menu-group">
+      <button id="fileMenuBtn" class="menu-button">Файл</button>
+      <div id="fileMenu" class="menu-dropdown" role="menu" aria-hidden="true">
+        <button id="exportSceneBtn" role="menuitem">Экспорт сцены (JSON)</button>
+        <button id="importSceneBtn" role="menuitem">Импорт сцены (JSON)</button>
+        <button id="exportCsvBtn" role="menuitem">Скачать логи (CSV)</button>
+      </div>
+    </div>
+    <div id="debugToggleWrapper" style="display:inline-flex; align-items:center; gap:6px; margin-left:18px;">
+      <label for="debugToggleBtn" style="font-size:14px;">Debug:</label>
+      <button id="debugToggleBtn" class="secondary" aria-pressed="false" style="min-width:60px;">Выкл</button>
+    </div>
+    <div class="menu-spacer"></div>
+    <div class="doc-chip" title="Пояснительная записка к техпроекту модуля лабораторных работ по дисциплине «Автоматы»">ПЗ · ЕСПД 19.404–79</div>
+  </nav>
+
+  <main class="layout">
+    <section class="canvas-pane">
+      <canvas id="scene" width="1280" height="720" aria-label="Поле симуляции"></canvas>
+      <div class="legend">
+        <span class="dot dot-green"></span> активный шар
+        <span class="dot dot-orange"></span> событие
+        <span class="dot dot-teal"></span> вход
+        <span class="dot dot-orange"></span> выход
+        <span class="dot dot-red"></span> стена
+        <br>
+        <small>Перетаскивание: ЛКМ • Удаление: ПКМ</small>
+      </div>
+    </section>
+
+    <aside class="control-pane" aria-label="Панель управления">
+      <div class="panel" style="position:relative;">
+        <h3>Шаг</h3>
+        <div style="position:absolute; top:12px; right:12px; min-width: 200px; z-index:1; background: var(--surface); box-shadow: 0 2px 8px #0006; border-radius: 12px; padding: 12px 14px;">
+          <h3 style="margin:0 0 8px 0;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.02em;">Выбор пресета</h3>
+          <select id="presetSelect" style="width:100%;">
+            <option value="gate_and">Гейт "И"</option>
+            <option value="gate_or">Гейт "ИЛИ"</option>
+            <option value="custom" selected>Своя версия</option>
+          </select>
+        </div>
+        <div style="flex: 1 1 0; min-width: 0;">
+          <div class="controls-row">
+            <button id="startBtn" class="primary">Старт</button>
+            <button id="stopBtn" class="secondary">Стоп</button>
+          </div>
+          <div class="controls-row">
+            <button id="stepBtn" class="secondary">Пошагово</button>
+            <button id="resetBtn" class="secondary danger">Сброс</button>
+            <button id="cycleBtn" class="secondary">Цикл проверок</button>
+          </div>
+          <div class="field">
+            <label for="speedRange">Скорость</label>
+            <input id="speedRange" type="range" min="0.1" max="3" step="0.1" value="1"><span id="speedValue" style="display:inline-block;min-width:40px;margin-left:8px;">1.0</span>
+          </div>
+          <div class="indicators">
+            <div class="badge" title="Количество шагов/событий">
+              Шаг <span id="stepCount">0</span>
+            </div>
+            <div class="badge" title="Время симуляции, с">
+              Время <span id="simTime">0.00</span>
+            </div>
+            <div class="badge" title="Текущий FPS">
+              FPS <span id="fps">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Добавить</h3>
+        <div class="controls-row grid3">
+          <button id="addWallBtn" class="secondary">Стена</button>
+          <button id="addInputBtn" class="secondary">Вход</button>
+          <button id="addOutputBtn" class="secondary">Выход</button>
+        </div>
+        <div class="controls-row">
+          <button id="spawnBallsBtn" class="primary">Создать шарики</button>
+          <button id="clearBallsBtn" class="secondary danger">Удалить все шары со сцены</button>
+        </div>
+        <div class="field">
+          <label>Входы для создания шаров</label>
+          <div id="inputSpawnList" class="checkbox-list"></div>
+        </div>
+      </div>
+
+      <div class="panel logs">
+        <div class="panel-head">
+          <h3>Логи</h3>
+          <button id="clearLogsBtn" class="ghost" title="Очистить">✕</button>
+        </div>
+        <div id="logView" class="log-view" aria-live="polite"></div>
+      </div>
+    </aside>
+  </main>
+  <!-- About Project Section START -->
+  <section class="about-section panel" style="margin:18px 0 24px 0; max-width:1280px; margin-left:0; margin-right:auto; border-top-left-radius:0; border-top-right-radius:0; border-bottom-left-radius:16px; border-bottom-right-radius:16px;">
+    <h2>О проекте</h2>
+    <p>
+      <strong>Бильярдный компьютер (ББМ)</strong> — это модель обратимых (реверсивных) вычислений, в которой информация кодируется в упругих столкновениях шариков на поле, согласно принципам физики и логики. В этой симуляции реализованы базовые логические элементы: вентиль Фредкина, вентиль Тоффоли, полусумматор, а также пользовательские схемы на их основе.
+    </p>
+    <h3>Как пользоваться симулятором</h3>
+    <ul>
+      <li>Выберите тип схемы (пресет) или создайте собственную, используя панель «Добавить».</li>
+      <li>Добавляйте стены, входы и выходы с помощью соответствующих кнопок.</li>
+      <li>Для запуска симуляции воспользуйтесь кнопками <strong>Старт</strong> и <strong>Стоп</strong> или запускайте пошагово.</li>
+      <li>Создавайте шарики во входных точках с помощью кнопки «Создать шарики».</li>
+      <li>Следите за логами в нижней панели и экспортируйте результаты при необходимости.</li>
+    </ul>
+    <h3>Горячие клавиши</h3>
+    <ul>
+      <li><b>Space</b> — старт / пауза симуляции</li>
+      <li><b>S</b> или <b>Ы</b> — шаг вперёд (один тик, работает на обеих раскладках)</li>
+      <li><b>R</b> или <b>К</b> — сброс сцены (работает на обеих раскладках)</li>
+      <li><b>=</b> или <b>+</b> — увеличение скорости (нажмите = или Shift+=, работает в любой раскладке)</li>
+      <li><b>-</b> — уменьшение скорости (любой язык)</li>
+      <li><b>W</b> или <b>Ц</b> — создать стену (нажать, потянуть и отпустить)</li>
+      <li><b>I</b> или <b>Ш</b> — создать вход</li>
+      <li><b>O</b> или <b>Щ</b> — создать выход</li>
+      <li><b>ЛКМ</b> — перетаскивание элементов (шаров, стен и пр.)</li>
+      <li><b>ПКМ</b> или <b>delete</b> — удаление элемента со сцены</li>
+      <li><b>Ctrl+Z</b> или <b>Cmd+Z</b> — отмена последнего действия</li>
+    </ul>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;">Горячие клавиши букв работают одинаково на русской и английской раскладке (например, S=Ы, R=К, W=Ц, I=Ш, O=Щ).</p>
+    <!-- <p style="color:var(--muted);font-size:13px;margin-top:14px;">НИЯУ МИФИ · Кафедра 22 «Кибернетика» · 2025</p> -->
+  </section>
+  <!-- About Project Section END -->
+
+  <dialog id="aboutDialog">
+    <h2>О модуле</h2>
+    <p><strong>«Бильярдный компьютер»</strong> — учебная симуляция обратимых вычислений (ББМ). Реализованы идеальные упругие столкновения и базовые вентили Фредкина и Тоффоли. Управление: Space — старт/пауза; S — шаг; R — сброс; ± — скорость.</p>
+    <p>НИЯУ МИФИ · Кафедра 22 «Кибернетика», 2025.</p>
+    <form method="dialog">
+      <button class="primary">Закрыть</button>
+    </form>
+  </dialog>
+
+  <input type="file" id="fileInput" accept="application/json" hidden>
+
+  <script src="js/logger.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/logic.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+

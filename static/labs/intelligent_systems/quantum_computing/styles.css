@@ -1,0 +1,73 @@
+/* === Темы (CSS переменные) ================================================= */
+:root[data-theme='light']{
+  --bg:#ffffff; --bg-elev:#f4f6f8; --text:#0d1015; --text-muted:#5b6270;
+  --border:#d9dee5; --accent:#2563eb;
+  --panel:#ffffff; --panel-border:#e5e9ef;
+  --btn-bg:#ffffff; --btn-text:#0d1015; --btn-border:#d9dee5; --btn-bg-hover:#f1f5f9;
+  --chip-bg:#e9eef7; --chip-text:#1f2a44;
+}
+:root[data-theme='dark']{
+  --bg:#0f1115; --bg-elev:#151922; --text:#e9eff7; --text-muted:#9aa4b2;
+  --border:#273042; --accent:#60a5fa;
+  --panel:#11151c; --panel-border:#1f2937;
+  --btn-bg:#141923; --btn-text:#e9eff7; --btn-border:#273042; --btn-bg-hover:#1a2230;
+  --chip-bg:#1e293b; --chip-text:#c9d6ef;
+}
+
+/* === База ================================================================== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:var(--bg); color:var(--text);
+}
+
+/* === Header/Footer ========================================================== */
+#app-header, #app-footer, #app-toolbar{
+  background:var(--bg-elev);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+#app-header{padding:8px 12px; min-height:44px; display:flex; align-items:center}
+#app-footer{
+  padding:8px 12px; min-height:40px; display:flex; gap:16px; align-items:center;
+}
+
+/* === Toolbar ================================================================ */
+#app-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 12px; gap:12px; position:sticky; top:0; z-index:10;
+}
+#app-toolbar .toolbar-left, #app-toolbar .toolbar-center, #app-toolbar .toolbar-right{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+#app-toolbar .speed{display:inline-flex; align-items:center; gap:6px}
+
+/* === Layout ================================================================ */
+#app-main{
+  display:grid; grid-template-columns: 280px 1fr 360px; gap:12px;
+  padding:12px; align-items:stretch;
+}
+.panel{
+  background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:10px; padding:10px; min-height:120px;
+}
+
+/* === Controls =============================================================== */
+button{
+  appearance:none; border:1px solid var(--btn-border); background:var(--btn-bg);
+  color:var(--btn-text); border-radius:8px; padding:6px 10px; cursor:pointer;
+}
+button:hover{background:var(--btn-bg-hover)}
+input[type=range]{accent-color:var(--accent)}
+input,select{
+  background:var(--panel); color:var(--text); border:1px solid var(--panel-border);
+  border-radius:6px; padding:4px 6px;
+}
+.muted{color:var(--text-muted)}
+
+/* === Helpers ================================================================ */
+#circuit-grid{min-height:420px}
+#left-palette{min-height:180px; margin-bottom:12px}
+#left-presets{min-height:180px}
+#right-panel{min-height:420px}

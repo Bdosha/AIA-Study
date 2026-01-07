@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор RAM-машины</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="light">
+    <!-- Заголовок приложения -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>Симулятор RAM-машины</h1>
+                    <p class="subtitle">Машина с произвольным доступом к памяти - Моделирование вычислений и изучение алгоритмов</p>
+                </div>
+                <div class="theme-switch">
+                    <label for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                        <span class="theme-label">Светлая тема</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="container">
+            <div class="simulator-grid">
+                <!-- Левая колонка - Программа и управление -->
+                <div class="left-panel card">
+                    <div class="card__header">
+                        <h3>Программа и управление</h3>
+                    </div>
+                    <div class="card__body">
+                        <!-- Выбор примера -->
+                        <div class="form-group">
+                            <label class="form-label" for="example-select">Предустановленные примеры:</label>
+                            <select id="example-select" class="form-control">
+                                <option value="">-- Выберите пример --</option>
+                            </select>
+                        </div>
+
+                        <!-- Поле ввода программы -->
+                        <div class="form-group">
+                            <label class="form-label" for="program-editor">Код программы:</label>
+                            <textarea id="program-editor" class="form-control program-editor" 
+                                    rows="12" placeholder="Введите программу или выберите пример..."></textarea>
+                        </div>
+
+                        <!-- Входные данные -->
+                        <div class="form-group">
+                            <label class="form-label" for="input-data">Входные данные (числа через пробел):</label>
+                            <input type="text" id="input-data" class="form-control" 
+                                   placeholder="Например: 5 3 8 1">
+                        </div>
+
+                        <!-- Кнопки управления -->
+                        <div class="control-buttons">
+                            <div class="button-row">
+                                <button id="load-btn" class="btn btn-primary">Загрузить программу</button>
+                                <button id="clear-btn" class="btn btn-secondary">Очистить</button>
+                            </div>
+                            <div class="button-row">
+                                <button id="start-btn" class="btn btn-success" disabled>▶ Старт</button>
+                                <button id="step-btn" class="btn btn-info" disabled>⏯ Пошагово</button>
+                                <button id="stop-btn" class="btn btn-warning" disabled>⏸ Стоп</button>
+                                <button id="reset-btn" class="btn btn-secondary" disabled>🔄 Сброс</button>
+                            </div>
+                            <div class="button-row">
+                                <button id="export-csv-btn" class="btn btn-export" disabled>📊 Экспорт CSV</button>
+                            </div>
+                        </div>
+
+                        <!-- Настройки симуляции -->
+                        <div class="form-group">
+                            <label class="form-label" for="speed-slider">Период такта:</label>
+                            <div class="speed-control">
+                                <input type="range" id="speed-slider" class="form-control" 
+                                       min="50" max="2000" value="500" step="50">
+                                <span id="speed-display">500 мс</span>
+                            </div>
+                        </div>
+
+                        <!-- Статистика -->
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Шагов:</span>
+                                <span id="step-count">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Время:</span>
+                                <span id="execution-time">0.0с</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Центральная колонка - Выполнение -->
+                <div class="center-panel card">
+                    <div class="card__header">
+                        <h3>Процесс выполнения</h3>
+                    </div>
+                    <div class="card__body">
+                        <!-- Отображение программы -->
+                        <div class="form-group">
+                            <label class="form-label">Программа:</label>
+                            <div id="program-display" class="program-display">
+                                <div class="no-program">Программа не загружена</div>
+                            </div>
+                        </div>
+
+                        <!-- Текущая команда -->
+                        <div class="form-group">
+                            <label class="form-label">Текущая команда:</label>
+                            <div id="current-command" class="current-command">-</div>
+                        </div>
+
+                        <!-- Состояние выполнения -->
+                        <div class="form-group">
+                            <label class="form-label">Состояние:</label>
+                            <div id="execution-status" class="execution-status status-stopped">Остановлена</div>
+                        </div>
+
+                        <!-- Лог выполнения -->
+                        <div class="form-group">
+                            <label class="form-label">Лог выполнения:</label>
+                            <div id="execution-log" class="execution-log">
+                                <div class="log-empty">Лог пуст</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка - Состояние системы -->
+                <div class="right-panel card">
+                    <div class="card__header">
+                        <h3>Состояние системы</h3>
+                    </div>
+                    <div class="card__body">
+                        <!-- Регистры памяти -->
+                        <div class="form-group">
+                            <label class="form-label">Регистры памяти:</label>
+                            <div id="registers-display" class="registers-display">
+                                <div class="register accumulator">
+                                    <span class="reg-name">r0 (аккумулятор)</span>
+                                    <span class="reg-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Счётчик команд -->
+                        <div class="form-group">
+                            <label class="form-label">Счётчик команд:</label>
+                            <div id="program-counter" class="program-counter">PC: 0</div>
+                        </div>
+
+                        <!-- Входная лента -->
+                        <div class="form-group">
+                            <label class="form-label">Входная лента:</label>
+                            <div id="input-tape" class="tape">
+                                <div class="tape-empty">Нет данных</div>
+                            </div>
+                        </div>
+
+                        <!-- Выходная лента -->
+                        <div class="form-group">
+                            <label class="form-label">Выходная лента:</label>
+                            <div id="output-tape" class="tape">
+                                <div class="tape-empty">Нет вывода</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast уведомления -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

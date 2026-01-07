@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>НМТ Визуализатор — вертикальное дерево</title>
+  <style>
+    :root{--bg:#0b0b0d;--panel:#161618;--accent:#0ea5a4;--muted:#9aa0a6;--card:#222;--accept:#134e4a;--reject:#4b5563}
+    *{box-sizing:border-box;font-family:Inter,Segoe UI,Arial;margin:0}
+    body{background:linear-gradient(180deg,#070708,#0f1011);color:#e6eef6;height:100vh;display:flex;gap:12px;padding:12px}
+    .panel{background:var(--panel);border-radius:8px;padding:12px;box-shadow:0 6px 22px rgba(0,0,0,.6);overflow:hidden}
+    #left{width:300px;display:flex;flex-direction:column;gap:10px}
+    #center{flex:1;display:flex;flex-direction:column;gap:10px}
+    #right{width:420px}
+    h3{font-size:14px;margin-bottom:8px;color:var(--muted)}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type=text], select, textarea{width:100%;padding:8px;border-radius:6px;background:#0b0b0c;border:1px solid #333;color:#d9eef6}
+    textarea{height:60px}
+    .row{display:flex;gap:8px}
+    button{background:var(--accent);border:none;padding:8px 12px;border-radius:6px;color:#032;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #2a2a2a;color:var(--muted)}
+    .blue{background:#1e90ff;color:white}
+    .controls{display:flex;gap:8px;align-items:center}
+
+    /* Tape */
+    .tape{display:flex;align-items:center;gap:6px;padding:10px;background:#0b0b0c;border-radius:8px}
+    .cell{min-width:44px;height:44px;background:#171719;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;border:1px solid #232323}
+    .cell.head{outline:3px solid #16a34a}
+    .cell.head .sym{font-weight:900}
+    .tape-controls{display:flex;gap:6px;align-items:center}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #272727;padding:6px;font-size:13px}
+    th{background:#121213;color:var(--muted)}
+
+    #treeContainer{height:560px;position:relative;border-radius:6px;background:#070708;padding:6px}
+    #treeFull{position:fixed;inset:0;background:rgba(5,5,6,.95);display:none;align-items:stretch;padding:20px}
+    #treeFull .close{position:absolute;right:20px;top:20px;background:#222;border-radius:6px}
+
+    .status{font-size:13px;color:var(--muted);margin-top:8px}
+    .small{font-size:12px;color:var(--muted)}
+    .fileButtons{display:flex;gap:8px;margin-top:8px}
+    .footer{font-size:12px;color:var(--muted);margin-top:6px}
+
+    svg {width:100%;height:100%}
+    .link{stroke:#2f2f33;stroke-width:1.5;fill:none}
+    .nodeRect{rx:8;fill:#111827;stroke:#2a2a2a}
+    .nodeText{fill:#dbeafe;font-size:12px}
+    .nodeAccept{fill:var(--accept)}
+    .nodeReject{fill:var(--reject)}
+
+    @media (max-width:1000px){#left{display:none}#right{display:none}} 
+  </style>
+</head>
+<body>
+  <div id="left" class="panel">
+    <h3>Настройки</h3>
+    <label>Алфавит (через запятую, пустой для blank)</label>
+    <input id="alphabet" type="text" value="0,1,_" />
+
+    <label>Состояния (через запятую)</label>
+    <input id="states" type="text" value="q0,q1,q2" />
+
+    <label>Начальное состояние</label>
+    <input id="startState" type="text" value="q0" />
+
+    <label>Конечные состояния (через запятую)</label>
+    <input id="acceptStates" type="text" value="q2" />
+
+    <label>Стратегия поиска</label>
+    <select id="strategy"><option value="BFS">BFS</option><option value="DFS">DFS</option></select>
+
+    <div class="fileButtons">
+      <button id="importBtn" class="ghost">Импорт (JSON)</button>
+      <button id="exportBtn" class="ghost">Экспорт (JSON)</button>
+      <input id="fileInput" type="file" style="display:none" />
+    </div>
+
+    <div class="footer">Клик по ячейке ленты — переместить головку. ◀/▶ — сдвинуть головку. Клик по узлу дерева — показать эту конфигурацию.</div>
+  </div>
+
+  <div id="center" class="panel">
+    <h3>Симуляция</h3>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input id="tapeInput" type="text" value="_ 1 _" />
+      <button id="loadTape" class="blue">Загрузить</button>
+    </div>
+
+    <div class="tape" id="tapeView"></div>
+    <div class="tape-controls" style="margin-top:8px">
+      <button id="moveLeft" class="ghost">◀</button>
+      <button id="moveRight" class="ghost">▶</button>
+      <div class="small">Клик по ячейке — установить головку. ◀/▶ — сдвинуть головку. Зеленая рамка — текущая позиция головки.</div>
+    </div>
+
+    <div class="controls">
+      <button id="start">Старт</button>
+      <button id="stop" class="ghost">Стоп</button>
+      <button id="step" class="ghost">Пошагово</button>
+      <button id="reset" class="ghost">Сброс</button>
+      <div style="margin-left:auto">Шагов: <span id="steps">0</span></div>
+    </div>
+
+    <h3 style="margin-top:12px">Таблица переходов</h3>
+    <div style="overflow:auto;max-height:180px">
+      <table id="transTable">
+        <thead><tr><th>Состояние</th><th>Символ</th><th>Действие (q_next,symbol,move)</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <input id="addState" placeholder="q0" />
+      <input id="addSymbol" placeholder="1" />
+      <input id="addAction" placeholder="q1,1,R" />
+      <button id="addTrans" class="ghost">Добавить</button>
+    </div>
+
+    <div class="status">
+      Режим: <span id="mode">Не запущено</span><br>
+      Результат: <span id="result">Не завершено</span>
+    </div>
+  </div>
+
+  <div id="right" class="panel">
+    <h3>Дерево конфигураций</h3>
+    <div id="treeContainer"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="openFull">Открыть на весь экран</button>
+      <button id="clearTree" class="ghost">Очистить</button>
+    </div>
+  </div>
+
+  <div id="treeFull">
+    <button class="close" id="closeFull">Закрыть</button>
+    <div id="treeFullInner" style="flex:1;margin-top:40px"></div>
+  </div>
+
+<script>
+// === Небольшая, аккуратная реализация вертикального дерева без внешних библиотек ===
+class Config {
+  constructor(id, state, tape, head, parent=null, action=null){
+    this.id = id; this.state = state; this.tape = tape.slice(); this.head = head; this.parent = parent; this.action = action; this.children = []; this.accept=false; this.reject=false;
+  }
+}
+
+const app = {
+  configs: new Map(),
+  frontier: [],
+  nextId: 1,
+  transitions: [],
+  running: false,
+  interval: null,
+  steps: 0,
+  activeConfigId: null
+};
+
+// DOM refs
+const tapeView = document.getElementById('tapeView');
+const tapeInput = document.getElementById('tapeInput');
+const loadTape = document.getElementById('loadTape');
+const startBtn = document.getElementById('start');
+const stopBtn = document.getElementById('stop');
+const stepBtn = document.getElementById('step');
+const resetBtn = document.getElementById('reset');
+const stepsEl = document.getElementById('steps');
+const modeEl = document.getElementById('mode');
+const resultEl = document.getElementById('result');
+const transTbody = document.querySelector('#transTable tbody');
+const addTrans = document.getElementById('addTrans');
+const addState = document.getElementById('addState');
+const addSymbol = document.getElementById('addSymbol');
+const addAction = document.getElementById('addAction');
+const strategy = document.getElementById('strategy');
+const treeContainer = document.getElementById('treeContainer');
+const openFull = document.getElementById('openFull');
+const treeFull = document.getElementById('treeFull');
+const closeFull = document.getElementById('closeFull');
+const treeFullInner = document.getElementById('treeFullInner');
+const importBtn = document.getElementById('importBtn');
+const exportBtn = document.getElementById('exportBtn');
+const fileInput = document.getElementById('fileInput');
+const moveLeft = document.getElementById('moveLeft');
+const moveRight = document.getElementById('moveRight');
+const clearTreeBtn = document.getElementById('clearTree');
+
+// helpers
+function parseTape(text){
+  const tokens = text.trim().split(/\s+/).filter(Boolean);
+  if(tokens.length===1 && tokens[0].length>1 && !tokens[0].includes(',')) return tokens[0].split('');
+  return tokens;
+}
+
+function renderTape(tape, head){
+  tapeView.innerHTML='';
+  for(let i=0;i<tape.length;i++){
+    const d = document.createElement('div'); d.className='cell'+(i===head?' head':''); d.innerHTML = `<span class="sym">${tape[i]}</span>`; d.dataset.index=i;
+    d.addEventListener('click', ()=>{
+      const cfg = app.configs.get(app.activeConfigId) || Array.from(app.configs.values()).find(c=>c.parent===null);
+      if(!cfg) return; cfg.head = i; renderTape(cfg.tape, cfg.head); buildTree();
+    });
+    tapeView.appendChild(d);
+  }
+}
+
+// transitions
+function addTransition(from, symbol, action){ if(!from||!symbol||!action) return alert('Заполните все поля'); app.transitions.push({from,symbol,action}); refreshTable(); }
+function removeTransition(idx){ app.transitions.splice(idx,1); refreshTable(); }
+function refreshTable(){ transTbody.innerHTML=''; app.transitions.forEach((t,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${t.from}</td><td>${t.symbol}</td><td>${t.action}</td><td><button data-i='${i}' class='ghost'>X</button></td>`; transTbody.appendChild(tr); }); transTbody.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>removeTransition(+b.dataset.i))); }
+
+// simulation
+function initSimulation(){ app.configs.clear(); app.frontier=[]; app.nextId=1; app.steps=0; app.activeConfigId=null; stepsEl.textContent='0'; modeEl.textContent='Готов'; resultEl.textContent='Не завершено';
+  const raw = parseTape(tapeInput.value||''); const tape = raw.slice(); if(tape.length===0) tape.push('_');
+  const start = document.getElementById('startState').value||'q0'; const cfg = new Config(app.nextId++, start, tape, 0, null, 'start'); app.configs.set(cfg.id,cfg); app.frontier.push(cfg.id); app.activeConfigId = cfg.id; buildTree(); renderTape(cfg.tape, cfg.head);
+}
+
+function stepSimulation(){ if(app.frontier.length===0){ modeEl.textContent='Завершено'; return; } app.steps++; stepsEl.textContent=String(app.steps); const strat = strategy.value; const currentId = (strat==='BFS')? app.frontier.shift() : app.frontier.pop(); const cfg = app.configs.get(currentId); app.activeConfigId = cfg.id;
+  const acceptStates = (document.getElementById('acceptStates').value||'').split(',').map(s=>s.trim()).filter(Boolean);
+  if(acceptStates.includes(cfg.state)){ cfg.accept=true; resultEl.textContent='Accepted (найден путь)'; modeEl.textContent='Пауза'; renderTape(cfg.tape,cfg.head); buildTree(); stopSimulation(); return; }
+  let matched=false;
+  for(const t of app.transitions){ if(t.from!==cfg.state) continue; const sym = t.symbol; if(sym!==cfg.tape[cfg.head] && sym!=='*') continue; const parts = t.action.split(',').map(s=>s.trim()); if(parts.length<3) continue; const [qnext, write, move] = parts; const newTape = cfg.tape.slice(); newTape[cfg.head]=write; let newHead = cfg.head; if(move.toUpperCase()==='R') newHead++; else if(move.toUpperCase()==='L') newHead--; if(newHead<0){ newTape.unshift('_'); newHead=0;} if(newHead>=newTape.length) newTape.push('_'); const child = new Config(app.nextId++, qnext, newTape, newHead, cfg.id, `${cfg.state} -> ${qnext} (${move.toUpperCase()})`); app.configs.set(child.id, child); app.frontier.push(child.id); cfg.children.push(child.id); matched=true; }
+  if(!matched) cfg.reject=true; renderTape(cfg.tape,cfg.head); buildTree(); }
+
+function runSimulation(){ if(app.running) return; app.running=true; modeEl.textContent='Запущено'; app.interval=setInterval(()=>{ if(app.frontier.length===0){ stopSimulation(); modeEl.textContent='Завершено'; return;} stepSimulation(); }, 350); }
+function stopSimulation(){ app.running=false; clearInterval(app.interval); }
+function resetSimulation(){ stopSimulation(); initSimulation(); }
+
+// Tree building & layout (vertical) - simple top-down tree where x is computed by leaf ordering
+function buildTree(){ const root = Array.from(app.configs.values()).find(c=>c.parent===null); if(!root){ treeContainer.innerHTML=''; return; }
+  // construct hierarchical data
+  function nodeObj(cfg){ return {id:cfg.id, cfg:cfg, children: cfg.children.map(id=>nodeObj(app.configs.get(id)))} }
+  const data = nodeObj(root);
+  // compute leaf order (in-order like) to get x positions
+  let leafCount = 0;
+  function assignX(node){ if(node.children.length===0){ node.x = ++leafCount; } else { node.children.forEach(assignX); node.x = (node.children.reduce((s,ch)=>s+ch.x,0))/node.children.length; } }
+  assignX(data);
+  // compute depth -> y
+  function assignY(node, depth){ node.y = depth; node.children.forEach(ch=>assignY(ch, depth+1)); }
+  assignY(data, 0);
+  // convert to coords
+  const spacingX = 120; const spacingY = 90;
+  function toRender(node){ return {id: node.id, x: node.x*spacingX, y: node.y*spacingY, cfg: node.cfg, children: node.children.map(toRender)} }
+  const renderData = toRender(data);
+  renderTreeSVG(renderData);
+}
+
+function renderTreeSVG(data){ treeContainer.innerHTML=''; const width = treeContainer.clientWidth; const height = treeContainer.clientHeight; const svgNS = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(svgNS,'svg'); svg.setAttribute('viewBox', `0 0 ${Math.max(width, data.x+200)} ${Math.max(height, (data.y+6)*120)}`);
+  svg.style.width='100%'; svg.style.height='100%';
+  // links
+  function walkLinks(node){ node.children.forEach(ch=>{ const path = document.createElementNS(svgNS,'path'); const x1 = node.x; const y1 = node.y; const x2 = ch.x; const y2 = ch.y; const cx1 = x1; const cy = (y1+y2)/2; const cx2 = x2; const d = `M ${x1} ${y1} C ${cx1} ${cy} ${cx2} ${cy} ${x2} ${y2}`; path.setAttribute('d', d); path.setAttribute('class','link'); svg.appendChild(path); walkLinks(ch); }); }
+  walkLinks(data);
+  // nodes
+  function walkNodes(node){ const g = document.createElementNS(svgNS,'g'); g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+    const rect = document.createElementNS(svgNS,'rect'); rect.setAttribute('x', -60); rect.setAttribute('y', -16); rect.setAttribute('width', 120); rect.setAttribute('height', 32); rect.setAttribute('rx',8);
+    rect.setAttribute('class','nodeRect');
+    if(node.cfg.accept) rect.setAttribute('class','nodeAccept');
+    if(node.cfg.reject) rect.setAttribute('class','nodeReject');
+    g.appendChild(rect);
+    const text = document.createElementNS(svgNS,'text'); text.setAttribute('text-anchor','middle'); text.setAttribute('dy','4'); text.setAttribute('class','nodeText');
+    // label: state + move(if exists) + tape with head highlighted
+    let headSym = node.cfg.tape[node.cfg.head] || '_';
+    let moveLabel = '';
+    if(node.action && node.action.includes('(')){
+      // action stored like 'q0 -> q1 (R)'
+      const m = node.action.match(/\((.)\)/);
+      if(m) moveLabel = '[' + m[1] + '] ';
+    }
+    const tapeStr = renderTapeInline(node.cfg.tape, node.cfg.head);
+    const label = `${node.cfg.state} ${moveLabel}${tapeStr}`;
+    text.textContent = label;
+    g.appendChild(text);
+    // make clickable
+    g.style.cursor='pointer';
+    g.addEventListener('click', ()=>{ app.activeConfigId = node.id; renderTape(node.cfg.tape, node.cfg.head); highlightNode(svg, node.id); });
+    svg.appendChild(g);
+    node.children.forEach(walkNodes);
+  }
+  function highlightNode(svg, id){ // remove previous highlights
+    svg.querySelectorAll('rect').forEach(r=>r.setAttribute('stroke','#2a2a2a'));
+    const found = svg.querySelectorAll('g').forEach(g=>{ const t = g.querySelector('text'); if(!t) return; if(t.textContent.includes(`@${id}`)){} }); // noop - keep simple
+  }
+  function renderTapeInline(tape, head){ // produce string with head indicated by surrounding underscores for readability
+    const arr = tape.map((s,i)=> i===head ? `_` + s + `_` : String(s)); return arr.join(''); }
+  walkNodes(data);
+  treeContainer.appendChild(svg);
+}
+
+// UI wiring
+loadTape.addEventListener('click', ()=>{ initSimulation(); });
+startBtn.addEventListener('click', ()=>{ runSimulation(); });
+stopBtn.addEventListener('click', ()=>{ stopSimulation(); modeEl.textContent='Пауза'; });
+stepBtn.addEventListener('click', ()=>{ stepSimulation(); });
+resetBtn.addEventListener('click', ()=>{ resetSimulation(); });
+addTrans.addEventListener('click', ()=>{ addTransition(addState.value.trim(), addSymbol.value.trim(), addAction.value.trim()); addState.value=''; addSymbol.value=''; addAction.value=''; });
+moveLeft.addEventListener('click', ()=>{ const cfg = app.configs.get(app.activeConfigId) || Array.from(app.configs.values()).find(c=>c.parent===null); if(!cfg) return; cfg.head = Math.max(0, cfg.head-1); renderTape(cfg.tape, cfg.head); buildTree(); });
+moveRight.addEventListener('click', ()=>{ const cfg = app.configs.get(app.activeConfigId) || Array.from(app.configs.values()).find(c=>c.parent===null); if(!cfg) return; cfg.head = Math.min(cfg.tape.length-1, cfg.head+1); renderTape(cfg.tape, cfg.head); buildTree(); });
+openFull.addEventListener('click', ()=>{ treeFull.style.display='flex'; treeFullInner.innerHTML = treeContainer.innerHTML; });
+closeFull.addEventListener('click', ()=>{ treeFull.style.display='none'; });
+clearTreeBtn.addEventListener('click', ()=>{ app.configs.clear(); app.frontier=[]; treeContainer.innerHTML=''; treeFullInner.innerHTML=''; });
+
+// import/export
+exportBtn.addEventListener('click', ()=>{ const payload = { alphabet: document.getElementById('alphabet').value, states: document.getElementById('states').value, startState: document.getElementById('startState').value, acceptStates: document.getElementById('acceptStates').value, transitions: app.transitions, tape: tapeInput.value }; const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='nmt-config.json'; a.click(); URL.revokeObjectURL(url); });
+importBtn.addEventListener('click', ()=>fileInput.click());
+fileInput.addEventListener('change',(e)=>{ const f = e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = ev=>{ try{ const j = JSON.parse(ev.target.result); document.getElementById('alphabet').value = j.alphabet||''; document.getElementById('states').value = j.states||''; document.getElementById('startState').value = j.startState||''; document.getElementById('acceptStates').value = j.acceptStates||''; app.transitions = j.transitions||[]; refreshTable(); tapeInput.value = j.tape||''; initSimulation(); }catch(err){alert('Ошибка чтения JSON')} }; reader.readAsText(f); });
+
+// preload sample
+(function preload(){ addTransition('q0','1','q1,1,R'); addTransition('q0','1','q2,1,S'); refreshTable(); initSimulation(); })();
+
+</script>
+</body>
+</html>

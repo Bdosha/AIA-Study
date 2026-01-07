@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Гексагональные жизнеподобные клеточные автоматы — Лабораторный модуль</title>
+  <meta name="description" content="ЛР по дисциплине ‘Автоматы’: исследование гексагональных жизнеподобных клеточных автоматов (ядра 6/12/18, границы тор/ограниченные, правила B/S)." />
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">Гексагональные жизнеподобные клеточные автоматы</div>
+    <div class="header-actions">
+      <div class="seg" id="themeSeg">
+        <button type="button" data-theme="dark" class="active">Тёмная</button>
+        <button type="button" data-theme="light">Светлая</button>
+      </div>
+      <button class="btn" id="toggleGrid">Сетка</button>
+      <button class="btn" id="resetView">Сброс вида</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="canvas-wrap">
+      <canvas id="hexCanvas"></canvas>
+    </section>
+
+    <aside>
+      <section class="card">
+        <h3>Симуляция</h3>
+        <div class="grid">
+          <div class="seg" id="simSeg">
+            <button type="button" data-act="start" class="primary">Старт</button>
+            <button type="button" data-act="pause">Стоп</button>
+            <button type="button" data-act="step">Шаг</button>
+            <button type="button" data-act="reset">Сброс</button>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <label>Скорость (шаг/с)
+            <input id="speed" type="range" min="1" max="60" value="10" />
+          </label>
+          <label>N шагов
+            <div class="grid">
+              <input id="nSteps" type="number" min="1" value="50" />
+              <button class="btn" id="doNSteps">Выполнить</button>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Автомат</h3>
+        <div class="row">
+          <label>Ядро соседства
+            <select id="kernel">
+              <option value="edge6">Рёбра (6)</option>
+              <option value="vertex12">Вершины (12)</option>
+              <option value="combined18">Комбинированное (18)</option>
+            </select>
+          </label>
+          <label>Границы
+            <select id="bounds">
+              <option value="toroidal">Тороидальные</option>
+              <option value="limited">Ограниченные</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>B (рождение)
+            <div id="chipsB" class="chipset"></div>
+          </label>
+          <label>S (выживание)
+            <div id="chipsS" class="chipset"></div>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Поле</h3>
+        <div class="row">
+          <label>Ширина (клетки)
+            <input id="widthCells" type="number" min="10" max="400" value="80" />
+          </label>
+          <label>Высота (клетки)
+            <input id="heightCells" type="number" min="10" max="400" value="60" />
+          </label>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <button class="btn" id="btnClear">Очистить</button>
+          <button class="btn" id="btnRandom">Случайное</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Редактирование</h3>
+        <div class="row">
+          <div class="seg" id="toolSeg">
+            <button type="button" data-tool="brush" class="active">Кисть</button>
+            <button type="button" data-tool="eraser">Ластик</button>
+          </div>
+          <label>Размер кисти
+            <input id="brushSize" type="range" min="1" max="5" value="1" />
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Пресеты</h3>
+        <div class="row">
+          <label>Пресет
+            <select id="preset">
+              <option value="none">—</option>
+              <option value="glider_like">Планёроподобный</option>
+              <option value="oscillator_like">Осциллятороподобный</option>
+            </select>
+          </label>
+          <div style="display:flex; gap:8px; align-items:end;">
+            <button class="btn" id="loadPreset">Загрузить</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Импорт / Экспорт</h3>
+        <div class="row">
+          <button class="btn" id="btnImport">Импорт JSON</button>
+          <button class="btn" id="btnExport">Экспорт JSON</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Аналитика</h3>
+        <div class="row-3">
+          <div><span class="muted mini">Шаги</span><div id="stepsOut">0</div></div>
+          <div><span class="muted mini">Время (с)</span><div id="timeOut">0.0</div></div>
+          <div><span class="muted mini">Живых</span><div id="aliveOut">0</div></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="status" id="status">Готово.</div>
+    <div class="counters">
+      <div id="modeOut">Режим: пауза</div>
+    </div>
+  </footer>
+</div>
+
+<!-- Подключение JS-модулей -->
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рекурсивные функции Гёделя</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div class="container">
+        <header>
+            <h1>Рекурсивные функции Гёделя</h1>
+            <div class="theme-toggle">
+                <button id="themeToggle">Светлая тема</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <section class="function-editor">
+                <h2>Редактор функций</h2>
+                <textarea id="functionCode" placeholder="Введите определение функции...">sum(x, y) = prim_rec(proj1_1(x), proj3_3(x, y, z), proj2_2(y))</textarea>
+                <div class="arguments">
+                    <h3>Аргументы</h3>
+                    <div id="argumentInputs">
+                        <input type="number" id="arg1" placeholder="x" value="3">
+                        <input type="number" id="arg2" placeholder="y" value="2">
+                    </div>
+                </div>
+            </section>
+
+            <section class="controls">
+                <h2>Управление</h2>
+                <div class="control-buttons">
+                    <button id="startBtn">Старт</button>
+                    <button id="resetBtn">Сброс</button>
+                </div>
+                <div class="simulation-info">
+                    <div>Шаги: <span id="stepCounter">0</span></div>
+                    <div>Время: <span id="timeCounter">0.0с</span></div>
+                    <div>Глубина: <span id="depthCounter">0</span></div>
+                </div>
+            </section>
+
+            <section class="visualization">
+                <h2>Дерево рекурсивных вызовов</h2>
+                <div id="treeContainer">
+                    <svg id="treeSvg" width="100%" height="300"></svg>
+                </div>
+            </section>
+
+            <section class="trace">
+                <h2>Трассировка вычислений</h2>
+                <div id="traceOutput"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

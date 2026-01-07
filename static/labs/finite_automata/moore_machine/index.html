@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор автомата Мура - Лабораторная работа</title>
+    <link rel="stylesheet" href="style.css">
+<body>
+    <!-- Заголовок приложения -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>Симулятор автомата Мура</h1>
+                    <p class="header-subtitle">Интерактивная лабораторная работа</p>
+                </div>
+                <div class="theme-controls">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="theme-slider">
+                            <span class="theme-icon theme-icon-dark">🌙</span>
+                            <span class="theme-icon theme-icon-light">☀️</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Главная страница -->
+    <div id="main-page" class="page active">
+        <div class="container">
+            <div class="hero-section">
+                <h2>Проектирование автомата Мура</h2>
+                <p class="description">
+                    Изучите теорию конечных автоматов, создайте свой автомат Мура и протестируйте его работу. 
+                    Используйте интерактивные инструменты для проектирования и симуляции.
+                </p>
+            </div>
+
+            <div class="goals-section">
+                <h3>Цели работы:</h3>
+                <ul>
+                    <li>Изучить принципы работы автомата Мура</li>
+                    <li>Освоить методы проектирования конечных автоматов</li>
+                    <li>Научиться создавать диаграммы состояний</li>
+                    <li>Протестировать работу автомата на различных входных последовательностях</li>
+                    <li>Анализировать временные характеристики автомата</li>
+                    <li>Освоить таблицы переходов и функций выходов</li>
+                    <li>Изучить способы оптимизации автоматов</li>
+                    <li>Получить практические навыки работы с цифровыми устройствами</li>
+                </ul>
+            </div>
+            <div class="variant-input">
+                <button id="go-to-theory" class="btn btn--primary btn--lg">Изучить теорию и начать работу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница задания -->
+    <div id="task-page" class="page hidden">
+        <div class="container">
+            <div class="task-header">
+                <h2>Теоретическая справка</h2>
+                <button id="back-to-main" class="btn btn--secondary">← Назад</button>
+            </div>
+
+            <div class="task-content">
+                <div class="theory-section card">
+                    <div class="card-body">
+                        <h3>Автомат Мура</h3>
+                        <div class="theory-content">
+                            <p><strong>Автомат Мура</strong> — это конечный автомат, в котором выходные значения определяются только текущим состоянием.</p>
+                            
+                            <p><strong>Формальное определение:</strong> M = ⟨Q, Σ, Δ, λ, δ, q₀⟩, где:</p>
+                            <ul class="list">
+                                <li><strong>Q</strong> — конечное множество состояний</li>
+                                <li><strong>Σ</strong> — входной алфавит</li>
+                                <li><strong>Δ</strong> — выходной алфавит</li>
+                                <li><strong>δ: Q × Σ → Q</strong> — функция переходов</li>
+                                <li><strong>λ: Q → Δ</strong> — функция выходов</li>
+                                <li><strong>q₀ ∈ Q</strong> — начальное состояние</li>
+                            </ul>
+                        </div>
+
+                        <div class="advantages">
+                            <h4>Преимущества автомата Мура:</h4>
+                            <ul>
+                                <li>Выходы не зависят от входов напрямую</li>
+                                <li>Более стабильная работа при помехах</li>
+                                <li>Упрощенная синхронизация</li>
+                                <li>Легче анализировать временные характеристики</li>
+                                <li>Подходит для последовательностных схем</li>
+                                <li>Хорошо подходит для конвейерной обработки</li>
+                                <li>Упрощает отладку и тестирование</li>
+                                <li>Обеспечивает предсказуемое поведение</li>
+                            </ul>
+                        </div>
+
+                        <!-- Оставляем входной и выходной алфавит по желанию -->
+                        <div class="task-details">
+                            <div><strong>Входной алфавит:</strong> {0, 1, 2...}</div>
+                            <div><strong>Выходной алфавит:</strong> {A, B...}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="go-to-design" class="btn btn--primary btn--lg">Перейти к проектированию</button>
+        </div>
+    </div>
+
+    <!-- Страница проектирования -->
+    <div id="design-page" class="page hidden">
+        <div class="workspace">
+            <!-- Левая панель -->
+            <div class="left-panel">
+
+
+                <div class="panel-section">
+                    <h4>Инструменты</h4>
+                    <div class="tools">
+                        <button id="add-state" class="btn btn--secondary btn--full-width">+ Добавить состояние</button>
+                        <button id="add-transition" class="btn btn--secondary btn--full-width">+ Добавить переход</button>
+                        <button id="set-initial" class="btn btn--secondary btn--full-width">⭐ Установить начальное</button>
+                        <button id="delete-element" class="btn btn--outline btn--full-width">🗑️ Удалить элемент</button>
+                        <button id="clear-all" class="btn btn--outline btn--full-width">🔄 Очистить всё</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h4>Примеры автоматов</h4>
+                    <div class="presets">
+                        <select id="preset-selector" class="form-control">
+                            <option value="">Выберите пример</option>
+                            <option value="basic">Базовый автомат</option>
+                            <option value="extended">Расширенный автомат</option>
+                        </select>
+                        <button id="load-preset" class="btn btn--secondary btn--full-width">Загрузить пример</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h4>Симуляция</h4>
+                    <div class="simulation-controls">
+                        <div class="control-group">
+                            <button id="sim-start" class="btn btn--primary btn--sm">▶️ Пуск</button>
+                            <button id="sim-pause" class="btn btn--secondary btn--sm">⏸️ Пауза</button>
+                            <button id="sim-step" class="btn btn--secondary btn--sm">⏭️ Шаг</button>
+                            <button id="sim-reset" class="btn btn--outline btn--sm">⏹️ Стоп</button>
+                        </div>
+                    </div>
+
+                    <div class="simulation-info">
+                        <div class="sim-counter">Шаг: <span id="step-counter">0</span></div>
+                        <div class="sim-timer">Время: <span id="sim-timer">00:00</span></div>
+                    </div>
+
+                    <div class="speed-control">
+                        <label for="speed-slider" class="form-label">Скорость симуляции</label>
+                        <input type="range" id="speed-slider" class="speed-slider" 
+                               min="0.25" max="2" step="0.25" value="1.25">
+                        <div class="speed-display">×<span id="speed-value">1</span></div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h4>Тестирование</h4>
+                    <label for="test-string" class="form-label">Входная последовательность:</label>
+                    <input type="text" id="test-string" class="form-control" placeholder="Например: 0110101">
+                    <button id="simulate" class="btn btn--primary btn--full-width">🔄 Симулировать</button>
+                </div>
+
+                <div class="panel-section">
+                    <div class="status-section">
+                        <div class="timer">⏱️ <span id="timer">00:00</span></div>
+                        <div class="status-indicator" id="status">
+                            <span class="status status--info">Готов к работе</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Центральная панель с холстом -->
+            <div class="center-panel">
+                <div class="canvas-container">
+                    <canvas id="automaton-canvas" width="800" height="600"></canvas>
+                </div>
+                <div class="canvas-controls">
+                    <button id="zoom-in" class="btn btn--outline btn--sm">🔍+</button>
+                    <button id="zoom-out" class="btn btn--outline btn--sm">🔍-</button>
+                    <button id="reset-view" class="btn btn--outline btn--sm">🎯 Сбросить вид</button>
+                </div>
+            </div>
+
+            <!-- Правая панель -->
+            <div class="right-panel">
+                <!-- ДОБАВЛЕН БЛОК ПРОВЕРКИ КОРРЕКТНОСТИ -->
+                <div class="panel-section">
+                    <h4>Проверка корректности</h4>
+                    <div id="check-results" class="check-results hidden">
+                        <div class="info-message">
+                            <p>Нажмите кнопку "Проверить корректность" для запуска проверки</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h4>Таблица переходов</h4>
+                    <div id="transition-table" class="transition-table"></div>
+                </div>
+
+                <div class="panel-section">
+                    <h4>Результаты симуляции</h4>
+                    <div id="simulation-results" class="simulation-results">
+                        <p>Запустите симуляцию для просмотра результатов</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h4>Журнал выполнения</h4>
+                    <div id="trace-log" class="trace-log">
+                        <p>История переходов будет отображена здесь</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижняя панель действий -->
+        <div class="bottom-panel">
+            <div class="action-buttons">
+                <button id="check-correctness" class="btn btn--secondary">✅ Проверить корректность</button>
+                <button id="save-automaton" class="btn btn--secondary">💾 Сохранить автомат</button>
+                <button id="export-png" class="btn btn--secondary">📷 Экспорт PNG</button>
+                <button id="reset-automaton" class="btn btn--outline">🔄 Сбросить автомат</button>
+                <button id="back-to-task" class="btn btn--outline">← Назад к справке</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для создания состояния -->
+    <div id="state-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Создание состояния</h3>
+            <div class="form-group">
+                <label for="state-name" class="form-label">Имя состояния:</label>
+                <input type="text" id="state-name" class="form-control" placeholder="q0, q1, q2...">
+            </div>
+            <div class="form-group">
+                <label for="state-output" class="form-label">Выходное значение:</label>
+                <input type="text" id="state-output" class="form-control" placeholder="0 или 1">
+            </div>
+            <div class="modal-actions">
+                <button id="create-state" class="btn btn--primary">Создать</button>
+                <button id="cancel-state" class="btn btn--outline">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для создания перехода -->
+    <div id="transition-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Создание перехода</h3>
+            <div class="form-group">
+                <label for="from-state" class="form-label">Из состояния:</label>
+                <select id="from-state" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label for="to-state" class="form-label">В состояние:</label>
+                <select id="to-state" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label for="input-symbol" class="form-label">Входной символ:</label>
+                <input type="text" id="input-symbol" class="form-control" placeholder="0, 1, a, b...">
+            </div>
+            <div class="modal-actions">
+                <button id="create-transition" class="btn btn--primary">Создать</button>
+                <button id="cancel-transition" class="btn btn--outline">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно с фейерверком -->
+    <div id="fireworks-modal" class="modal hidden">
+        <div class="modal-content celebration">
+            <div class="fireworks"></div>
+            <h2>Поздравляем! 🎉</h2>
+            <p id="celebration-message">Отличная работа!</p>
+            <button id="close-celebration" class="btn btn--primary">Закрыть</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

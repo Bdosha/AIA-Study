@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Динамический графовый автомат</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+    <div class="container">
+        <aside class="sidebar">
+            <h1 class="title">Динамический графовый автомат</h1>
+
+            <!-- Граф и алгоритмы -->
+            <section class="section">
+                <h2>Параметры графа</h2>
+                <div class="field">
+                    <label>Количество вершин</label>
+                    <input id="vertexInput" type="number" min="2" max="200" value="20">
+                </div>
+                <div class="field">
+                    <label>Плотность (0–1)</label>
+                    <input id="densityInput" type="number" step="0.05" min="0" max="1" value="0.2">
+                </div>
+                <div class="field">
+                    <label>Тип топологии</label>
+                    <select id="topologySelect">
+                        <option value="random">Случайная</option>
+                        <option value="grid">Решётка</option>
+                        <option value="custom">Пользовательская</option>
+                    </select>
+                </div>
+                <button id="generateGraph">Сгенерировать граф</button>
+                <div class="buttons">
+                    <button id="importBtn">Импорт</button>
+                    <button id="exportBtn">Экспорт</button>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Алгоритм</h2>
+                <div class="field">
+                    <label>Выберите пресет</label>
+                    <select id="presetSelect">
+                        <option value="">– без предустановки –</option>
+                        <option value="life">Игра «Жизнь»</option>
+                        <option value="predator">Предатор‑жертва</option>
+                        <option value="friendship">Дружба</option>
+                        <option value="social">Социальное влияние</option>
+                        <option value="neural">Нейронный рост</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Правила</h2>
+                <label>Правила состояния (DSL)</label>
+                <textarea id="stateRulesInput" placeholder="STATE_RULES:\nIF ... THEN new_state = ..."></textarea>
+                <label>Правила топологии (DSL)</label>
+                <textarea id="topologyRulesInput" placeholder="TOPOLOGY_RULES:\nIF ... THEN ADD/REMOVE EDGE"></textarea>
+                <button id="applyRules">Применить правила</button>
+            </section>
+
+            <section class="section help">
+                <h2>Справка</h2>
+                <p>
+                    <strong>Динамический граф</strong> — структура, в которой меняется не только состояние вершин, но и сами связи между ними. 
+                    Вы задаёте <em>правила состояния</em>, описывающие, как изменяется состояние вершины в зависимости от её соседей, 
+                    и <em>правила топологии</em>, определяющие, когда добавлять или удалять ребра или вершины.
+                </p>
+                <p>
+                    Выберите один из <strong>алгоритмов пресетов</strong> или напишите свои правила. 
+                    Нажимайте «Старт», чтобы запустить симуляцию, «Пауза» — чтобы остановить, «Шаг» — 
+                    чтобы выполнить один шаг, и «N шагов» — чтобы сделать несколько шагов разом. 
+                    В разделе «Аналитика» видно, сколько вершин и рёбер, как распределяются состояния и размеры компонент.
+                </p>
+                <p>
+                    При необходимости можно <strong>переключить тему</strong> между светлой и тёмной, чтобы облегчить работу глаз.
+                </p>
+            </section>
+
+            <section class="section legend">
+                <h2>Легенда</h2>
+                <div id="legendContainer"></div>
+            </section>
+
+            <section class="section analytics">
+                <h2>Аналитика</h2>
+                <p id="vertexCount">Вершин: 0</p>
+                <p id="edgeCount">Рёбер: 0</p>
+                <p id="componentSize">Крупнейшая компонента: 0</p>
+                <p id="degreeDistribution">Распределение степеней:</p>
+                <ul id="degreeList"></ul>
+            </section>
+        </aside>
+
+        <main class="main">
+            <canvas id="graphCanvas"></canvas>
+
+            <section class="simulation-controls">
+                <h2>Симуляция</h2>
+                <div class="buttons">
+                    <button id="startBtn">Старт</button>
+                    <button id="pauseBtn">Пауза</button>
+                    <button id="stepBtn">Шаг</button>
+                </div>
+                <div class="batch">
+                    <label>Запустить N шагов</label>
+                    <input id="batchInput" type="number" min="1" value="10">
+                    <button id="runBatchBtn">Запустить</button>
+                </div>
+                <div class="field">
+                    <label>Скорость (кадров/сек)</label>
+                    <input id="speedInput" type="number" min="1" max="30" value="5">
+                </div>
+                <p id="status">Шаг: 0</p>
+            </section>
+
+            <button id="toggleThemeBtn" class="theme-toggle">Переключить тему</button>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

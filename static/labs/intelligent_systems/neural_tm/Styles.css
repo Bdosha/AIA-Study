@@ -1,0 +1,58 @@
+:root{
+  --bg:#0f1117; --fg:#e5e7eb; --muted:#9aa4be;
+  --card:#141823; --border:#242a36; --primary:#4ea0ff; --danger:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)}
+.subtitle{color:var(--muted);margin:4px 0 0}
+.wrap{padding:16px;display:flex;flex-direction:column;gap:16px}
+.grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+@media (max-width:1100px){.grid-2{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 24px #0003;padding:14px}
+.btn{background:#1a2233;border:1px solid var(--border);color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer}
+.btn:hover{border-color:#3a4458}
+.btn-outline{background:transparent}
+.btn.primary{background:var(--primary);color:#0a1020;font-weight:600}
+.btn.btn-danger{background:var(--danger)}
+.input{background:#0e1422;border:1px solid var(--border);color:var(--fg);padding:8px 10px;border-radius:10px}
+.input-xs{width:84px;text-align:center}
+.badge{background:#101627;border:1px solid var(--border);padding:4px 8px;border-radius:8px;font-size:12px}
+.chip{background:#1c2333;border:1px solid var(--border);padding:4px 8px;border-radius:999px;font-size:12px}
+.legend{color:var(--muted);margin-top:6px}
+.params{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.machine-controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+
+/* Лента */
+.tape-viewport{
+  display:flex; gap:6px; overflow:auto; padding:8px;
+  border:1px dashed var(--border); border-radius:12px;
+  background:#0c1220; min-height:54px
+}
+.tcell{
+  min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center;
+  border-radius:9px; border:1px solid var(--border); background:#121b2c; font-weight:600
+}
+.tcell.active{ outline:2px solid var(--primary); outline-offset:-2px }
+.tape-quick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* Таблица правил */
+.ruletable table{border-collapse:collapse;width:100%}
+.ruletable th, .ruletable td{border:1px solid var(--border);padding:6px;text-align:left}
+.ruletable th{background:#10162a;color:#cfe0ff}
+.ruletable td select{
+  background:#0e1422;color:var(--fg);border:1px solid var(--border);
+  border-radius:8px;padding:6px;width:100%;
+}
+.ruletable .row-actions{display:flex;gap:6px;justify-content:flex-end}
+.ruletable .row-actions .btn{padding:6px 8px}
+
+/* Графики */
+.canvas{width:100%;border:1px solid var(--border);border-radius:10px;background:#0a0f1d}
+.train-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.log{height:160px;overflow:auto;background:#0b111f;border:1px solid var(--border);border-radius:10px;padding:10px;white-space:pre-wrap}
+
+/* Контролы графика */
+.chart-controls{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+.chk{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);user-select:none}

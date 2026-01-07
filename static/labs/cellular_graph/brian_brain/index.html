@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Мозг Брайана - Клеточный Автомат</title>
+
+  <!-- Применяем сохранённую тему до загрузки стилей -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('bb-theme');
+        var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var initial = saved || (systemDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-color-scheme', initial);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" href="data:," />
+</head>
+<body>
+  <!-- Заголовок -->
+  <header class="header">
+    <div class="container">
+      <h1 class="header__title">Мозг Брайана (Brian's Brain)</h1>
+      <p class="header__subtitle">Симулятор трёхцветного клеточного автомата с расширенными правилами</p>
+      <div class="header__controls">
+        <button class="btn btn--sm theme-toggle" id="themeToggle" title="Переключить тему">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="app-layout">
+        <!-- Левая панель управления -->
+        <aside class="control-panel">
+          <!-- Управление -->
+          <div class="control-section">
+            <h3>Управление симуляцией</h3>
+            <div class="control-buttons">
+              <button class="btn btn--primary" id="startBtn">Старт</button>
+              <button class="btn btn--secondary" id="stopBtn">Стоп</button>
+              <button class="btn btn--outline" id="stepBtn">Пошагово</button>
+              <button class="btn btn--outline" id="resetBtn">Сброс</button>
+              <div class="control-group" style="grid-column: 1 / -1">
+                <button id="clearGridBtn" class="btn btn--secondary btn--full-width">Очистить</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Скорость -->
+          <div class="control-section">
+            <h3>Скорость симуляции</h3>
+            <div class="form-group">
+              <label for="speedSlider" class="form-label">Задержка: <span id="speedValue">100</span>мс</label>
+              <input type="range" id="speedSlider" class="speed-slider" min="10" max="1000" value="100"/>
+            </div>
+          </div>
+
+          <!-- Правила -->
+          <div class="control-section">
+            <h3>Правила перехода</h3>
+            <div class="form-group">
+              <label for="birthThreshold" class="form-label">Порог рождения: <span id="birthValue">2</span></label>
+              <input type="range" id="birthThreshold" min="1" max="8" value="2"/>
+            </div>
+            <div class="form-group">
+              <label for="randomChance" class="form-label">Случайность: <span id="randomValue">0</span>%</label>
+              <input type="range" id="randomChance" min="0" max="10" value="0"/>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="wrapEdges"/>
+                Замыкание границ
+              </label>
+            </div>
+          </div>
+
+          <!-- Размер поля -->
+          <div class="control-section">
+            <h3>Размер поля</h3>
+            <div class="size-controls">
+              <div class="form-group">
+                <label for="gridWidth" class="form-label">Ширина: <span id="widthValue">50</span></label>
+                <input type="range" id="gridWidth" min="20" max="100" value="50"/>
+              </div>
+              <div class="form-group">
+                <label for="gridHeight" class="form-label">Высота: <span id="heightValue">50</span></label>
+                <input type="range" id="gridHeight" min="20" max="100" value="50"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Инструменты рисования -->
+          <div class="control-section">
+            <h3>Инструменты рисования</h3>
+            <div class="drawing-tools">
+              <div class="tool-group">
+                <label class="form-label">Состояние кисти:</label>
+                <div class="state-buttons">
+                  <button class="state-btn state-btn--off" data-state="0">Покой</button>
+                  <button class="state-btn state-btn--on" data-state="1">Возбуждение</button>
+                  <button class="state-btn state-btn--dying" data-state="2">Рефрактерность</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="brushSize" class="form-label">Размер кисти: <span id="brushValue">1</span></label>
+                <input type="range" id="brushSize" min="1" max="5" value="1"/>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="toggleHeatmap"/>
+                  Показать тепловую карту активности
+                </label>
+              </div>
+
+              <button class="btn btn--secondary btn--full-width" id="randomFillBtn">Случайная заливка</button>
+              <div class="form-group">
+                <label for="fillDensity" class="form-label">Плотность: <span id="densityValue">30</span>%</label>
+                <input type="range" id="fillDensity" min="1" max="100" value="30"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Паттерны -->
+          <div class="control-section">
+            <h3>Предустановленные паттерны</h3>
+            <div class="form-group">
+              <label for="patternSelect" class="form-label">Известные паттерны</label>
+              <select id="patternSelect" class="select form-control">
+                <option value="" selected>Выберите паттерн...</option>
+                <option value="single">Единичная клетка</option>
+                <option value="block">Блок 2x2</option>
+                <option value="cross">Крест</option>
+                <option value="line">Линия</option>
+                <option value="spiral">Спираль</option>
+                <option value="chaos">Хаос</option>
+                <option value="diag-ship">Диагональный корабль</option>
+                <option value="ring">Кольцо</option>
+                <option value="rays">Лучи</option>
+                <option value="burst">Взрыв</option>
+                <option value="cross2">Крест-2</option>
+              </select>
+            </div>
+            <button class="btn btn--secondary btn--full-width" id="placePatternBtn">Разместить паттерн</button>
+
+            <div class="control-buttons" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap">
+              <button class="btn btn--secondary" id="savePatternBtn">Сохранить узор</button>
+              <label class="btn btn--outline" style="cursor:pointer">
+                Загрузить узор
+                <input type="file" id="loadPatternInput" accept="application/json" style="display:none"/>
+              </label>
+            </div>
+          </div>
+
+          <!-- Исследование -->
+          <div class="control-section">
+            <h3>Исследование закономерностей</h3>
+            <div class="form-group">
+              <label for="analysisGenerations" class="form-label">
+                Поколений для анализа: <span id="analysisGenValue">500</span>
+              </label>
+              <input type="range" id="analysisGenerations" min="100" max="5000" step="100" value="500"/>
+            </div>
+
+            <div class="control-buttons">
+              <button class="btn btn--secondary" id="runAnalysisBtn">Запустить анализ</button>
+              <button class="btn btn--outline" id="exportCsvBtn">Экспорт CSV</button>
+            </div>
+
+            <div class="form-group" style="margin-top:12px">
+              <label class="form-label">Итоги анализа:</label>
+              <hr style="margin:12px 0; opacity:.3"/>
+              <div id="analysisSummary" class="monospace" style="font-size:12px; opacity:.85">ещё не запускался</div>
+
+              <div class="form-group">
+                <label class="form-label">Показать кадр из анализа:</label>
+                <div style="display:flex; gap:8px; align-items:center">
+                  <input type="number" id="showGenInput" min="0" value="0" style="width:90px"/>
+                  <button class="btn btn--outline" id="showGenBtn">Показать кадр</button>
+                </div>
+                <div class="monospace" id="showGenHint" style="font-size:12px; opacity:.7; margin-top:4px">
+                  (доступно после запуска анализа)
+                </div>
+              </div>
+
+              <hr style="margin:12px 0; opacity:.3"/>
+
+              <div class="form-group">
+                <label class="form-label">Мини-графики (онлайн):</label>
+
+                <!-- Контейнер, который СКРОЛЛИТСЯ по горизонтали -->
+                <div class="charts-scroll-container">
+                  <div class="charts-inner">
+                    <!-- Шире панели — появляется горизонтальный скролл -->
+                    <canvas id="chartDensity" width="900" height="70"></canvas>
+                    <canvas id="chartEntropy" width="900" height="70"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Правая часть: симуляция -->
+        <section class="simulation-area">
+          <div class="canvas-container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+            <div class="canvas-overlay">
+              <div class="legend">
+                <div class="legend-item">
+                  <div class="legend-color legend-color--off"></div>
+                  <span>Покой (Off)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color legend-color--on"></div>
+                  <span>Возбуждение (On)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color legend-color--dying"></div>
+                  <span>Рефрактерность (Dying)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Горизонтальная плашка статуса -->
+          <div class="sim-status-bar is-stopped" id="statusBottom">🟥 Остановлено</div>
+
+          <!-- ЕДИНСТВЕННЫЙ блок статистики -->
+          <div class="sim-stats">
+            <div class="sim-stat-card">
+              <div class="sim-stat-label">Поколение:</div>
+              <div class="sim-stat-value" id="genBottom">0</div>
+            </div>
+
+            <div class="sim-stat-card">
+              <div class="sim-stat-label">Энтропия:</div>
+              <div class="sim-stat-value" id="entropyBottom">0</div>
+            </div>
+
+            <div class="sim-stat-card">
+              <div class="sim-stat-label">Живых клеток:</div>
+              <div class="sim-stat-value" id="aliveBottom">0</div>
+            </div>
+
+            <div class="sim-stat-card">
+              <div class="sim-stat-label">Плотность:</div>
+              <div class="sim-stat-value" id="densityBottom">0%</div>
+            </div>
+
+            <div class="sim-stat-card">
+              <div class="sim-stat-label">Время:</div>
+              <div class="sim-stat-value" id="timeBottom">00:00</div>
+            </div>
+          </div>
+
+          <!-- НИЖЕ: Информационная панель с правилами -->
+          <div class="info-panel" style="margin-top:16px">
+            <div class="card">
+              <div class="card__body">
+                <h4>Правила «Мозга Брайана»</h4>
+
+                <ul class="rules-list">
+                  <li><strong>Покой (OFF) → Возбуждение (ON):</strong> клетка включается,
+                    если среди 8 соседей <em>ровно</em> <strong>birthThreshold</strong> активных
+                    (по умолчанию 2).
+                  </li>
+                  <li><strong>Возбуждение (ON) → Рефрактерность (DYING):</strong> всегда на следующем шаге
+                    — клетка «выгорает», чтобы не зацикливаться.
+                  </li>
+                  <li><strong>Рефрактерность (DYING) → Покой (OFF):</strong> всегда на следующем шаге —
+                    клетка «восстанавливается» и снова готова к активации.
+                  </li>
+                </ul>
+
+                <p class="info-text" style="margin-top:8px">
+                  <strong>Классическое правило:</strong> рождение при <code>ровно 2</code> активных соседях
+                  (то есть <code>birthThreshold = 2</code>). Это создаёт движущиеся волны и сложные паттерны
+                  без устойчивых «блоков», как в «Жизни» Конвея.
+                </p>
+
+                <h5 style="margin-top:14px">Дополнительные настройки</h5>
+                <ul class="rules-list">
+                  <li><strong>Замыкание границ (wrapEdges):</strong> поле «склеено» по краям:
+                    соседи на границе считаются через противоположную сторону. Без замыкания
+                    всё, что вне поля, — OFF.
+                  </li>
+                  <li><strong>Случайность (randomChance):</strong> с указанной вероятностью в процентах
+                    любая OFF-клетка может самопроизвольно стать ON на следующем шаге —
+                    удобно для «искорок» в вырождающихся сценах.
+                  </li>
+                  <li><strong>Порог рождения (birthThreshold):</strong> точное число активных соседей
+                    для включения. При значениях, отличных от 2, характер динамики заметно меняется.
+                  </li>
+                </ul>
+
+                <h5 style="margin-top:14px">Цвета состояний (по умолчанию)</h5>
+                <ul class="rules-list">
+                  <li><strong>OFF</strong> — OFF — покой (белый в светлой теме / серый в тёмной).</li>
+                  <li><strong>ON</strong> — возбуждение (серый в светлой теме / белый в тёмной).</li>
+                  <li><strong>DYING</strong> — рефрактерность (красный в светлой теме / синий в тёмной).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- /Правая часть -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ПОДКЛЮЧЕНИЕ СКРИПТОВ В IIFE-ПОРЯДКЕ -->
+  <script src="core/constants.js"></script>
+  <script src="core/briansBrain.js"></script>
+  <script src="ui/theme.js"></script>
+  <script src="state/persistence.js"></script>
+  <script src="ui/renderer.js"></script>
+  <script src="ui/controls.js"></script>
+  <script src="state/store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

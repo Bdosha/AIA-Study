@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Универсальный Симулятор Машины Тьюринга</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Универсальный Симулятор Машины Тьюринга</h1>
+                    <p>Интерактивная симуляция для изучения формальных вычислений</p>
+                </div>
+                <div class="header-controls">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                        <span class="theme-label">Тёмная тема</span>
+                    </label>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Конфигурация машины Тьюринга -->
+            <section class="config-section">
+                <h2>Конфигурация Машины Тьюринга</h2>
+                
+                <div class="config-grid">
+                    <div class="config-group">
+                        <label for="alphabet">Алфавит ленты (через запятую):</label>
+                        <input type="text" id="alphabet" value="0, 1" placeholder="0, 1, A, B">
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="states">Состояния (через запятую):</label>
+                        <input type="text" id="states" value="q0, q1, q2, qf" placeholder="q0, q1, q2, qf">
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="initial-state">Начальное состояние:</label>
+                        <select id="initial-state">
+                            <option value="q0">q0</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="final-states">Заключительные состояния:</label>
+                        <input type="text" id="final-states" value="qf" placeholder="qf">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Визуализация ленты -->
+             
+            <section class="tape-section">
+                <h2>Лента</h2>
+                <div class="tape-editor">
+                    <label for="tape-input">Содержимое ленты (символы через пробел):</label>
+                    <div class="tape-input-group">
+                        <input type="text" id="tape-input" value="1 0 1" placeholder="1 0 1 A B">
+                        <button id="apply-tape" class="btn-primary">Применить</button>
+                    </div>
+                </div>
+                <div class="tape-container">
+                    <div id="tape" class="tape">
+                        <!-- Ячейки ленты будут генерироваться здесь -->
+                    </div>
+                </div>
+                <div class="tape-controls">
+                    <button id="clear-tape" class="btn-secondary">Очистить ленту</button>
+                    <button id="reset-tape" class="btn-secondary">Сброс в начало</button>
+                </div>
+            </section>
+
+            <!-- Таблица переходов -->
+            <section class="transitions-section">
+                <h2>Таблица переходов</h2>
+                <div class="transitions-container">
+                    <table id="transition-table">
+                        <thead>
+                            <tr>
+                                <th>Текущее состояние</th>
+                                <th>Символ</th>
+                                <th>Новое состояние</th>
+                                <th>Новый символ</th>
+                                <th>Движение</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transition-body">
+                            <!-- Строки переходов будут добавляться здесь -->
+                        </tbody>
+                    </table>
+                    <button id="add-transition" class="btn-primary">Добавить переход</button>
+                </div>
+            </section>
+
+            <!-- Компактная панель управления -->
+            <div class="compact-panel">
+                <!-- Управление симуляцией -->
+                <section class="control-section compact">
+                    <h2>Управление симуляцией</h2>
+                    
+                    <div class="control-buttons">
+                        <button id="start-btn" class="btn-success">Старт</button>
+                        <button id="pause-btn" class="btn-warning" disabled>Пауза</button>
+                        <button id="step-btn" class="btn-info">Пошагово</button>
+                        <button id="reset-btn" class="btn-secondary">Сброс</button>
+                    </div>
+
+                    <div class="simulation-info compact">
+                        <div class="info-group">
+                            <h3>Текущая команда:</h3>
+                            <div id="current-command" class="command-display">-</div>
+                        </div>
+                        <div class="info-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Позиция головки:</span>
+                                <span id="head-position" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Шагов выполнено:</span>
+                                <span id="steps-counter" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Статус:</span>
+                                <span id="simulation-status" class="stat-value ready">Готов</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Библиотека программ -->
+                <section class="library-section compact">
+                    <h2>Библиотека программ</h2>
+                    <div class="library-controls">
+                        <select id="program-select">
+                            <option value="">Выберите программу –</option>
+                            <option value="addition">Сложение унарных чисел</option>
+                            <option value="multiplication">Умножение унарных чисел</option>
+                            <option value="palindrome">Проверка палиндромов</option>
+                            <option value="copy">Копирование строки</option>
+                        </select>
+                        <button id="load-program" class="btn-primary">Загрузить</button>
+                    </div>
+                </section>
+
+                <!-- Импорт/Экспорт -->
+                <section class="io-section compact">
+                    <h2>Импорт / Экспорт</h2>
+                    <div class="io-controls">
+                        <button id="export-btn" class="btn-primary">Экспорт конфигурации</button>
+                        <div class="import-group">
+                            <input type="file" id="import-file" accept=".json">
+                            <button id="import-trigger" class="btn-secondary">Выберите файл</button>
+                            <span id="file-name" class="file-name">Файл не выбран</span>
+                        </div>
+                        <button id="import-confirm" class="btn-primary" disabled>Импорт конфигурации</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/turing-machine.js"></script>
+    <script src="js/simulator.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

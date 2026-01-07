@@ -1,0 +1,179 @@
+/*
+  Турмиты / Муравей Лэнгтона — стили приложения
+  — Две темы (тёмная/светлая).
+  — Адаптивный контейнер поля с aspect-ratio.
+  — Сетка — это CSS background на overlay-слое.
+  — Визуальная блокировка disabled элементов в режиме «Работа».
+*/
+
+/* Тёмная тема по умолчанию */
+:root{
+  --bg:#0f1115; --bg-elev:#171a21; --text:#e6e6e6; --muted:#9aa4b2;
+  --accent:#6aa9ff; --danger:#ff6a6a; --border:#2b2f3a;
+
+  /* Палитра клеток поля: 0 — фон, 1.. — состояния */
+  --cell0:#0f1115; --cell1:#d6d6d6; --cell2:#6aa9ff; --cell3:#a879ff;
+
+  /* Цвет линий сетки (тонкий, полупрозрачный) */
+  --grid-line: rgba(255,255,255,0.07);
+}
+
+/* Светлая тема */
+body[data-theme="light"]{
+  --bg:#f7f7fb; --bg-elev:#ffffff; --text:#1d222d; --muted:#606a78;
+  --accent:#2d6ae3; --danger:#d43c3c; --border:#dfe3eb;
+
+  --cell0:#ffffff; --cell1:#c7cdd8; --cell2:#2d6ae3; --cell3:#7a35e8;
+
+  --grid-line: rgba(0,0,0,0.12);
+}
+
+/* Базовая раскладка */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg); color:var(--text);
+  /* ВАЖНО: делаем страницу колонкой, чтобы main занял весь экран,
+     а левая панель могла прокручиваться независимо */
+  display:flex; flex-direction:column; min-height:100vh;
+}
+
+/* Шапка/подвал */
+.app-header,.app-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:var(--bg-elev);border-bottom:1px solid var(--border)
+}
+.app-footer{border-top:1px solid var(--border);border-bottom:none;font-size:12px;color:var(--muted)}
+.title h1{margin:0;font-size:20px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.badge{background:#26304a;color:#cfe0ff;padding:2px 8px;border-radius:999px;font-size:14px}
+.badge.alt{background:#2b3a2b;color:#d6ffd6}
+.title p{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+/* Сетка страницы */
+.layout{
+  display:grid;grid-template-columns:380px 1fr;gap:12px;padding:12px;
+  /* растянуть на доступную высоту между хедером и футером */
+  flex:1; min-height:0;
+}
+@media (max-width:980px){.layout{grid-template-columns:1fr}}
+
+/* Левая панель — вертикальная лента (самостоятельная прокрутка) */
+.controls{
+  background:var(--bg-elev);border:1px solid var(--border);
+  border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px;
+
+  /* ключ к независимой прокрутке */
+  overflow-y:auto; min-height:0; /* разрешить ужиматься внутри грида */
+  overscroll-behavior:contain;   /* без скролла всей страницы */
+  scrollbar-gutter: stable;      /* стабильный трек скроллбара */
+  /* липкий режим – панель держится в зоне просмотра */
+  position:sticky; top:12px; align-self:start; max-height:calc(100vh - 24px);
+}
+
+/* Снэпы по блокам для ощущений “ленты” (необязательно, но приятно) */
+.controls{ scroll-snap-type: y proximity; }
+.group{ scroll-snap-align: start; }
+
+.group{border:1px dashed var(--border);border-radius:10px;padding:10px;position:relative;background:var(--bg-elev)}
+.group h2{margin:0 0 8px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.subhead{margin:4px 0 8px;font-size:13px;color:var(--muted);font-weight:600}
+
+/* Закреплённая группа (основные контролы) */
+.group.sticky{
+  position:sticky; top:0; z-index:5;
+  box-shadow:0 6px 12px rgba(0,0,0,.18);
+}
+
+/* Формы/кнопки */
+.controls label{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:14px
+}
+.controls input[type=number],.controls input[type=text],.controls select{
+  flex:1 1 auto;min-width:0;padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)
+}
+.controls input[type=range]{width:100%}
+.toggle{gap:8px}
+
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button{
+  padding:8px 12px;border-radius:10px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text);cursor:pointer;
+  transition:transform .05s ease,background .2s ease
+}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button.secondary{background:transparent}
+button.danger{border-color:var(--danger);color:var(--danger)}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+/* Явная визуализация disabled (без color-mix для совместимости Safari 14) */
+input:disabled, select:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  background: var(--bg);
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.04), rgba(0,0,0,0.04));
+  border-style:dashed;
+}
+
+/* Маленькая подсказка-замок в группе */
+.lock-hint{
+  position:absolute; top:8px; right:10px; font-size:12px;
+  color:var(--muted); opacity:0; transform:translateY(-4px);
+  transition:opacity .18s ease, transform .18s ease;
+  pointer-events:none;
+}
+.group.locked .lock-hint{ opacity:1; transform:translateY(0) }
+
+/* Переключатель темы */
+.theme-switch select{padding:6px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
+
+/* Контейнер канваса: ограничение высоты + aspect-ratio (JS подставляет) */
+.canvas-wrap{
+  position:relative;background:var(--bg-elev);border:1px solid var(--border);
+  border-radius:12px;padding:0;display:flex;align-items:center;justify-content:center;
+  width:100%;min-height:280px;max-height:min(72vh,620px);user-select:none
+}
+
+/* Канвас разворачиваем на всю область контейнера */
+#viewport{display:block;width:100%;height:100%;image-rendering:pixelated;cursor:crosshair}
+
+/* Слой сетки — две повторяющиеся линейные заливки; параметры обновляет JS */
+.grid-overlay{
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-repeat:repeat;
+  background-size:16px 16px;  /* JS: step px */
+  background-position:0 0;    /* JS: offset px */
+  opacity:0; transition:opacity 120ms ease;
+  border-radius:12px; will-change:background-position, background-size, opacity
+}
+
+/* Карточки/легенда/статистика */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.stats>div{padding:6px 8px;border-radius:8px;background:var(--bg);border:1px solid var(--border)}
+
+.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.tool{display:flex;gap:6px;align-items:center}
+
+.patterns{display:grid;grid-template-columns:1fr;gap:10px}
+.pattern-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px;display:grid;gap:8px}
+.rule-legend{display:flex;gap:6px;flex-wrap:wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.rule-chip{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:8px;border:1px solid var(--border)}
+.rule-chip .swatch{width:14px;height:14px;border-radius:3px;border:1px solid var(--border)}
+.rule-chip .turn{opacity:.85}
+.note{color:var(--muted);margin-top:6px}
+.legend{color:var(--muted)}
+.muted{color:var(--muted);font-weight:normal}
+
+/* === Hotfix: keep presets list visible with long descriptions === */
+.patterns { min-height: 1rem; overflow: auto; }
+.pattern-card .desc, .pattern-card .note, .pattern-card p { white-space: normal; word-break: break-word; }
+
+/* (опционально) скроллбар понаряднее */
+.controls::-webkit-scrollbar{width:10px}
+.controls::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:10px;border:1px solid var(--border)}
+.controls::-webkit-scrollbar-track{background:transparent}

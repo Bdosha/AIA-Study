@@ -1,0 +1,178 @@
+/* style.css */
+:root {
+    --bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --accent-color: #4a9cff;
+    --secondary-color: #333;
+    --border-color: #555;
+    --node-color: #2a4d7a;
+    --active-node-color: #3a7dca;
+}
+
+.light-theme {
+    --bg-color: #f5f5f5;
+    --text-color: #333;
+    --accent-color: #0066cc;
+    --secondary-color: #e0e0e0;
+    --border-color: #ccc;
+    --node-color: #a0c8ff;
+    --active-node-color: #4a9cff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1, h2, h3 {
+    color: var(--accent-color);
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.function-editor, .controls, .visualization, .trace {
+    background-color: var(--secondary-color);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.controls {
+    grid-column: 1 / 3;
+}
+
+.visualization {
+    grid-column: 1 / 3;
+}
+
+#functionCode {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+    font-family: monospace;
+}
+
+.arguments {
+    margin-top: 15px;
+}
+
+#argumentInputs input {
+    width: 80px;
+    padding: 5px;
+    margin-right: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #3a7dca;
+}
+
+button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.simulation-info {
+    display: flex;
+    gap: 20px;
+}
+
+#treeSvg {
+    background-color: var(--bg-color);
+    border-radius: 4px;
+}
+
+.node {
+    fill: var(--node-color);
+    stroke: var(--border-color);
+    stroke-width: 2;
+}
+
+.node.active {
+    fill: var(--active-node-color);
+}
+
+.node-text {
+    fill: var(--text-color);
+    font-size: 12px;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.edge {
+    stroke: var(--border-color);
+    stroke-width: 2;
+    fill: none;
+}
+
+#traceOutput {
+    height: 200px;
+    overflow-y: auto;
+    background-color: var(--bg-color);
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.trace-step {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.trace-step.active {
+    background-color: rgba(74, 156, 255, 0.2);
+}

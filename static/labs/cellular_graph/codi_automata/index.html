@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Стохастические клеточные автоматы - Лабораторная работа</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="dark-theme">
+  <header class="header">
+    <div class="header-content">
+      <h1>Стохастические клеточные автоматы</h1>
+      <p>Система для моделирования клеточных автоматов с вероятностными правилами перехода</p>
+    </div>
+    <button id="theme-toggle" class="theme-toggle">🌓</button>
+  </header>
+
+  <main class="main-container">
+    <!-- Левая панель -->
+    <aside class="control-panel">
+      <section class="control-section">
+        <h3>Параметры сетки</h3>
+        <div class="input-group">
+          <label for="grid-width">Ширина:</label>
+          <input type="number" id="grid-width" value="50" min="10" max="200"/>
+        </div>
+        <div class="input-group">
+          <label for="grid-height">Высота:</label>
+          <input type="number" id="grid-height" value="50" min="10" max="200"/>
+        </div>
+        <div class="input-group">
+          <label for="cell-size">Размер клетки:</label>
+          <input type="number" id="cell-size" value="10" min="5" max="20"/>
+        </div>
+          <div class="input-group" id="view-scroll-x-group" style="display:none;">
+            <label for="view-offset-x">Прокрутка по горизонтали:</label>
+            <input type="range" id="view-offset-x" min="0" value="0" step="1">
+          </div>
+
+          <div class="input-group" id="view-scroll-y-group" style="display:none;">
+            <label for="view-offset-y">Прокрутка по вертикали:</label>
+            <input type="range" id="view-offset-y" min="0" value="0" step="1">
+          </div>
+      </section>
+
+      <section class="control-section">
+        <h3>Правила перехода</h3>
+        <div class="input-group">
+          <label for="rule-select">Правило:</label>
+          <select id="rule-select">
+            <option value="majority">Правило большинства с шумом</option>
+            <option value="vote">Голосование с вероятностью</option>
+            <option value="ising">Ising-подобное (логистическое)</option>
+            <option value="game-of-life">Игра "Жизнь" с шумом</option>
+            <option value="custom">Пользовательское правило</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label id="noise-label" for="noise-prob">Параметр правила (η):</label>
+          <input type="range" id="noise-prob" min="0" max="1" step="0.01" value="0.10"/>
+          <span id="noise-value">0.10</span>
+        </div>
+        <div class="input-group">
+          <label for="states-count">Количество состояний:</label>
+          <input type="number" id="states-count" value="2" min="2" max="8"/>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3>Начальные условия</h3>
+        <div class="input-group">
+          <label for="initial-state">Тип:</label>
+          <select id="initial-state">
+            <option value="random">Случайное</option>
+            <option value="center">Точка в центре</option>
+            <option value="checkerboard">Шахматный порядок</option>
+            <option value="custom">Пользовательское</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="density">Плотность (для случайного):</label>
+          <input type="range" id="density" min="0" max="1" step="0.1" value="0.5"/>
+          <span id="density-value">0.5</span>
+        </div>
+      </section>
+
+      <section class="control-section">
+          <h3>Паттерны</h3>
+            <div class="preset-buttons">
+                <button class="preset-btn" data-pattern="random">Случайная (p из ползунка)</button>
+                <button class="preset-btn" data-pattern="checkerboard">Шахматка</button>
+                <button class="preset-btn" data-pattern="stripes-v">Полосы (верт.)</button>
+                <button class="preset-btn" data-pattern="two-domains">Два домена</button>
+                <button class="preset-btn" data-pattern="islands">Острова</button>
+                <button class="preset-btn" data-pattern="salt-pepper">Соль-перец (ε)</button>
+                <button class="preset-btn" data-pattern="gradient-x">Градиент (X)</button>
+                <button class="preset-btn" data-pattern="percolation">Перколяция (~0.59)</button>
+                <button class="preset-btn" data-pattern="seed-line">Затравка: линия</button>
+                <button class="preset-btn" data-pattern="import-template">Импорт шаблона</button>
+            </div>
+  <!-- скрытый input для импорта JSON -->
+  <input type="file" id="template-file" accept=".json" style="display:none"/>
+  <p class="hint">
+    Примечание: «точка-затравка» — это начальное состояние «Точка в центре».
+  </p>
+</section>
+    </aside>
+
+    <!-- Центральная панель -->
+    <section class="visualization-panel">
+      <div class="canvas-container">
+        <canvas id="grid-canvas"></canvas>
+      </div>
+      <div class="simulation-info">
+        <span>Шаг: <span id="step-counter">0</span></span>
+        <span>Время: <span id="time-counter">0</span>с</span>
+        <span>Энтропия: <span id="entropy-value">0.00</span></span>
+      </div>
+    </section>
+
+    <!-- Правая панель -->
+    <aside class="metrics-panel">
+      <section class="control-section">
+        <h3>Управление симуляцией</h3>
+        <div class="control-buttons">
+          <button id="start-btn" class="btn primary">Старт</button>
+          <button id="stop-btn" class="btn secondary" disabled>Стоп</button>
+          <button id="step-btn" class="btn secondary">Пошагово</button>
+          <button id="reset-btn" class="btn secondary">Сброс</button>
+        </div>
+        <div class="input-group">
+          <label for="simulation-speed">Скорость:</label>
+          <input type="range" id="simulation-speed" min="1" max="10" value="5"/>
+          <span id="speed-value">5</span>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3>Метрики</h3>
+        <div class="metrics-display">
+          <div class="metric">
+            <label>Энтропия:</label>
+            <span id="current-entropy">0.00</span>
+          </div>
+          <div class="metric">
+            <label>Параметр порядка:</label>
+            <span id="order-parameter">0.00</span>
+          </div>
+          <div class="metric">
+            <label>Активные клетки:</label>
+            <span id="active-cells">0</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3>Графики</h3>
+        <div class="charts-container">
+          <canvas id="entropy-chart"></canvas>
+          <canvas id="order-chart"></canvas>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h3>Экспорт данных</h3>
+        <div class="export-buttons">
+          <button id="export-grid" class="btn secondary">Экспорт сетки</button>
+          <button id="export-csv" class="btn secondary">Экспорт CSV</button>
+          <button id="save-state" class="btn secondary">Сохранить состояние</button>
+          <button id="load-state" class="btn secondary">Загрузить состояние</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <!-- Модалка для пользовательских правил (зарезервировано под будущее) -->
+  <div id="custom-rule-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>Пользовательское правило</h3>
+    </div>
+  </div>
+
+  <!-- ВАЖНО: путь оставил как у тебя -->
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>

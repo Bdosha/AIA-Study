@@ -1,0 +1,524 @@
+/* styles.css */
+:root {
+    --bg-color: #1e1e1e;
+    --panel-bg: #2d2d30;
+    --text-color: #ffffff;
+    --accent-color: #007acc;
+    --border-color: #3e3e42;
+    --success-color: #2d7d2d;
+    --error-color: #d13434;
+    --warning-color: #ff6d00;
+}
+
+[data-theme="light"] {
+    --bg-color: #f5f5f5;
+    --panel-bg: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    gap: 12px;
+    padding: 12px;
+}
+
+header {
+    grid-column: 1 / 4;
+    background-color: var(--panel-bg);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    position: relative;
+}
+
+.left-panel, .right-panel {
+    background-color: var(--panel-bg);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+.main-content {
+    background-color: var(--panel-bg);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.graph-container {
+    flex-grow: 1;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+}
+
+button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #005a9e;
+}
+
+button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+}
+
+.matrix-table th, .matrix-table td {
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    text-align: center;
+}
+
+.matrix-table th {
+    background-color: rgba(0, 122, 204, 0.1);
+}
+
+.property-indicator {
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-radius: 4px;
+    background-color: var(--panel-bg);
+    border-left: 4px solid #666;
+}
+
+.valid {
+    border-left-color: var(--success-color);
+}
+
+.invalid {
+    border-left-color: var(--error-color);
+}
+
+.warning {
+    border-left-color: var(--warning-color);
+}
+
+.state-node {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #68217a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    border: 3px solid #ffffff;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
+.state-node:hover {
+    transform: scale(1.05);
+}
+
+.state-node.initial {
+    background-color: var(--success-color);
+}
+
+.state-node.final {
+    background-color: var(--error-color);
+}
+
+.state-node.current {
+    border-color: #ffeb3b;
+    box-shadow: 0 0 15px #ffeb3b;
+}
+
+.transition-arrow {
+    position: absolute;
+    z-index: 5;
+}
+
+.arrow-line {
+    position: absolute;
+    background-color: #cccccc;
+    height: 3px;
+    transform-origin: 0 0;
+}
+
+.arrow-head {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 12px solid #cccccc;
+}
+
+.probability-label {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 15;
+    color: white;
+    border: 1px solid #666;
+}
+
+.probability-input {
+    width: 60px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+}
+
+footer {
+    grid-column: 1 / 4;
+    background-color: var(--panel-bg);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.stats-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.stat-item {
+    background-color: var(--bg-color);
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.histogram-container {
+    height: 150px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: end;
+    gap: 5px;
+}
+
+.histogram-bar {
+    flex: 1;
+    background-color: var(--accent-color);
+    border-radius: 2px 2px 0 0;
+    transition: height 0.3s;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.validation-error {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Модальное окно для матриц */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: var(--panel-bg);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: var(--text-color);
+}
+
+.matrix-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.matrix-tab {
+    padding: 10px 20px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.matrix-tab.active {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.matrix-container {
+    display: none;
+}
+
+.matrix-container.active {
+    display: block;
+}
+
+.matrices-button {
+    background-color: #68217a;
+    margin-left: auto;
+}
+
+.matrices-button:hover {
+    background-color: #5a1c68;
+}
+
+/* Стили для симуляции */
+.simulation-controls {
+    padding: 15px;
+    background: var(--panel-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.control-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.control-btn:disabled {
+    background: var(--disabled-color);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.control-label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.control-slider {
+    flex: 1;
+    min-width: 100px;
+}
+
+.control-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.control-input {
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.validation-message {
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.validation-message.valid {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #4caf50;
+}
+
+.validation-message.error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #f44336;
+}
+
+.simulation-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--bg-color);
+    border-radius: 4px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-item span:first-child {
+    font-weight: 500;
+}
+
+.info-item span:last-child {
+    font-weight: bold;
+}
+
+/* Статусы симуляции */
+.status-running { color: #00bcd4; font-weight: bold; }
+.status-paused { color: #ff9800; font-weight: bold; }
+.status-completed { color: #4caf50; font-weight: bold; }
+.status-error { color: #f44336; font-weight: bold; }
+.status-idle { color: var(--text-secondary); }
+
+.status-accepted { color: #4caf50; font-weight: bold; }
+.status-rejected { color: #f44336; font-weight: bold; }
+
+/* Усиливаем подсветку состояний */
+.state-highlight-from {
+    filter: drop-shadow(0 0 10px #2196f3) brightness(1.2);
+}
+
+.state-highlight-to {
+    filter: drop-shadow(0 0 15px #2196f3) brightness(1.3);
+}
+
+.state-highlight-final {
+    filter: drop-shadow(0 0 12px #ff9800) brightness(1.2);
+}
+
+/* Контейнер для гистограммы */
+#histogram,
+.histogram-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 150px;
+    background: var(--panel-bg, #f5f5f5);
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+/* Отдельный столбик */
+.histogram-bar {
+    background-color: var(--accent-color, #4e79a7);
+    width: 20px;
+    margin: 0 4px;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s;
+}
+

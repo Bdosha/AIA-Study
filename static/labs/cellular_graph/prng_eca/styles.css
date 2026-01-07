@@ -1,0 +1,340 @@
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Цветовые темы */
+:root {
+  --bg: #0d0d0d;
+  --panel: #1a1a1a;
+  --text: #eee;
+  --border: #333;
+  --accent: #0a84ff;
+}
+
+.light {
+  --bg: #f5f5f5;
+  --panel: #ffffff;
+  --text: #111;
+  --border: #ccc;
+  --accent: #0078d4;
+}
+
+/* Компоновка */
+.layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sidebar {
+  flex: 0 0 360px;
+  background: var(--panel);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border);
+  box-sizing: border-box;
+}
+
+.visual {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* Заголовок */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+h1 {
+  font-size: 18px;
+  margin: 0;
+  line-height: 1.2;
+}
+p {
+  font-size: 12px;
+  color: #888;
+  margin: 4px 0 0;
+}
+
+/* Кнопка темы */
+.theme-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+.theme-btn:hover {
+  background: var(--border);
+}
+
+/* Элементы управления */
+.controls label {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+}
+.controls input,
+.controls select {
+  width: 100%;
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+.buttons button {
+  background: var(--border);
+  color: var(--text);
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.buttons button:hover {
+  background: var(--accent);
+  color: white;
+}
+.pattern-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pattern-row input {
+  flex: 1;
+}
+.small-btn {
+  width: 42px;
+  height: 36px;
+  font-size: 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.small-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Ошибки ввода */
+#patternError {
+  color: #c33;
+  font-size: 12px;
+  margin: 4px 0 0;
+  display: none;
+}
+
+/* Раздел Импорт/Экспорт */
+.io-section h2 {
+  font-size: 15px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.io-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.io-buttons button {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.io-buttons button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Таблица результатов */
+.results h2 {
+  font-size: 15px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+.results table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.results td {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.results td:last-child {
+  text-align: right;
+  color: var(--accent);
+}
+
+/* Холст */
+#gridCanvas {
+  max-width: 90vw;
+  max-height: 90vh;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  box-sizing: border-box;
+}
+
+/* Адаптация под мобильные устройства */
+@media (max-width: 800px) {
+  .layout {
+    flex-direction: column;
+    height: auto;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+  }
+  .visual {
+    height: calc(100vh - 400px);
+  }
+  #gridCanvas {
+    width: 95vw;
+    height: auto;
+  }
+  .buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Подсказки для метрик */
+.info {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  background: var(--border);
+  color: var(--text);
+  margin-left: 6px;
+  cursor: default;
+  position: relative;
+  transition: background 0.2s;
+}
+.info:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Текст подсказки всегда в пределах экрана */
+.info::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 125%;
+  left: 0;
+  transform: none;
+  max-width: min(280px, 80vw);
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 10;
+  white-space: normal;
+  word-wrap: break-word;
+  box-sizing: border-box;
+}
+
+/* Стрелка слева */
+.info::before {
+  content: "";
+  position: absolute;
+  bottom: 115%;
+  left: 8px;
+  transform: none;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--panel) transparent transparent transparent;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* Появление */
+.info:hover::after,
+.info:hover::before {
+  opacity: 1;
+}
+
+@media (max-height: 600px) {
+  .info::after {
+    top: 125%;
+    bottom: auto;
+  }
+  .info::before {
+    top: 115%;
+    bottom: auto;
+    border-color: transparent transparent var(--panel) transparent;
+  }
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+
+/* Кнопки одинаковой ширины */
+.buttons button {
+  background: var(--border);
+  color: var(--text);
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+.buttons button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+#exportPNGBtn {
+  grid-column: span 3;
+}

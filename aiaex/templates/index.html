@@ -1,33 +1,76 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <main class="main-container">
-        <!-- Заголовок страницы -->
-        <div class="page-header">
-            <h1 class="page-title">Учебные материалы</h1>
-            <p class="page-subtitle">
-                Добро пожаловать в учебный центр МИФИ программы Искусственный интеллект и моделирование когнитивных
-                процессов в проектировании и разработке информационных систем
+<main class="main-container">
+    <!-- Заголовок страницы -->
+    <div class="page-header">
+        <div class="page-icon">🎓</div>
+        <h1 class="page-title">Учебные материалы</h1>
+        <p class="page-subtitle">
+            Добро пожаловать в учебный центр МИФИ программы «Искусственный интеллект
+            и моделирование когнитивных процессов»
+        </p>
+    </div>
+
+    <!-- Два основных раздела -->
+    <div class="sections-grid" style="margin-bottom: 4rem;">
+        <!-- Раздел ДМ-3: Автоматы -->
+        <div class="section-card">
+            <div class="section-icon">🔬</div>
+            <h2 class="section-title">ДМ-3: Автоматы</h2>
+            <p class="section-description">
+                Лабораторные работы по дисциплине «Дискретная математика — 3». 
+                Симуляторы конечных автоматов, машин Тьюринга, клеточных автоматов
+                и формальных систем вычислений.
             </p>
-        </div>
-
-        <!-- Сетка материалов -->
-        <!-- Сетка материалов -->
-        <div class="content-grid">
-
-            {% for card in cards %}
-                <div class="material-card">
-                    <div class="card-icon">{{ card.emojy }}</div>
-                    <h3 class="card-title">{{ card.name }}</h3>
-                    <p class="card-description">
-                        {{ card.description }}
-
-                    </p>
-                    <a href="/{{ card.url }}" class="card-link">Перейти к материалам</a>
+            <div class="section-meta">
+                <div class="labs-count">
+                    <span>📚</span>
+                    <span>30 работ</span>
                 </div>
-            {% endfor %}
-
+                <a href="/labs/" class="section-link">
+                    Открыть раздел →
+                </a>
+            </div>
         </div>
 
-    </main>
+        <!-- Раздел Другое -->
+        <div class="section-card">
+            <div class="section-icon">📦</div>
+            <h2 class="section-title">Другое</h2>
+            <p class="section-description">
+                Дополнительные учебные материалы: визуализации функций, 
+                интерактивные демонстрации, симуляторы и инструменты.
+            </p>
+            <div class="section-meta">
+                <div class="labs-count">
+                    <span>🧩</span>
+                    <span>5 модулей</span>
+                </div>
+                <a href="#other" class="section-link">
+                    Смотреть ниже →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция "Другое" -->
+    <div id="other" style="scroll-margin-top: 100px;">
+        <div class="section-header">
+            <h2><span>📦</span> Другое</h2>
+            <p>Дополнительные учебные материалы и интерактивные инструменты</p>
+        </div>
+
+        <div class="content-grid">
+            {% for card in other_cards %}
+            <div class="material-card">
+                <div class="card-icon">{{ card.emojy }}</div>
+                <h3 class="card-title">{{ card.name }}</h3>
+                <p class="card-description">{{ card.description }}</p>
+                <a href="/{{ card.url }}" class="card-link">Перейти</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
 {% endblock content %}

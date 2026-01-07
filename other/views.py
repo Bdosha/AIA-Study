@@ -191,6 +191,18 @@ OTHER_CARDS = [
         'url': 'visuphi'
     },
     {
+        'name': 'Фазовые портреты ДУ',
+        'emojy': '🌀',
+        'description': 'Интерактивная визуализация фазовых портретов линейных дифференциальных уравнений',
+        'url': 'phase'
+    },
+    {
+        'name': 'Симулятор КА',
+        'emojy': '🔲',
+        'description': 'Симулятор жизнеподобных клеточных автоматов',
+        'url': 'cellular/sim'
+    },
+    {
         'name': 'Теория игр',
         'emojy': '🎯',
         'description': 'Равновесие Нэша и анализ игр',
@@ -337,7 +349,20 @@ def klab_raw(request, lab):
 
 
 def klsim(request):
+    return wrap_view(request, 'Симулятор клеточных автоматов', '/cellular/sim/raw/')
+
+
+def klsim_raw(request):
     return render(request, 'lab_kl/cellular.html')
+
+
+# ===== ФАЗОВЫЕ ПОРТРЕТЫ =====
+def phase_portrait(request):
+    return wrap_view(request, 'Фазовые портреты ДУ', '/phase/raw/')
+
+
+def phase_portrait_raw(request):
+    return render(request, 'custom_labs/phase_portrait_interactive.html')
 
 
 # ===== КОНЕЧНЫЕ АВТОМАТЫ (DFA) =====

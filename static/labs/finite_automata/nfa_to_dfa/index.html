@@ -1,0 +1,106 @@
+<!-- Лаба: редактор и симулятор НКА→ДКА с построением эталонного ДКА и проверкой -->
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Преобразование НКА → ДКА</title>
+  <link rel="icon" href="./assets/favicon.svg">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header class="app-header">
+  <h1>Преобразование НКА → ДКА</h1>
+  <div class="header-actions">
+    <button id="themeToggle" class="btn ghost" title="Переключить тему">Тема</button>
+    <span class="meta">Счётчик: <span id="stepCounter">0</span></span>
+    <span class="meta">Время: <span id="timeCounter">00:00.0</span></span>
+  </div>
+</header>
+
+<main class="app-main">
+  <!-- Левая панель -->
+  <aside class="sidebar left">
+    <div class="panel">
+      <h2>Редактор</h2>
+      <button class="btn" id="addStateBtn">Добавить состояние</button>
+      <button class="btn" id="addEdgeBtn">Добавить переход</button>
+      <button class="btn" id="markStartBtn">Назначить начальное</button>
+      <button class="btn" id="markFinalBtn">Назначить конечное</button>
+      <div style="height:6px"></div>
+      <button class="btn" id="deleteStateBtn">Удалить состояние</button>
+      <button class="btn" id="deleteEdgeBtn">Удалить переход</button>
+    </div>
+
+    <div class="panel">
+      <h2>Алфавит</h2>
+      <input id="alphabetInput" class="input" placeholder="напр. a,b" />
+      <small>Разделитель: запятая</small>
+    </div>
+
+    <div class="panel">
+      <h2>Файлы</h2>
+      <button class="btn" id="importJsonBtn">Импорт JSON</button>
+      <button class="btn" id="importSvgBtn">Импорт SVG</button>
+      <button class="btn" id="exportJsonBtn">Экспорт JSON</button>
+      <button class="btn" id="exportPngBtn">Экспорт PNG</button>
+      <button class="btn" id="exportSvgBtn">Экспорт SVG</button>
+    </div>
+  </aside>
+
+  <!-- Центральный холст -->
+  <section class="canvas-wrap">
+    <div class="canvas-toolbar">
+      <div class="segmented">
+        <button class="seg active" data-view="nfa">НКА</button>
+        <button class="seg" data-view="dfa">ДКА</button>
+        <button class="seg" data-view="both">Оба</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn primary" id="convertBtn">Преобразовать НКА→ДКА</button>
+      <button class="btn" id="checkBtn">Проверить решение</button>
+    </div>
+    <svg id="graphSvg" class="graph-svg" viewBox="0 0 1200 700" aria-label="Граф автомата"></svg>
+  </section>
+
+  <!-- Правая панель -->
+  <aside class="sidebar right">
+    <div class="panel">
+      <h2>Симуляция</h2>
+      <label>Входная строка</label>
+      <input id="inputWord" class="input" placeholder="например: ababba" />
+      <div class="btn-row">
+        <button id="startBtn" class="btn primary">Старт</button>
+        <button id="stopBtn" class="btn">Стоп</button>
+        <button id="stepBtn" class="btn">Пошагово</button>
+        <button id="resetBtn" class="btn ghost">Сброс</button>
+      </div>
+      <label>Скорость</label>
+      <input id="speedRange" type="range" min="50" max="1000" value="300" />
+    </div>
+
+    <div class="panel tabs">
+      <div class="tabbar">
+        <button class="tab btn" data-tab="subset">Таблица подмножеств</button>
+        <button class="tab btn" data-tab="log">Лог</button>
+        <button class="tab btn" data-tab="results">Результаты</button>
+      </div>
+      <div class="tabcontent active" id="tab-subset">
+        <table id="subsetTable" class="table">
+          <thead><tr><th>#</th><th>Из (I)</th><th>Символ</th><th>В (J)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="tabcontent" id="tab-log"><pre id="logArea" class="log"></pre></div>
+      <div class="tabcontent" id="tab-results"><div id="resultsArea"></div></div>
+    </div>
+  </aside>
+</main>
+
+<footer class="app-footer">
+  <small>Все подписи на русском. Тёмная тема по умолчанию.</small>
+</footer>
+
+<script type="module" src="./scripts/main.js"></script>
+</body>
+</html>

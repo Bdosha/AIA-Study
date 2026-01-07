@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<style>
+    /* Additional styles for labs */
+    
+    /* Labs grid */
+    .labs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .lab-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        animation: fadeInUp 0.5s ease-out backwards;
+    }
+
+    .lab-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .lab-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+    }
+
+    .lab-description {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* Back link */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--accent-light);
+    }
+</style>
+{% block extra_head %}{% endblock %}
+{% endblock %}
+
+{% block breadcrumb %}
+<a href="/">🎓</a>
+<span>/</span>
+<a href="/labs/">ДМ-3</a>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

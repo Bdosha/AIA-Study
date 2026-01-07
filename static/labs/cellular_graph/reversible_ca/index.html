@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Обратимые клеточные автоматы — симуляция и проверка обратимости</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;">
+  <nav style="display:flex;gap:10px;">
+    
+  </nav>
+  <button id="themeToggle" class="btn">Сменить тему</button>
+</header>
+
+
+
+
+
+
+
+
+<div class="container">
+  <div class="panel canvas-wrap">
+    <canvas id="canvas" width="640" height="480" aria-label="Поле КА"></canvas>
+    <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+      <div class="info-grid">
+        <div class="info-item">Шаг: <strong id="step">0</strong></div>
+        <div class="info-item">Партиция: <strong id="part">A</strong></div>
+        <div class="info-item">Δ к снимку: <strong id="delta">—</strong></div>
+        <div class="info-item">Размер: <strong id="sizeInfo">—</strong></div>
+      </div>
+      <div class="legend small">
+        <div class="box" style="background:var(--context)"></div> контекст
+        <div class="box" style="background:var(--diff)"></div> отличия
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3 style="margin:0 0 8px 0">Управление</h3>
+    <div class="controls">
+      <button id="startBtn" class="primary">Старт</button>
+      <button id="stopBtn">Стоп</button>
+      <button id="stepBtn">Шаг вперёд</button>
+      <button id="backBtn">Шаг назад</button>
+      <button id="resetBtn">Сброс</button>
+      
+    </div>
+
+    <div class="row">
+      <label>Скорость: <input id="speed" type="range" min="1" max="10" value="5"/></label>
+      <div class="output" id="speedOut">5</div>
+    </div>
+
+    <div class="row">
+      <label>Размеры поля (клеток, чётные):</label>
+      <input id="wInput" type="number" min="10" value="80" style="width:80px"/>
+      <input id="hInput" type="number" min="10" value="60" style="width:80px"/>
+      <button id="resizeBtn">Применить</button>
+    </div>
+
+    <div class="row">
+      <label>Масштаб клетки (px): <input id="scale" type="range" min="4" max="20" value="8"/></label>
+      <div class="output" id="scaleOut">8</div>
+      <span class="small">← только «зум» отображения</span>
+    </div>
+
+    <div class="row">
+      <label>Правило:
+        <select id="ruleSelect">
+          <option value="critters">Critters</option>
+          <option value="rotations">Rotations</option>
+          <option value="identity">Identity</option>
+          <option value="custom">Пользовательское</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="row" id="customRow" style="display:none">
+      <label style="flex-basis:100%">Перестановка 16 чисел 0..15 (через запятую):</label>
+      <input id="customInp" type="text" style="width:100%" placeholder="0,1,2,...,15"/>
+      <button id="loadCustom">Загрузить</button>
+    </div>
+
+    <div class="row">
+      <label>Предустановка:
+        <select id="preset">
+          <option value="random">Случайная область</option>
+          <option value="blockGas">BlockGas</option>
+          <option value="gliders">Кластеры (gliders)</option>
+          <option value="checker">Шашка</option>
+          <option value="crittersPattern">Critters-паттерн</option>
+          <option value="blank">Пустое поле</option>
+        </select>
+      </label>
+      <button id="applyPreset">Применить</button>
+    </div>
+
+    <div class="row">
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+    <h4 style="margin:0 0 6px 0">Проверка обратимости (визуальная)</h4>
+    <div class="row">
+      <button id="visualCheckBtn">Проверить (визуально)</button>
+      
+      <span class="small" id="vcStatus">режим выкл</span>
+    </div>
+
+    <div class="row">
+  <button id="exportBtn">Экспорт PNG</button>
+</div>
+  </div>
+</div>
+
+<footer><div class="small">Визуальная проверка: фон показывает текущее поле серым, а красным подсвечиваются клетки, отличающиеся от снимка.</div></footer>
+
+<div id="toast" class="toast">Сообщение</div>
+
+<script src="engine.js" defer></script>
+<script src="presets.js" defer></script>
+<script src="ui.js" defer></script>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const root=document.documentElement;
+  const body=document.body;
+  const btn=document.getElementById('themeToggle');
+  const current=localStorage.getItem('theme')||'dark';
+  applyTheme(current);
+
+  function applyTheme(mode){
+    const vars = mode==='light' ? {
+      '--bg':'#f9f9f9','--panel':'#ffffff','--text':'#111111','--muted':'#444444','--border':'#c9c9c9'
+    } : {
+      '--bg':'#0b0b0f','--panel':'#14141a','--text':'#e8e8f0','--muted':'#a4a4b0','--border':'#272737'
+    };
+    for(const k in vars){root.style.setProperty(k, vars[k]);}
+    body.setAttribute('data-theme', mode);
+    localStorage.setItem('theme', mode);
+  }
+
+  if(btn){
+    btn.textContent='Сменить тему';
+    btn.addEventListener('click',()=>{
+      const newT = (localStorage.getItem('theme')==='dark') ? 'light' : 'dark';
+      applyTheme(newT);
+    });
+  }
+});
+</script>
+
+</body>
+</html>

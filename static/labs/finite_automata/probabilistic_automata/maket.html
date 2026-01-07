@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Веб-симулятор вероятностных автоматов - НИЯУ МИФИ</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --panel-bg: #2d2d30;
+            --text-color: #ffffff;
+            --accent-color: #007acc;
+            --border-color: #3e3e42;
+            --success-color: #2d7d2d;
+            --error-color: #d13434;
+            --warning-color: #ff6d00;
+        }
+        
+        [data-theme="light"] {
+            --bg-color: #f5f5f5;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            gap: 12px;
+            padding: 12px;
+        }
+        
+        header {
+            grid-column: 1 / 4;
+            background-color: var(--panel-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            position: relative;
+        }
+        
+        .left-panel, .right-panel {
+            background-color: var(--panel-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            background-color: var(--panel-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .graph-container {
+            flex-grow: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            padding: 12px 0;
+            flex-wrap: wrap;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #005a9e;
+        }
+        
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        
+        .matrix-table th, .matrix-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            text-align: center;
+        }
+        
+        .matrix-table th {
+            background-color: rgba(0, 122, 204, 0.1);
+        }
+        
+        .property-indicator {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            background-color: var(--panel-bg);
+            border-left: 4px solid #666;
+        }
+        
+        .valid {
+            border-left-color: var(--success-color);
+        }
+        
+        .invalid {
+            border-left-color: var(--error-color);
+        }
+        
+        .warning {
+            border-left-color: var(--warning-color);
+        }
+        
+        .state-node {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #68217a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            border: 3px solid #ffffff;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+        
+        .state-node:hover {
+            transform: scale(1.05);
+        }
+        
+        .state-node.initial {
+            background-color: var(--success-color);
+        }
+        
+        .state-node.final {
+            background-color: var(--error-color);
+        }
+        
+        .state-node.current {
+            border-color: #ffeb3b;
+            box-shadow: 0 0 15px #ffeb3b;
+        }
+        
+        .transition-arrow {
+            position: absolute;
+            z-index: 5;
+        }
+        
+        .arrow-line {
+            position: absolute;
+            background-color: #cccccc;
+            height: 3px;
+            transform-origin: 0 0;
+        }
+        
+        .arrow-head {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 12px solid #cccccc;
+        }
+        
+        .probability-label {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 15;
+            color: white;
+            border: 1px solid #666;
+        }
+        
+        .probability-input {
+            width: 60px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px;
+            text-align: center;
+        }
+        
+        footer {
+            grid-column: 1 / 4;
+            background-color: var(--panel-bg);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .input-group {
+            margin-bottom: 10px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .stats-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .stat-item {
+            background-color: var(--bg-color);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .histogram-container {
+            height: 150px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-top: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: end;
+            gap: 5px;
+        }
+        
+        .histogram-bar {
+            flex: 1;
+            background-color: var(--accent-color);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.3s;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .validation-error {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* Модальное окно для матриц */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--text-color);
+        }
+
+        .matrix-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .matrix-tab {
+            padding: 10px 20px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .matrix-tab.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .matrix-container {
+            display: none;
+        }
+
+        .matrix-container.active {
+            display: block;
+        }
+
+        .matrices-button {
+            background-color: #68217a;
+            margin-left: auto;
+        }
+
+        .matrices-button:hover {
+            background-color: #5a1c68;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- Модальное окно для матриц вероятностных переходов -->
+    <div id="matricesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Матрицы вероятностных переходов</h2>
+            
+            <div class="matrix-tabs">
+                <div class="matrix-tab active" data-matrix="a">Символ 'a'</div>
+                <div class="matrix-tab" data-matrix="b">Символ 'b'</div>
+                <div class="matrix-tab" data-matrix="c">Символ 'c'</div>
+            </div>
+
+            <div id="matrixA" class="matrix-container active">
+                <h3>Матрица переходов для символа 'a'</h3>
+                <table class="matrix-table">
+                    <tr>
+                        <th>Из/В</th>
+                        <th>q₀</th>
+                        <th>q₁</th>
+                        <th>q₂</th>
+                    </tr>
+                    <tr>
+                        <td>q₀</td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.5" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.3" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₁</td>
+                        <td><input type="number" class="probability-input" value="0.1" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.7" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₂</td>
+                        <td><input type="number" class="probability-input" value="0.4" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.1" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.5" min="0" max="1" step="0.1"></td>
+                    </tr>
+                </table>
+                <div class="property-indicator valid">Сумма вероятностей: 1.0</div>
+            </div>
+
+            <div id="matrixB" class="matrix-container">
+                <h3>Матрица переходов для символа 'b'</h3>
+                <table class="matrix-table">
+                    <tr>
+                        <th>Из/В</th>
+                        <th>q₀</th>
+                        <th>q₁</th>
+                        <th>q₂</th>
+                    </tr>
+                    <tr>
+                        <td>q₀</td>
+                        <td><input type="number" class="probability-input" value="0.3" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.4" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.3" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₁</td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.6" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₂</td>
+                        <td><input type="number" class="probability-input" value="0.1" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.3" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.6" min="0" max="1" step="0.1"></td>
+                    </tr>
+                </table>
+                <div class="property-indicator valid">Сумма вероятностей: 1.0</div>
+            </div>
+
+            <div id="matrixC" class="matrix-container">
+                <h3>Матрица переходов для символа 'c'</h3>
+                <table class="matrix-table">
+                    <tr>
+                        <th>Из/В</th>
+                        <th>q₀</th>
+                        <th>q₁</th>
+                        <th>q₂</th>
+                    </tr>
+                    <tr>
+                        <td>q₀</td>
+                        <td><input type="number" class="probability-input" value="0.5" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.3" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₁</td>
+                        <td><input type="number" class="probability-input" value="0.4" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.4" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₂</td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.6" min="0" max="1" step="0.1"></td>
+                    </tr>
+                </table>
+                <div class="property-indicator valid">Сумма вероятностей: 1.0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Веб-симулятор вероятностных конечных автоматов (ВКА)</h1>
+            <p>НИЯУ МИФИ - Институт интеллектуальных кибернетических систем</p>
+            <button class="theme-toggle" id="themeToggle">🌙 Тёмная тема</button>
+        </header>
+        
+        <div class="left-panel">
+            <div class="section">
+                <div class="section-title">Управление автоматом</div>
+                <div class="controls">
+                    <button id="add-state">+ Состояние</button>
+                    <button id="add-symbol">+ Символ</button>
+                    <button id="validate">Проверить ВКА</button>
+                    <button id="matricesButton" class="matrices-button">📊 Матрицы переходов</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Текущая матрица переходов</div>
+                <div class="input-group">
+                    <label>Алфавит: {a, b, c}</label>
+                    <label>Текущий символ: 
+                        <select id="currentSymbol">
+                            <option value="a">a</option>
+                            <option value="b">b</option>
+                            <option value="c">c</option>
+                        </select>
+                    </label>
+                </div>
+                <table class="matrix-table">
+                    <tr>
+                        <th>Из/В</th>
+                        <th>q₀</th>
+                        <th>q₁</th>
+                        <th>q₂</th>
+                    </tr>
+                    <tr>
+                        <td>q₀</td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.5" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.3" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₁</td>
+                        <td><input type="number" class="probability-input" value="0.1" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.7" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.2" min="0" max="1" step="0.1"></td>
+                    </tr>
+                    <tr>
+                        <td>q₂</td>
+                        <td><input type="number" class="probability-input" value="0.4" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.1" min="0" max="1" step="0.1"></td>
+                        <td><input type="number" class="probability-input" value="0.5" min="0" max="1" step="0.1"></td>
+                    </tr>
+                </table>
+                <div class="property-indicator valid">Сумма вероятностей: 1.0</div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Настройки состояний</div>
+                <div class="input-group">
+                    <label>Начальное распределение:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                        <div>q₀: <input type="number" class="probability-input" value="1.0" min="0" max="1" step="0.1"></div>
+                        <div>q₁: <input type="number" class="probability-input" value="0.0" min="0" max="1" step="0.1"></div>
+                        <div>q₂: <input type="number" class="probability-input" value="0.0" min="0" max="1" step="0.1"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Конечные состояния:</label>
+                    <div>
+                        <input type="checkbox" id="final-q0" checked>
+                        <label for="final-q0">q₀</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="final-q1">
+                        <label for="final-q1">q₁</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="final-q2" checked>
+                        <label for="final-q2">q₂</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="graph-container" id="graph-view">
+                <!-- Граф автомата будет отрисован здесь -->
+                <div class="state-node initial current" style="top: 100px; left: 150px;">q₀</div>
+                <div class="state-node" style="top: 100px; left: 400px;">q₁</div>
+                <div class="state-node final" style="top: 300px; left: 270px;">q₂</div>
+                
+                <!-- Переходы будут отрисованы JavaScript'ом -->
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Управление симуляцией</div>
+                <div class="controls">
+                    <button id="start">▶ Запуск</button>
+                    <button id="pause">⏸ Пауза</button>
+                    <button id="step">⏭ Шаг</button>
+                    <button id="reset">⏹ Сброс</button>
+                    <button id="save">💾 Сохранить</button>
+                    
+                    <label for="speed">Скорость:</label>
+                    <input type="range" id="speed" min="1" max="10" value="5">
+                    
+                    <select id="mode">
+                        <option>Пошагово</option>
+                        <option>Непрерывно</option>
+                    </select>
+                    
+                    <div class="input-group" style="margin: 0;">
+                        <label for="runs">Прогонов:</label>
+                        <input type="number" id="runs" value="1" min="1" max="1000" style="width: 60px;">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Входная строка</div>
+                <div class="controls">
+                    <input type="text" id="input-string" placeholder="Введите строку (напр., aab)" style="flex-grow: 1; padding: 8px;">
+                    <button id="check-string">Проверить строку</button>
+                </div>
+                <div id="string-status">Статус: -</div>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="section">
+                <div class="section-title">Свойства автомата</div>
+                <div class="property-indicator valid">Марковость: выполняется</div>
+                <div class="property-indicator warning">Эргодичность: проверяется</div>
+                <div class="property-indicator valid">Неприводимость: выполняется</div>
+                <div class="property-indicator invalid">Апериодичность: не выполняется</div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Статистика симуляции</div>
+                <div class="stats-display">
+                    <div class="stat-item">
+                        <div>Шагов выполнено</div>
+                        <div id="step-counter">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Время работы</div>
+                        <div id="time-counter">00:00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Текущее состояние</div>
+                        <div id="current-state">q₀</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Принято строк</div>
+                        <div id="accepted-count">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Распределение вероятностей</div>
+                <div>После 100 прогонов:</div>
+                <div class="histogram-container" id="histogram">
+                    <div class="histogram-bar" style="height: 70%;" title="q₀: 70%"></div>
+                    <div class="histogram-bar" style="height: 20%;" title="q₁: 20%"></div>
+                    <div class="histogram-bar" style="height: 10%;" title="q₂: 10%"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px;">
+                    <span>q₀</span>
+                    <span>q₁</span>
+                    <span>q₂</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Переключение темы
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', newTheme);
+                themeToggle.textContent = newTheme === 'dark' ? '🌙 Тёмная тема' : '☀️ Светлая тема';
+            });
+
+            // Управление модальным окном матриц
+            const modal = document.getElementById('matricesModal');
+            const matricesButton = document.getElementById('matricesButton');
+            const closeBtn = document.querySelector('.close');
+            const matrixTabs = document.querySelectorAll('.matrix-tab');
+            const matrixContainers = document.querySelectorAll('.matrix-container');
+
+            matricesButton.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Переключение между матрицами
+            matrixTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const matrixId = this.getAttribute('data-matrix');
+                    
+                    // Убираем активный класс у всех вкладок и контейнеров
+                    matrixTabs.forEach(t => t.classList.remove('active'));
+                    matrixContainers.forEach(c => c.classList.remove('active'));
+                    
+                    // Добавляем активный класс текущей вкладке и контейнеру
+                    this.classList.add('active');
+                    document.getElementById(`matrix${matrixId.toUpperCase()}`).classList.add('active');
+                });
+            });
+
+            // Инициализация графа автомата
+            function initializeGraph() {
+                const graphContainer = document.getElementById('graph-view');
+                console.log('Граф автомата инициализирован');
+            }
+
+            // Демонстрационные данные для статистики
+            let stepCount = 0;
+            let seconds = 0;
+            let acceptedCount = 0;
+
+            setInterval(() => {
+                if (document.getElementById('start').disabled) {
+                    stepCount++;
+                    document.getElementById('step-counter').textContent = stepCount;
+                    
+                    seconds++;
+                    const minutes = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    document.getElementById('time-counter').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+
+            // Обработчики кнопок
+            document.getElementById('start').addEventListener('click', function() {
+                this.disabled = true;
+                document.getElementById('pause').disabled = false;
+                document.getElementById('step').disabled = true;
+            });
+
+            document.getElementById('pause').addEventListener('click', function() {
+                document.getElementById('start').disabled = false;
+                this.disabled = true;
+                document.getElementById('step').disabled = false;
+            });
+
+            document.getElementById('reset').addEventListener('click', function() {
+                document.getElementById('start').disabled = false;
+                document.getElementById('pause').disabled = true;
+                stepCount = 0;
+                seconds = 0;
+                document.getElementById('step-counter').textContent = '0';
+                document.getElementById('time-counter').textContent = '00:00';
+            });
+
+            document.getElementById('check-string').addEventListener('click', function() {
+                const inputString = document.getElementById('input-string').value;
+                if (inputString) {
+                    // Демонстрационная логика проверки строки
+                    const isAccepted = Math.random() > 0.5;
+                    document.getElementById('string-status').textContent = 
+                        `Статус: ${isAccepted ? 'Принята' : 'Не принята'}`;
+                    document.getElementById('string-status').className = 
+                        isAccepted ? 'valid' : 'invalid';
+                    
+                    if (isAccepted) {
+                        acceptedCount++;
+                        document.getElementById('accepted-count').textContent = acceptedCount;
+                    }
+                }
+            });
+
+            // Валидация матрицы вероятностей
+            const probabilityInputs = document.querySelectorAll('.probability-input');
+            probabilityInputs.forEach(input => {
+                input.addEventListener('change', validateProbabilityMatrix);
+            });
+
+            function validateProbabilityMatrix() {
+                console.log('Валидация матрицы вероятностей');
+            }
+
+            initializeGraph();
+        });
+    </script>
+</body>
+</html>

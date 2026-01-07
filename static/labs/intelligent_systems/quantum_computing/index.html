@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <title>Симулятор квантовых схем</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="./assets/logo.svg">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header id="app-header"></header>
+
+  <section id="app-toolbar">
+    <div class="toolbar-left">
+      <button id="btn-theme" title="Переключить тему">🖥️ Системная</button>
+    </div>
+    <div class="toolbar-center">
+      <button id="btn-start">Старт</button>
+      <button id="btn-stop">Стоп</button>
+      <button id="btn-step">Шаг</button>
+      <button id="btn-reset">Сброс</button>
+
+      <label class="speed">
+        Скорость:
+        <input id="speed-range" type="range" min="0" max="100" value="50">
+      </label>
+
+      <button id="btn-unitary">Унитар / CSV</button>
+<!--      <button id="btn-probs-csv">Вероятности CSV</button>-->
+      <button id="btn-qasm">Экспорт QASM</button>
+      <button id="btn-quil">Экспорт Quil</button>
+    </div>
+    <div class="toolbar-right">
+<!--      <button id="btn-save">Сохранить</button>-->
+<!--      <button id="btn-load">Загрузить</button>-->
+      <button id="btn-export">Экспорт</button>
+      <button id="btn-import">Импорт</button>
+    </div>
+  </section>
+
+  <main id="app-main">
+    <aside id="left">
+      <section id="left-palette" class="panel"></section>
+      <section id="left-presets" class="panel"></section>
+    </aside>
+
+    <section id="center">
+      <div id="circuit-grid" class="panel"></div>
+    </section>
+
+    <aside id="right">
+      <section id="right-panel" class="panel"></section>
+    </aside>
+  </main>
+
+  <footer id="app-footer">
+    <div>Шаг: <span id="f-step">0</span></div>
+    <div>Время: <span id="f-time">0.0</span> c</div>
+<!--    <div id="boot-status" class="muted">Загрузка…</div>-->
+  </footer>
+
+  <script type="module" src="./scripts/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Веб-симулятор вероятностных автоматов - НИЯУ МИФИ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="dark">
+
+    <div class="container">
+        <header>
+            <h1>Веб-симулятор вероятностных конечных автоматов (ВКА)</h1>
+            <p>НИЯУ МИФИ - Институт интеллектуальных кибернетических систем</p>
+            <button class="theme-toggle" id="themeToggle">🌙 Тёмная тема</button>
+        </header>
+        
+        <div class="left-panel">
+            <!-- Управление автоматом -->
+            <div class="section">
+                <div class="section-title">Управление автоматом</div>
+                <div class="controls">
+                    <button id="add-state">+ Состояние</button>
+                    <button id="add-symbol">+ Символ</button>
+                    <button id="remove-state">- Состояние</button>
+                    <button id="remove-symbol">- Символ</button>
+                    <button id="validate">Проверить ВКА</button>
+                </div>
+            </div>
+            
+            <!-- Текущая матрица переходов -->
+            <div class="section" id="probability-panel">
+                <!-- Динамически заполняется probabilityPanel.js -->
+            </div>
+            
+            <!-- Настройки состояний -->
+            <div class="section" id="state-settings">
+                <!-- Динамически заполняется stateVisualization.js -->
+            </div>
+        </div>
+        
+
+        <div class="main-content">
+            <div class="graph-container" id="graph-view">
+                <!-- Граф автомата будет отрисован здесь -->
+                <div class="state-node initial current" style="top: 100px; left: 150px;">q₀</div>
+                <div class="state-node" style="top: 100px; left: 400px;">q₁</div>
+                <div class="state-node final" style="top: 300px; left: 270px;">q₂</div>
+                
+                <!-- Переходы будут отрисованы JavaScript'ом -->
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Управление симуляцией</div>
+                <div class="controls">
+                    <button id="start">▶ Запуск</button>
+                    <button id="pause">⏸ Пауза</button>
+                    <button id="step">⏭ Шаг</button>
+                    <button id="reset">⏹ Сброс</button>
+                    <button id="save">💾 Сохранить</button>
+                    
+
+                    
+                    <label for="speed">Скорость:</label>
+                    <input type="range" id="speed" min="1" max="10" value="5">
+                    
+                    <div class="input-group" style="margin: 0;">
+                        <label for="runs">Прогонов:</label>
+                        <input type="number" id="runs" value="1" min="1" max="1000" style="width: 60px;">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="input-validation">
+                <!-- Динамически заполняется controlSimulator.js -->
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="section" id="properties-panel">
+                <div class="section-title">Свойства автомата</div>
+                <div id="markov-property" class="property-indicator">Марковость: —</div>
+                <div id="ergodicity-property" class="property-indicator">Эргодичность: —</div>
+                <div id="irreducibility-property" class="property-indicator">Неприводимость: —</div>
+                <div id="aperiodicity-property" class="property-indicator">Апериодичность: —</div>
+            </div>
+            <!-- <div class="section">
+                <div class="section-title">Свойства автомата</div>
+                <div class="property-indicator valid">Марковость: выполняется</div>
+                <div class="property-indicator warning">Эргодичность: проверяется</div>
+                <div class="property-indicator valid">Неприводимость: выполняется</div>
+                <div class="property-indicator invalid">Апериодичность: не выполняется</div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Статистика симуляции</div>
+                <div class="stats-display">
+                    <div class="stat-item">
+                        <div>Шагов выполнено</div>
+                        <div id="step-counter">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Время работы</div>
+                        <div id="time-counter">00:00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Текущее состояние</div>
+                        <div id="current-state">q₀</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Принято строк</div>
+                        <div id="accepted-count">0</div>
+                    </div>
+                </div>
+            </div> -->
+            
+            <div class="section">
+                <div class="section-title">Распределение вероятностей</div>
+                <div>После N прогонов:</div>
+                <div class="histogram-container" id="histogram"></div>
+            </div>
+
+        </div>
+        
+        <footer>
+            <div>Лабораторная работа "Автоматы с вероятностными переходами"</div>
+            <div>Интеграция с: https://study.aia.expert/</div>
+        </footer>
+    </div>
+
+    <!-- Подключаем все JS файлы -->
+    <script src="scripts/core/state.js"></script>
+    <script src="scripts/core/probability.js"></script>
+    <script src="scripts/core/transitions.js"></script>
+    <script src="scripts/core/automata.js"></script>
+    <script src="scripts/core/model.js"></script>
+    <script src="scripts/core/simulator.js"></script>
+    
+    <script src="scripts/algorithms/statistics.js"></script>
+    <script src="scripts/algorithms/markov.js"></script>
+    <script src="scripts/algorithms/ergodicity.js"></script>
+    
+    <script src="scripts/state/store.js"></script>
+    <script src="scripts/state/persistence.js"></script>
+    
+    <script src="scripts/ui/stateVisualization.js"></script>
+    <script src="scripts/ui/probabilityPanel.js"></script>
+    <script src="scripts/ui/graphView.js"></script>
+    <script src="scripts/ui/simulationControl.js"></script>
+    
+    <script src="scripts/main.js"></script>
+
+    <script>
+    /*
+    Используем глобальные объекты: StateVisualization и модель из main.js (appModel).
+    Это минимальное изменение: не меняет архитектуру, не требует ES-модулей.
+    */
+
+    (function() {
+        try {
+            // Подождём, пока основной код инициализирует appModel / window.probabilityPanel и т.п.
+            // Но здесь просто создадим экземпляр визуализации, если класс доступен.
+            if (typeof window.StateVisualization === 'function') {
+                // StateVisualization конструктор у тебя принимает (containerElement, appModel)
+                // В некоторых версиях он принимает id или элемент — проверим и подстроимся.
+                let histContainer = document.getElementById('histogram');
+
+                // Попробуем создать экземпляр корректно:
+                try {
+                    // если конструктор ожидает (element, appModel)
+                    window.histogram = new StateVisualization(histContainer, window.appModel || window.probabilityPanel?.appModel);
+                } catch (e) {
+                    // иначе возможно конструктор принимает id
+                    try {
+                        window.histogram = new StateVisualization('histogram');
+                    } catch (err) {
+                        console.warn('Не удалось инициализировать StateVisualization конструктором:', err);
+                    }
+                }
+            } else {
+                console.warn('StateVisualization не найден в window (возможно, загружен позже).');
+            }
+
+            // Подписываемся на событие завершения множественной симуляции
+            document.addEventListener('simulationComplete', function(event) {
+                try {
+                    const result = event.detail;
+                    if (!result) return;
+                    // поддерживаем прошлую структуру: result.type === 'multiple' и result.results.distribution
+                    const distribution = result.results?.distribution || result.results?.finalStates || null;
+                    const runs = result.runs || (result.results && result.results.runs) || null;
+
+                    if (window.histogram && typeof window.histogram.renderHistogram === 'function') {
+                        window.histogram.renderHistogram(distribution || {}, runs || null);
+                    } else {
+                        // если нет экземпляра, просто логируем
+                        console.debug('simulationComplete received, but histogram not initialized.', distribution, runs);
+                    }
+                } catch (e) {
+                    console.error('Ошибка в обработчике simulationComplete:', e);
+                }
+            });
+
+        } catch (e) {
+            console.error('Ошибка инициализации histogram listener:', e);
+        }
+    })();
+    </script>
+
+</body>
+</html>

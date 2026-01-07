@@ -1,0 +1,38 @@
+{% extends "labs/base.html" %}
+
+{% block title %}{{ section_title }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="/">🎓</a>
+<span>/</span>
+<a href="/labs/">ДМ-3</a>
+<span>/</span>
+<span style="color: var(--text);">{{ section_title|truncatechars:20 }}</span>
+{% endblock %}
+
+{% block content %}
+<main class="main-container">
+    <a href="/labs/" class="back-link">← Все разделы</a>
+    
+    <div class="page-header">
+        <div class="page-icon">{{ section_icon }}</div>
+        <h1 class="page-title">{{ section_title }}</h1>
+        <p class="page-subtitle">{{ section_description }}</p>
+    </div>
+
+    <div class="labs-grid">
+        {% for lab in labs %}
+        <a href="/labs/{{ section_id }}/{{ lab.id }}/" class="lab-card" style="animation-delay: 0.{{ forloop.counter0 }}s;">
+            <h3 class="lab-title">{{ lab.title }}</h3>
+            <p class="lab-description">{{ lab.description }}</p>
+        </a>
+        {% empty %}
+        <div class="lab-card">
+            <h3 class="lab-title">Раздел в разработке</h3>
+            <p class="lab-description">Лабораторные работы скоро будут добавлены</p>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}
+

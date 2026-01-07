@@ -3,71 +3,286 @@ import subprocess
 import os
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from .models import CustomLabs
 
 
-# Create your views here.
+# Реестр лабораторных работ по разделам
+LABS_REGISTRY = {
+    'finite_automata': {
+        'title': 'Конечные автоматы и методы управления состояниями',
+        'description': 'Симуляторы ДКА, НКА, автоматов Мура и Мили, методы минимизации и преобразования',
+        'icon': '🔄',
+        'labs': {
+            'dfa_simulator': {
+                'title': 'Симулятор ДКА',
+                'description': 'Детерминированный конечный автомат',
+            },
+            'nfa_simulator': {
+                'title': 'Симулятор НКА',
+                'description': 'Недетерминированный конечный автомат',
+            },
+            'dfa_minimization': {
+                'title': 'Минимизация ДКА',
+                'description': 'Алгоритмы минимизации детерминированных автоматов',
+            },
+            'nfa_to_dfa': {
+                'title': 'Преобразование НКА в ДКА',
+                'description': 'Алгоритм построения детерминированного автомата',
+            },
+            'moore_machine': {
+                'title': 'Симулятор автомата Мура',
+                'description': 'Автомат с выходом, зависящим от состояния',
+            },
+            'mealy_machine': {
+                'title': 'Симулятор автомата Мили',
+                'description': 'Автомат с выходом, зависящим от перехода',
+            },
+            'probabilistic_automata': {
+                'title': 'Вероятностные автоматы',
+                'description': 'Автоматы с вероятностными переходами',
+            },
+        }
+    },
+    'cellular_graph': {
+        'title': 'Клеточные и графовые вычислительные структуры',
+        'description': 'Клеточные автоматы различных типов, турмиты и граф-автоматы',
+        'icon': '🧬',
+        'labs': {
+            'prng_eca': {
+                'title': 'ГПСЧ на ЭКлА',
+                'description': 'Генератор псевдослучайных последовательностей на элементарных клеточных автоматах',
+            },
+            'brian_brain': {
+                'title': 'Мозг Брайана',
+                'description': 'Клеточный автомат с расширенными правилами',
+            },
+            'codi_automata': {
+                'title': 'Клеточные автоматы CoDi',
+                'description': 'Специализированные клеточные автоматы',
+            },
+            'triangular_ca': {
+                'title': 'КА на треугольных решётках',
+                'description': 'Клеточные автоматы на треугольной сетке',
+            },
+            'hexagonal_ca': {
+                'title': 'Гексагональные КА',
+                'description': 'Клеточные автоматы с жизнеподобными правилами на гексагональной сетке',
+            },
+            'reversible_ca': {
+                'title': 'Обратимые КА',
+                'description': 'Обратимые клеточные автоматы',
+            },
+            'turmites': {
+                'title': 'Турмиты',
+                'description': 'Турмиты и муравьи Лэнгтона',
+            },
+            'graph_automata': {
+                'title': 'Граф-автоматы',
+                'description': 'Автоматы на графовых структурах',
+            },
+            'dynamic_graph': {
+                'title': 'Динамические граф-автоматы',
+                'description': 'Автоматы на графах с динамической топологией',
+            },
+        }
+    },
+    'turing_machines': {
+        'title': 'Модели и разновидности машин Тьюринга',
+        'description': 'Различные модификации и расширения машины Тьюринга',
+        'icon': '📼',
+        'labs': {
+            'multitape_tm': {
+                'title': 'Многоленточная МТ',
+                'description': 'Машина Тьюринга с несколькими лентами',
+            },
+            'universal_tm': {
+                'title': 'Универсальная МТ',
+                'description': 'Универсальный симулятор машины Тьюринга',
+            },
+            'ram_machine': {
+                'title': 'RAM-машина',
+                'description': 'Машина с произвольным доступом к памяти',
+            },
+            'post_machine': {
+                'title': 'Машина Поста',
+                'description': 'Абстрактная вычислительная машина Поста',
+            },
+            'quantum_tm': {
+                'title': 'Квантовая МТ',
+                'description': 'Квантовая машина Тьюринга',
+            },
+            'nondeterministic_tm': {
+                'title': 'Недетерминированная МТ',
+                'description': 'Недетерминированная машина Тьюринга',
+            },
+            'zeno_machine': {
+                'title': 'L-системы',
+                'description': 'Визуализатор L-систем Линденмайера',
+            },
+        }
+    },
+    'formal_systems': {
+        'title': 'Алгоритмические и формальные системы вычислений',
+        'description': 'Нормальные алгорифмы, рекурсивные функции, сети Петри и другие формальные системы',
+        'icon': '📐',
+        'labs': {
+            'markov_algorithms': {
+                'title': 'Алгорифмы Маркова',
+                'description': 'Нормальные алгорифмы Маркова',
+            },
+            'godel_functions': {
+                'title': 'Функции Гёделя',
+                'description': 'Рекурсивные функции Гёделя',
+            },
+            'petri_nets': {
+                'title': 'Сети Петри',
+                'description': 'Моделирование параллельных процессов',
+            },
+            'billiard_computer': {
+                'title': 'Бильярдный компьютер',
+                'description': 'Вычисления на основе бильярдной динамики',
+            },
+        }
+    },
+    'intelligent_systems': {
+        'title': 'Мультиагентные и квантовые интеллектуальные системы',
+        'description': 'Нейронные сети, квантовые вычисления, искусственная жизнь',
+        'icon': '🧠',
+        'labs': {
+            'quantum_computing': {
+                'title': 'Квантовые вычисления',
+                'description': 'Симулятор квантовых вычислений',
+            },
+            'artificial_life': {
+                'title': 'Искусственная жизнь',
+                'description': 'Моделирование искусственной жизни',
+            },
+            'neural_tm': {
+                'title': 'Нейронная МТ',
+                'description': 'Нейронная машина Тьюринга',
+            },
+        }
+    },
+}
+
+# Карточки раздела "Другое"
+OTHER_CARDS = [
+    {
+        'name': 'Визуализация функций',
+        'emojy': '📊',
+        'description': 'Интерактивные визуализации математических функций и геометрии',
+        'url': 'visuphi'
+    },
+    {
+        'name': 'Клеточные автоматы',
+        'emojy': '🧬',
+        'description': 'ECA World, Life Matrix, WW Electra',
+        'url': 'cellular'
+    },
+    {
+        'name': 'Теория игр',
+        'emojy': '🎯',
+        'description': 'Равновесие Нэша и анализ игр',
+        'url': 'nash'
+    },
+    {
+        'name': 'Задача коммивояжёра',
+        'emojy': '🗺️',
+        'description': 'Решение задачи коммивояжёра',
+        'url': 'komi'
+    },
+    {
+        'name': 'Конечные автоматы',
+        'emojy': '🔄',
+        'description': 'Симулятор детерминированных конечных автоматов',
+        'url': 'dfa'
+    },
+    {
+        'name': 'Кибернетика',
+        'emojy': '🤖',
+        'description': 'Лабораторные работы по кибернетике',
+        'url': 'labkib'
+    },
+]
+
+
+# Обёртка для встраивания в единый дизайн
+def wrap_view(request, title, iframe_src, parent_title=None, parent_url=None):
+    """Универсальная обёртка для iframe"""
+    return render(request, 'wrapper.html', {
+        'title': title,
+        'iframe_src': iframe_src,
+        'parent_title': parent_title,
+        'parent_url': parent_url,
+    })
+
+
+# ===== ТЕОРИЯ ИГР (Нэш) =====
 def nash(request):
+    return wrap_view(request, 'Теория игр', '/nash/raw/')
+
+
+def nash_raw(request):
     return render(request, 'NESH.html')
 
 
+# ===== ГЛАВНАЯ =====
 def index(request):
-    return render(request, 'index.html', context={"cards": CustomLabs.objects.all()})
+    return render(request, 'index.html', context={"other_cards": OTHER_CARDS})
 
 
+# ===== ВИЗУАЛИЗАЦИЯ ФУНКЦИЙ =====
 def visuphi(request):
+    return wrap_view(request, 'Визуализация функций', '/visuphi/raw/')
+
+
+def visuphi_raw(request):
     return render(request, 'visuphi/visu.html')
 
 
 def visuphi_topic(request, sub, topic):
+    return wrap_view(request, f'Визуализация: {topic}', f'/visuphi/raw/{sub}/{topic}', 
+                     parent_title='Визуализация', parent_url='/visuphi/')
+
+
+def visuphi_topic_raw(request, sub, topic):
     return render(request, f'visuphi/{sub}/{topic}.html')
 
 
-@csrf_exempt
+# ===== ЗАДАЧА КОММИВОЯЖЁРА =====
 def komi(request):
-    # logger.info(f"Получен {request.method} запрос")
+    return wrap_view(request, 'Задача коммивояжёра', '/komi/raw/')
 
+
+@csrf_exempt
+def komi_raw(request):
     if request.method == 'GET':
         try:
             return render(request, 'komi.html')
         except Exception as e:
-            # logger.error(f"Ошибка рендера шаблона: {e}")
             return JsonResponse({"error": f"Ошибка шаблона: {str(e)}"}, status=500)
 
     elif request.method == 'POST':
         try:
-            # logger.info("Обрабатываем POST запрос")
-
-            # Проверяем тело запроса
             if not request.body:
                 return JsonResponse({"error": "Пустое тело запроса"}, status=400)
 
-            # logger.info(f"Тело запроса: {request.body}")
-
             data = json.loads(request.body.decode('utf-8'))
-            # logger.info(f"Распарсенные данные: {data}")
 
             if 'matrix' not in data:
                 return JsonResponse({"error": "Неверные данные"}, status=400)
 
             matrix = data['matrix']
-            # logger.info(f"Получена матрица: {matrix}")
 
-            # Проверяем наличие C++ программы
             cpp_path = os.path.join(os.getcwd(), "other/komi/komi")
             if not os.path.exists(cpp_path):
-                # logger.error(f"C++ программа не найдена по пути: {cpp_path}")
                 return JsonResponse({"error": "C++ программа не найдена"}, status=500)
 
-            # Сохраняем матрицу
             json_path = os.path.join(os.getcwd(), "other/komi/matrix_input.json")
             with open(json_path, "w", encoding='utf-8') as f:
                 json.dump(matrix, f, ensure_ascii=False, indent=2)
-            # logger.info(f"Матрица сохранена в {json_path}")
 
-            # Запускаем C++ программу
             result = subprocess.run(
                 [cpp_path],
                 capture_output=True,
@@ -77,14 +292,11 @@ def komi(request):
             )
 
             output = result.stdout.strip()
-            # logger.info(f"Ответ от C++: {output}")
 
             if not output:
                 return JsonResponse({"error": "C++ программа не вернула результат"}, status=500)
 
-            # Парсим JSON ответ
             parsed_output = json.loads(output)
-            # logger.info(f"Распарсенный ответ: {parsed_output}")
 
             return JsonResponse({
                 "path": parsed_output.get("path", []),
@@ -93,41 +305,104 @@ def komi(request):
             })
 
         except json.JSONDecodeError as e:
-            # logger.error(f"Ошибка JSON: {e}")
             return JsonResponse({"error": f"Неверный JSON: {str(e)}"}, status=400)
         except subprocess.TimeoutExpired:
-            # logger.error("Таймаут C++ программы")
             return JsonResponse({"error": "Превышено время выполнения"}, status=500)
         except subprocess.CalledProcessError as e:
-            # logger.error(f"Ошибка C++: {e}, stderr: {e.stderr}")
             return JsonResponse({"error": f"Ошибка C++: {e.stderr}"}, status=500)
         except Exception as e:
-            # logger.error(f"Неожиданная ошибка: {e}")
             return JsonResponse({"error": f"Внутренняя ошибка: {str(e)}"}, status=500)
 
 
+# ===== КЛЕТОЧНЫЕ АВТОМАТЫ =====
 def klindex(request):
-    return render(request, 'lab_kl/index.html')
+    return wrap_view(request, 'Клеточные автоматы', '/cellular/raw/')
+
+
+def klindex_raw(request):
+    return render(request, 'lab_kl/index_raw.html')
 
 
 def klab(request, lab):
+    return wrap_view(request, f'КА: {lab}', f'/cellular/raw/{lab}/', 
+                     parent_title='Клеточные автоматы', parent_url='/cellular/')
+
+
+def klab_raw(request, lab):
     return render(request, f'lab_kl/{lab}.html')
 
 
 def klsim(request):
     return render(request, 'lab_kl/cellular.html')
 
+
+# ===== КОНЕЧНЫЕ АВТОМАТЫ (DFA) =====
 def dfa(request):
+    return wrap_view(request, 'Конечные автоматы', '/dfa/raw/')
+
+
+def dfa_raw(request):
     return render(request, 'automata.html')
 
-def custom_lab(request, custom):
-    try:
-        print(str(CustomLabs.objects.get(url=custom).file)[26:])
-        return render(request, f'custom_labs/{str(CustomLabs.objects.get(url=custom).file)[26:]}.html')
-    except Exception as e:
-        print(str(e))
-        return JsonResponse({"error": "Custom lab not found"}, status=404)
+
+# Новые views для лабораторных работ
+def labs_index(request):
+    """Главная страница со всеми разделами лабораторных работ"""
+    sections = []
+    for section_id, section_data in LABS_REGISTRY.items():
+        sections.append({
+            'id': section_id,
+            'title': section_data['title'],
+            'description': section_data['description'],
+            'icon': section_data['icon'],
+            'labs_count': len(section_data['labs'])
+        })
+    return render(request, 'labs/index.html', {'sections': sections})
 
 
+def labs_section(request, section):
+    """Страница раздела со списком лабораторных работ"""
+    if section not in LABS_REGISTRY:
+        raise Http404("Раздел не найден")
+    
+    section_data = LABS_REGISTRY[section]
+    labs = []
+    for lab_id, lab_data in section_data['labs'].items():
+        labs.append({
+            'id': lab_id,
+            'title': lab_data['title'],
+            'description': lab_data['description'],
+        })
+    
+    return render(request, 'labs/section.html', {
+        'section_id': section,
+        'section_title': section_data['title'],
+        'section_description': section_data['description'],
+        'section_icon': section_data['icon'],
+        'labs': labs
+    })
+
+
+def lab_detail(request, section, lab):
+    """Страница конкретной лабораторной работы"""
+    if section not in LABS_REGISTRY:
+        raise Http404("Раздел не найден")
+    
+    if lab not in LABS_REGISTRY[section]['labs']:
+        raise Http404("Лабораторная работа не найдена")
+    
+    lab_data = LABS_REGISTRY[section]['labs'][lab]
+    
+    # iframe указывает на статику
+    iframe_src = f'/static/labs/{section}/{lab}/index.html'
+    
+    return render(request, 'labs/lab_detail.html', {
+        'section_id': section,
+        'section_title': LABS_REGISTRY[section]['title'],
+        'lab_id': lab,
+        'lab_title': lab_data['title'],
+        'lab_description': lab_data['description'],
+        'iframe_src': iframe_src,
+    })
 
 

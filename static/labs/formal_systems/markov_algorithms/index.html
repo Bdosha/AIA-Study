@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нормальные алгорифмы Маркова - Симулятор</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Заголовок приложения -->
+    <header class="app-header">
+        <h1>Симулятор нормальных алгорифмов Маркова</h1>
+        <div class="header-controls">
+            <button id="themeToggle" class="theme-toggle" title="Переключить тему">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Левая панель: Редактор алгоритма -->
+        <section class="editor-panel">
+            <h2>Редактор алгоритма</h2>
+
+            <!-- Алфавит -->
+            <div class="input-group">
+                <label for="alphabet">Алфавит символов:</label>
+                <input type="text" id="alphabet" placeholder="a, b, c, 0, 1, |" 
+                       title="Введите символы через запятую или пробел">
+                <span class="hint">Пример: a, b, c или 0, 1, |</span>
+            </div>
+
+            <!-- Правила подстановки -->
+            <div class="rules-section">
+                <div class="rules-header">
+                    <label>Правила подстановки:</label>
+                    <button id="addRuleBtn" class="btn-add">+ Добавить правило</button>
+                </div>
+                <div id="rulesContainer" class="rules-container">
+                    <!-- Правила будут добавляться динамически -->
+                </div>
+                <span class="hint">Используйте → для обычных правил, →. для заключительных</span>
+            </div>
+
+            <!-- Входная строка -->
+            <div class="input-group">
+                <label for="inputString">Входная строка:</label>
+                <input type="text" id="inputString" placeholder="Введите строку для обработки"
+                       maxlength="1000">
+                <span class="hint">Максимум 1000 символов</span>
+            </div>
+
+            <!-- Библиотека примеров -->
+            <div class="examples-section">
+                <label for="exampleSelect">Загрузить пример:</label>
+                <select id="exampleSelect">
+                    <option value="">-- Выберите пример --</option>
+                </select>
+            </div>
+
+            <!-- Управление данными -->
+            <div class="data-controls">
+                <button id="exportBtn" class="btn-secondary">📥 Экспорт</button>
+                <button id="importBtn" class="btn-secondary">📤 Импорт</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </section>
+
+        <!-- Правая панель: Визуализация и управление -->
+        <section class="simulation-panel">
+            <!-- Управление симуляцией -->
+            <div class="control-panel">
+                <h2>Управление симуляцией</h2>
+                <div class="controls-grid">
+                    <button id="startBtn" class="btn-primary">▶ Старт</button>
+                    <button id="stepBtn" class="btn-primary">⏭ Шаг</button>
+                    <button id="stopBtn" class="btn-danger" disabled>⏸ Стоп</button>
+                    <button id="resetBtn" class="btn-secondary">🔄 Сброс</button>
+                </div>
+
+                <!-- Скорость симуляции -->
+                <div class="speed-control">
+                    <label for="speedRange">Скорость (мс/шаг): <span id="speedValue">500</span></label>
+                    <input type="range" id="speedRange" min="100" max="2000" value="500" step="100">
+                </div>
+
+                <!-- Статус выполнения -->
+                <div class="status-info">
+                    <div class="status-item">
+                        <span class="status-label">Статус:</span>
+                        <span id="statusText" class="status-value">Готов к выполнению</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Шаг:</span>
+                        <span id="stepCounter" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Время:</span>
+                        <span id="timeCounter" class="status-value">0 мс</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Текущее состояние -->
+            <div class="current-state">
+                <h3>Текущее состояние</h3>
+                <div class="state-display">
+                    <div class="state-label">Рабочая строка:</div>
+                    <div id="currentString" class="state-string">—</div>
+                    <div class="state-label">Текущее правило:</div>
+                    <div id="currentRule" class="state-rule">—</div>
+                </div>
+            </div>
+
+            <!-- Визуализация -->
+            <div class="visualization">
+                <h3>Визуализация процесса</h3>
+                <canvas id="visualCanvas" width="700" height="200"></canvas>
+            </div>
+
+            <!-- История выполнения -->
+            <div class="history-panel">
+                <h3>История выполнения</h3>
+                <div id="historyContainer" class="history-container">
+                    <div class="empty-state">История пуста. Запустите алгоритм.</div>
+                </div>
+            </div>
+
+            <!-- Лог выполнения -->
+            <div class="log-panel">
+                <h3>Лог выполнения</h3>
+                <div id="logContainer" class="log-container">
+                    <div class="log-entry">Ожидание запуска...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подключение JavaScript модулей -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

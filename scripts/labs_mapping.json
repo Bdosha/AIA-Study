@@ -1,0 +1,213 @@
+{
+  "sections": {
+    "finite_automata": {
+      "title": "Конечные автоматы и методы управления состояниями",
+      "labs": {
+        "dfa_simulator": {
+          "repo": "GorSerGitVerse/DM3_Automaton_System",
+          "title": "Симулятор ДКА",
+          "description": "Детерминированный конечный автомат"
+        },
+        "nfa_simulator": {
+          "repo": "mynill/NFA-simulator",
+          "title": "Симулятор НКА",
+          "description": "Недетерминированный конечный автомат"
+        },
+        "dfa_minimization": {
+          "repo": "nik_yak/Minimization_of_deterministic_finite_state_machines",
+          "title": "Минимизация ДКА",
+          "description": "Алгоритмы минимизации детерминированных автоматов"
+        },
+        "nfa_to_dfa": {
+          "repo": "kemarrik/NFA_to_DFA",
+          "title": "Преобразование НКА в ДКА",
+          "description": "Алгоритм построения детерминированного автомата"
+        },
+        "moore_machine": {
+          "repo": "pavka2006/Moore_machine_lab",
+          "title": "Симулятор автомата Мура",
+          "description": "Автомат с выходом, зависящим от состояния"
+        },
+        "mealy_machine": {
+          "repo": "vechnoilive/DM3_Mealy_simulator",
+          "title": "Симулятор автомата Мили",
+          "description": "Автомат с выходом, зависящим от перехода"
+        },
+        "probabilistic_automata": {
+          "repo": "annabasalyga/Probabilistic_automaton",
+          "title": "Вероятностные автоматы",
+          "description": "Автоматы с вероятностными переходами"
+        }
+      }
+    },
+    "cellular_graph": {
+      "title": "Клеточные и графовые вычислительные структуры",
+      "labs": {
+        "prng_eca": {
+          "repo": "vla9ick/Lab_Auto_Pseudorandomness",
+          "title": "ГПСЧ на ЭКлА",
+          "description": "Генератор псевдослучайных последовательностей на элементарных клеточных автоматах"
+        },
+        "brian_brain": {
+          "repo": "rotnite/brian_brain",
+          "title": "Мозг Брайана",
+          "description": "Клеточный автомат с расширенными правилами"
+        },
+        "codi_automata": {
+          "repo": "FoxErLis/Laba_DM-3",
+          "title": "Клеточные автоматы CoDi",
+          "description": "Специализированные клеточные автоматы"
+        },
+        "triangular_ca": {
+          "repo": "FlynnTaggart075/cellular_automaton_on_triangular_lattices",
+          "title": "КА на треугольных решётках",
+          "description": "Клеточные автоматы на треугольной сетке"
+        },
+        "hexagonal_ca": {
+          "repo": "VoidSetup/DM-3-hexagonal-life-like-cellular-automata",
+          "title": "Гексагональные КА",
+          "description": "Клеточные автоматы с жизнеподобными правилами на гексагональной сетке"
+        },
+        "reversible_ca": {
+          "repo": "lulema/Simulation_of_reversible_cellular_automata",
+          "title": "Обратимые КА",
+          "description": "Обратимые клеточные автоматы"
+        },
+        "turmites": {
+          "repo": "winkey86/Turmites_and_Langtons_ants",
+          "title": "Турмиты",
+          "description": "Турмиты и муравьи Лэнгтона"
+        },
+        "graph_automata": {
+          "repo": "alexware/graph-automata",
+          "title": "Граф-автоматы",
+          "description": "Автоматы на графовых структурах"
+        },
+        "dynamic_graph": {
+          "repo": "expertdaniil/graph-automata-simulator",
+          "title": "Динамические граф-автоматы",
+          "description": "Автоматы на графах с динамической топологией"
+        }
+      }
+    },
+    "turing_machines": {
+      "title": "Модели и разновидности машин Тьюринга",
+      "labs": {
+        "multitape_tm": {
+          "repo": "bbluebberry/Multitape_Turing_machine",
+          "title": "Многоленточная МТ",
+          "description": "Машина Тьюринга с несколькими лентами"
+        },
+        "universal_tm": {
+          "repo": "CodeByKate/UniversalTuringMachineSimulator",
+          "title": "Универсальная МТ",
+          "description": "Универсальный симулятор машины Тьюринга"
+        },
+        "ram_machine": {
+          "repo": "efedorovskaa67/RAM",
+          "title": "RAM-машина",
+          "description": "Машина с произвольным доступом к памяти"
+        },
+        "post_machine": {
+          "repo": "LevoniaSolo/ThePostMachine",
+          "title": "Машина Поста",
+          "description": "Абстрактная вычислительная машина Поста"
+        },
+        "quantum_tm": {
+          "repo": "Valeria14/KvantMachineTuring",
+          "title": "Квантовая МТ",
+          "description": "Квантовая машина Тьюринга"
+        },
+        "nondeterministic_tm": {
+          "repo": "lollyk-pollyk/Non-deterministic_Turing_machine",
+          "title": "Недетерминированная МТ",
+          "description": "Недетерминированная машина Тьюринга"
+        },
+        "zeno_machine": {
+          "repo": "ivan-yakovl/Automats_Lab_1",
+          "title": "Машина Зенона",
+          "description": "Гипотетическая сверхвычислительная машина"
+        }
+      }
+    },
+    "formal_systems": {
+      "title": "Алгоритмические и формальные системы вычислений",
+      "labs": {
+        "markov_algorithms": {
+          "repo": "Grishiset/MarkovsAlgorythms",
+          "title": "Алгорифмы Маркова",
+          "description": "Нормальные алгорифмы Маркова"
+        },
+        "godel_functions": {
+          "repo": "Kolyan4ikBasalyga/Recursive_Godel_functions",
+          "title": "Функции Гёделя",
+          "description": "Рекурсивные функции Гёделя"
+        },
+        "petri_nets": {
+          "repo": "slavatlsn/PetNet",
+          "title": "Сети Петри",
+          "description": "Моделирование параллельных процессов"
+        },
+        "billiard_computer": {
+          "repo": "SMoorphic/billiard-computer",
+          "title": "Бильярдный компьютер",
+          "description": "Вычисления на основе бильярдной динамики"
+        }
+      }
+    },
+    "intelligent_systems": {
+      "title": "Мультиагентные и квантовые интеллектуальные системы",
+      "labs": {
+        "quantum_computing": {
+          "repo": "German229/Quantum_simulator",
+          "title": "Квантовые вычисления",
+          "description": "Симулятор квантовых вычислений"
+        },
+        "artificial_life": {
+          "repo": "Mihiil/Artificial_life",
+          "title": "Искусственная жизнь",
+          "description": "Моделирование искусственной жизни"
+        },
+        "neural_tm": {
+          "repo": "ulupapi/Neural_Turing_Machine",
+          "title": "Нейронная МТ",
+          "description": "Нейронная машина Тьюринга"
+        }
+      }
+    }
+  },
+  "clone_command": "ssh://git@gitverse.ru:2222/{repo}",
+  "all_repos": [
+    "alexware/graph-automata",
+    "annabasalyga/Probabilistic_automaton",
+    "Kolyan4ikBasalyga/Recursive_Godel_functions",
+    "German229/Quantum_simulator",
+    "GorSerGitVerse/DM3_Automaton_System",
+    "kemarrik/NFA_to_DFA",
+    "LevoniaSolo/ThePostMachine",
+    "vechnoilive/DM3_Mealy_simulator",
+    "lulema/Simulation_of_reversible_cellular_automata",
+    "Valeria14/KvantMachineTuring",
+    "CodeByKate/UniversalTuringMachineSimulator",
+    "bbluebberry/Multitape_Turing_machine",
+    "FlynnTaggart075/cellular_automaton_on_triangular_lattices",
+    "expertdaniil/graph-automata-simulator",
+    "ulupapi/Neural_Turing_Machine",
+    "vla9ick/Lab_Auto_Pseudorandomness",
+    "SMoorphic/billiard-computer",
+    "winkey86/Turmites_and_Langtons_ants",
+    "mynill/NFA-simulator",
+    "rotnite/brian_brain",
+    "VoidSetup/DM-3-hexagonal-life-like-cellular-automata",
+    "slavatlsn/PetNet",
+    "lollyk-pollyk/Non-deterministic_Turing_machine",
+    "efedorovskaa67/RAM",
+    "FoxErLis/Laba_DM-3",
+    "Mihiil/Artificial_life",
+    "pavka2006/Moore_machine_lab",
+    "nik_yak/Minimization_of_deterministic_finite_state_machines",
+    "ivan-yakovl/Automats_Lab_1",
+    "Grishiset/MarkovsAlgorythms"
+  ]
+}
+

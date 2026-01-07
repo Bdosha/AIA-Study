@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор граф-автоматов - НИЯУ МИФИ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Симулятор автоматов, работающих на графовых структурах</h1>
+            <div class="header-meta">
+                <span>НИЯУ МИФИ, Кафедра №22 Кибернетика | Nizambiev D.A. | 2025</span>
+                <button id="themeToggle" class="btn btn--secondary btn--sm">🌙 Тёмная</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <main class="main-container">
+        <!-- Left Sidebar - Control Panel -->
+        <aside class="sidebar sidebar--left">
+            <div class="panel">
+                <h3>Управление</h3>
+                
+                <div class="form-group">
+                    <label class="form-label" for="algorithmSelect">Алгоритм:</label>
+                    <select id="algorithmSelect" class="form-control">
+                        <option value="DFS">DFS (Поиск в глубину)</option>
+                        <option value="BFS">BFS (Поиск в ширину)</option>
+                        <option value="Dijkstra">Dijkstra (Кратчайший путь)</option>
+                        <option value="AStar">A* (Эвристический поиск)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="speedSlider">Скорость: <span id="speedValue">5</span></label>
+                    <input type="range" id="speedSlider" class="form-control" min="1" max="10" value="5">
+                </div>
+
+                <div class="button-group">
+                    <button id="startBtn" class="btn btn--primary btn--full-width">▶ Старт</button>
+                    <button id="stopBtn" class="btn btn--secondary btn--full-width" disabled>⏸ Стоп</button>
+                </div>
+
+                <div class="button-group">
+                    <button id="stepForwardBtn" class="btn btn--outline">→ Шаг вперёд</button>
+                    <button id="stepBackwardBtn" class="btn btn--outline">← Шаг назад</button>
+                </div>
+
+                <div class="button-group">
+                    <button id="resetBtn" class="btn btn--secondary btn--full-width">Сброс</button>
+                    <button id="clearBtn" class="btn btn--outline btn--full-width">🗑 Очистить</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Настройки графа</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Тип графа:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="graphType" value="directed" checked> Ориентированный</label>
+                        <label><input type="radio" name="graphType" value="undirected"> Неориентированный</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><input type="checkbox" id="enableWeights" checked> Включить веса рёбер</label>
+                </div>
+
+                <div class="form-group weight-range">
+                    <label class="form-label">Диапазон весов:</label>
+                    <div class="range-inputs">
+                        <input type="number" id="minWeight" class="form-control form-control--sm" value="1" min="1">
+                        <span>-</span>
+                        <input type="number" id="maxWeight" class="form-control form-control--sm" value="10" min="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Импорт/Экспорт</h3>
+                <div class="button-group">
+                    <button id="exportJsonBtn" class="btn btn--outline btn--full-width">Экспорт JSON</button>
+                    <button id="importJsonBtn" class="btn btn--outline btn--full-width">Импорт JSON</button>
+                    <input type="file" id="fileInput" accept=".json" style="display: none;">
+                </div>
+                <button id="exportCsvBtn" class="btn btn--outline btn--full-width">Экспорт CSV</button>
+            </div>
+
+            <div class="panel">
+                <h3>Инструкция</h3>
+                <ul class="instructions">
+                    <li>Клик по холсту - добавить вершину</li>
+                    <li>Клик по вершине, затем по другой - создать ребро</li>
+                    <li>ПКМ по элементу - удалить</li>
+                    <li>Двойной клик - начальная вершина</li>
+                    <li>Shift+клик - допускающее состояние</li>
+                    <li>Клик по ребру - метка и вес</li>
+                    <li>Перетаскивание - перемещение</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Canvas Area -->
+        <section class="canvas-container">
+            <canvas id="graphCanvas" width="800" height="600"></canvas>
+            <div class="canvas-overlay">
+                <div id="edgeLabelModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <h4>Редактировать ребро</h4>
+                        <div class="form-group">
+                            <label class="form-label">Метка:</label>
+                            <input type="text" id="edgeLabel" class="form-control" placeholder="a, b, c...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Вес:</label>
+                            <input type="number" id="edgeWeight" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="button-group">
+                            <button id="saveEdgeBtn" class="btn btn--primary">Сохранить</button>
+                            <button id="cancelEdgeBtn" class="btn btn--secondary">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Sidebar - Statistics -->
+        <aside class="sidebar sidebar--right">
+            <div class="panel">
+                <h3>Статистика</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Вершин:</span>
+                        <span id="vertexCount" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Рёбер:</span>
+                        <span id="edgeCount" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Алгоритм:</span>
+                        <span id="currentAlgorithm" class="stat-value">DFS</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Шаг:</span>
+                        <span id="currentStep" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Длина пути:</span>
+                        <span id="pathLength" class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Посещённые вершины</h3>
+                <div id="visitedVertices" class="visited-list"></div>
+            </div>
+
+            <div class="panel">
+                <h3>Состояние структуры</h3>
+                <div class="structure-state">
+                    <div id="algorithmStructure" class="algorithm-info">
+                        <strong>Стек (DFS):</strong>
+                    </div>
+                    <div id="structureContent" class="structure-content">[]</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Текущие расстояния</h3>
+                <div id="distanceTable" class="distance-table"></div>
+            </div>
+        </aside>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

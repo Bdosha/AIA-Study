@@ -1,0 +1,42 @@
+{% extends "labs/base.html" %}
+
+{% block title %}ДМ-3: Автоматы{% endblock %}
+
+{% block breadcrumb %}
+<a href="/">🎓</a>
+<span>/</span>
+<span style="color: var(--text);">ДМ-3: Автоматы</span>
+{% endblock %}
+
+{% block content %}
+<main class="main-container">
+    <div class="page-header">
+        <div class="page-icon">🔬</div>
+        <h1 class="page-title">ДМ-3: Автоматы</h1>
+        <p class="page-subtitle">
+            Лабораторные работы по дисциплине «Дискретная математика — 3».
+            Симуляторы конечных автоматов, машин Тьюринга, клеточных автоматов 
+            и формальных систем вычислений.
+        </p>
+    </div>
+
+    <div class="sections-grid">
+        {% for section in sections %}
+        <div class="section-card" style="animation-delay: {{ forloop.counter0 }}00ms;">
+            <div class="section-icon">{{ section.icon }}</div>
+            <h2 class="section-title">{{ section.title }}</h2>
+            <p class="section-description">{{ section.description }}</p>
+            <div class="section-meta">
+                <div class="labs-count">
+                    <span>📚</span>
+                    <span>{{ section.labs_count }} работ</span>
+                </div>
+                <a href="/labs/{{ section.id }}/" class="section-link">
+                    Открыть раздел →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

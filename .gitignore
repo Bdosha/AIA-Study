@@ -42,3 +42,9 @@ secrets.json
 *.bak
 
 static/works
+
+# External labs (cloned repositories)
+external_labs/
+
+# Node modules (from built labs)
+node_modules/

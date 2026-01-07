@@ -1,0 +1,3256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор многоленточной машины Тьюринга</title>
+    <style>
+        :root {
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+
+  /* RGB versions for opacity control */
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+
+  /* Background color tokens (Light Mode) */
+  --color-bg-1: rgba(59, 130, 246, 0.08);
+  --color-bg-2: rgba(245, 158, 11, 0.08);
+  --color-bg-3: rgba(34, 197, 94, 0.08);
+  --color-bg-4: rgba(239, 68, 68, 0.08);
+  --color-bg-5: rgba(147, 51, 234, 0.08);
+  --color-bg-6: rgba(249, 115, 22, 0.08);
+  --color-bg-7: rgba(236, 72, 153, 0.08);
+  --color-bg-8: rgba(6, 182, 212, 0.08);
+
+  /* Semantic Color Tokens (Light Mode) */
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+  /* Common style patterns */
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+  --status-bg-opacity: 0.15;
+  --status-border-opacity: 0.25;
+  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  /* RGB versions for opacity control */
+  --color-success-rgb: 33, 128, 141;
+  --color-error-rgb: 192, 21, 47;
+  --color-warning-rgb: 168, 75, 47;
+  --color-info-rgb: 98, 108, 113;
+
+  /* Typography */
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
+    0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+  /* Animation */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* RGB versions for opacity control (Dark Mode) */
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
+
+    /* Background color tokens (Dark Mode) */
+    --color-bg-1: rgba(29, 78, 216, 0.15);
+    --color-bg-2: rgba(180, 83, 9, 0.15);
+    --color-bg-3: rgba(21, 128, 61, 0.15);
+    --color-bg-4: rgba(185, 28, 28, 0.15);
+    --color-bg-5: rgba(107, 33, 168, 0.15);
+    --color-bg-6: rgba(194, 65, 12, 0.15);
+    --color-bg-7: rgba(190, 24, 93, 0.15);
+    --color-bg-8: rgba(8, 145, 178, 0.15);
+
+    /* Semantic Color Tokens (Dark Mode) */
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-error: var(--color-red-400);
+    --color-success: var(--color-teal-300);
+    --color-warning: var(--color-orange-400);
+    --color-info: var(--color-gray-300);
+    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-btn-primary-text: var(--color-slate-900);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    --button-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+
+    /* RGB versions for dark mode */
+    --color-success-rgb: var(--color-teal-300-rgb);
+    --color-error-rgb: var(--color-red-400-rgb);
+    --color-warning-rgb: var(--color-orange-400-rgb);
+    --color-info-rgb: var(--color-gray-300-rgb);
+  }
+}
+
+/* Base styles */
+html {
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+h2 {
+  font-size: var(--font-size-3xl);
+}
+h3 {
+  font-size: var(--font-size-2xl);
+}
+h4 {
+  font-size: var(--font-size-xl);
+}
+h5 {
+  font-size: var(--font-size-lg);
+}
+h6 {
+  font-size: var(--font-size-md);
+}
+
+p {
+  margin: 0 0 var(--space-16) 0;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-standard);
+  border: none;
+  text-decoration: none;
+  position: relative;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn--primary:active {
+  background: var(--color-primary-active);
+}
+
+.btn--secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn--secondary:hover {
+  background: var(--color-secondary-hover);
+}
+
+.btn--secondary:active {
+  background: var(--color-secondary-active);
+}
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--outline:hover {
+  background: var(--color-secondary);
+}
+
+.btn--sm {
+  padding: var(--space-4) var(--space-12);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+.btn--lg {
+  padding: var(--space-10) var(--space-20);
+  font-size: var(--font-size-lg);
+  border-radius: var(--radius-md);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form elements */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-8) var(--space-12);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+select.form-control {
+  padding: var(--space-8) var(--space-12);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: var(--select-caret-light);
+  background-repeat: no-repeat;
+  background-position: right var(--space-12) center;
+  background-size: 16px;
+  padding-right: var(--space-32);
+}
+
+@media (prefers-color-scheme: dark) {
+  select.form-control {
+    background-image: var(--select-caret-dark);
+  }
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  outline: var(--focus-outline);
+}
+
+/* Card component */
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card__body {
+  padding: var(--space-16);
+}
+
+/* Status indicators */
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-6) var(--space-12);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.status--success {
+  background-color: rgba(
+    var(--color-success-rgb, 33, 128, 141),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-success);
+  border: 1px solid
+    rgba(var(--color-success-rgb, 33, 128, 141), var(--status-border-opacity));
+}
+
+.status--error {
+  background-color: rgba(
+    var(--color-error-rgb, 192, 21, 47),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-error);
+  border: 1px solid
+    rgba(var(--color-error-rgb, 192, 21, 47), var(--status-border-opacity));
+}
+
+.status--warning {
+  background-color: rgba(
+    var(--color-warning-rgb, 168, 75, 47),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-warning);
+  border: 1px solid
+    rgba(var(--color-warning-rgb, 168, 75, 47), var(--status-border-opacity));
+}
+
+.status--info {
+  background-color: rgba(
+    var(--color-info-rgb, 98, 108, 113),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-info);
+  border: 1px solid
+    rgba(var(--color-info-rgb, 98, 108, 113), var(--status-border-opacity));
+}
+
+/* Custom styles for Turing Machine */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-20);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-24);
+    padding: var(--space-16) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.help-btn {
+    position: fixed;
+    top: var(--space-20);
+    right: var(--space-20);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.help-btn:hover {
+    background: var(--color-primary-hover);
+    transform: scale(1.1);
+}
+
+.wizard {
+    margin-bottom: var(--space-32);
+}
+
+.wizard-steps {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-24);
+}
+
+.wizard-step {
+    display: flex;
+    align-items: center;
+    margin: 0 var(--space-8);
+}
+
+.step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    margin-right: var(--space-8);
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.step-circle.active {
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+}
+
+.step-circle.completed {
+    background: var(--color-success);
+    color: var(--color-btn-primary-text);
+}
+
+.step-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.step-text.active {
+    color: var(--color-text);
+    font-weight: var(--font-weight-medium);
+}
+
+.tape-count-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+}
+
+.tape-card {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-16);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.tape-card:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-1);
+}
+
+.tape-card.selected {
+    border-color: var(--color-primary);
+    background: var(--color-bg-1);
+    box-shadow: var(--shadow-md);
+}
+
+.tape-number {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin-bottom: var(--space-8);
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+}
+
+.example-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-16);
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.example-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.example-card.selected {
+    border-color: var(--color-primary);
+    background: var(--color-bg-1);
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-12);
+    align-items: center;
+    margin-bottom: var(--space-24);
+    padding: var(--space-16);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.status-display {
+    padding: var(--space-8) var(--space-16);
+    background: var(--color-bg-1);
+    border-radius: var(--radius-base);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}
+
+.tapes-container {
+    margin-bottom: var(--space-24);
+}
+
+.tape {
+    margin-bottom: var(--space-16);
+    padding: var(--space-16);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+}
+
+.tape-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-12);
+}
+
+.tape-cells {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding: var(--space-8);
+    background: var(--color-background);
+    border-radius: var(--radius-base);
+    position: relative;
+}
+
+.tape-cell {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-normal) var(--ease-standard);
+    position: relative;
+}
+
+.tape-cell.head {
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-teal-500-rgb), 0.3);
+}
+
+.tape-cell.changed {
+    background: var(--color-warning) !important;
+    animation: cellChange 0.8s ease-in-out;
+    position: relative;
+}
+
+.tape-cell.changed::after {
+    content: '✨';
+    position: absolute;
+    top: -10px;
+    right: -5px;
+    font-size: 12px;
+    animation: sparkle 0.8s ease-in-out;
+}
+
+@keyframes cellChange {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.15) rotate(2deg); }
+    50% { transform: scale(1.1) rotate(-2deg); }
+    75% { transform: scale(1.05) rotate(1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes sparkle {
+    0% { opacity: 0; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-10px); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.head-tape-1 {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e) !important;
+    color: white;
+    border: 2px solid #ff6b6b;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.head-tape-2 {
+    background: linear-gradient(135deg, #4ecdc4, #7dd3db) !important;
+    color: white;
+    border: 2px solid #4ecdc4;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+}
+
+.head-tape-3 {
+    background: linear-gradient(135deg, #45b7d1, #74c7d9) !important;
+    color: white;
+    border: 2px solid #45b7d1;
+    box-shadow: 0 0 10px rgba(69, 183, 209, 0.5);
+}
+
+.head-tape-4 {
+    background: linear-gradient(135deg, #f9ca24, #f6d55c) !important;
+    color: #2c3e50;
+    border: 2px solid #f9ca24;
+    box-shadow: 0 0 10px rgba(249, 202, 36, 0.5);
+}
+
+.head-tape-5 {
+    background: linear-gradient(135deg, #6c5ce7, #8b7ae6) !important;
+    color: white;
+    border: 2px solid #6c5ce7;
+    box-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+}
+
+.tape-cell-index {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.transitions-editor {
+    margin-bottom: var(--space-24);
+    padding: var(--space-16);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+}
+
+.transition-rule {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 2fr 2fr auto;
+    gap: var(--space-8);
+    align-items: center;
+    margin-bottom: var(--space-8);
+    padding: var(--space-8);
+    background: var(--color-background);
+    border-radius: var(--radius-base);
+    border: 1px solid transparent;
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.transition-rule.active {
+    border-color: var(--color-primary);
+    background: var(--color-bg-1);
+    box-shadow: var(--shadow-sm);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: var(--space-20);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: var(--space-20);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: var(--space-4);
+    border-radius: var(--radius-base);
+    transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.close-btn:hover {
+    color: var(--color-text);
+    background: var(--color-secondary);
+}
+
+.help-section {
+    margin-bottom: var(--space-24);
+}
+
+.help-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    margin-bottom: var(--space-16);
+    padding-bottom: var(--space-16);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.help-nav-item {
+    padding: var(--space-6) var(--space-12);
+    background: var(--color-secondary);
+    border: none;
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.help-nav-item:hover {
+    background: var(--color-secondary-hover);
+}
+
+.help-nav-item.active {
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+}
+
+.help-content {
+    display: none;
+}
+
+.help-content.active {
+    display: block;
+}
+
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-charcoal-800);
+    color: var(--color-gray-200);
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) var(--ease-standard);
+    z-index: 1000;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width var(--duration-normal) var(--ease-standard);
+}
+
+.notification {
+    position: fixed;
+    top: var(--space-20);
+    right: var(--space-20);
+    padding: var(--space-12) var(--space-16);
+    border-radius: var(--radius-base);
+    color: var(--color-btn-primary-text);
+    font-weight: var(--font-weight-medium);
+    z-index: 1500;
+    transform: translateX(100%);
+    transition: transform var(--duration-normal) var(--ease-standard);
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    background: var(--color-success);
+}
+
+.notification.error {
+    background: var(--color-error);
+}
+
+.notification.warning {
+    background: var(--color-warning);
+}
+
+.notification.info {
+    background: var(--color-info);
+}
+
+.btn-icon {
+    padding: var(--space-8);
+    min-width: 40px;
+    height: 40px;
+}
+
+.btn-group {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--space-12);
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .transition-rule {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .tape-count-selection {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Help Button -->
+        <button class="help-btn tooltip" data-tooltip="Помощь (H)" onclick="showHelp()" id="helpBtn">
+            ?
+        </button>
+
+        <!-- Header -->
+        <header class="header">
+            <div>
+                <h1>Симулятор многоленточной машины Тьюринга</h1>
+                <p style="color: var(--color-text-secondary); margin-top: var(--space-8);">
+                    Интерактивная система для изучения многоленточных машин Тьюринга
+                </p>
+            </div>
+            <div class="status-display" id="globalStatus">
+                Готов к настройке
+            </div>
+        </header>
+
+        <!-- Wizard Steps -->
+        <div class="wizard" id="wizard">
+            <div class="wizard-steps">
+                <div class="wizard-step">
+                    <div class="step-circle active" id="step1Circle">1</div>
+                    <div class="step-text active" id="step1Text">Количество лент</div>
+                </div>
+                <div class="wizard-step">
+                    <div class="step-circle" id="step2Circle">2</div>
+                    <div class="step-text" id="step2Text">Выбор программы</div>
+                </div>
+                <div class="wizard-step">
+                    <div class="step-circle" id="step3Circle">3</div>
+                    <div class="step-text" id="step3Text">Настройка данных</div>
+                </div>
+                <div class="wizard-step">
+                    <div class="step-circle" id="step4Circle">4</div>
+                    <div class="step-text" id="step4Text">Симуляция</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Tape Count Selection -->
+        <div class="card wizard-step-content" id="step1Content">
+            <div class="card__body">
+                <h3 style="margin-bottom: var(--space-16);">Выберите количество лент</h3>
+                <div class="tape-count-selection">
+                    <div class="tape-card" onclick="selectTapeCount(1)" data-count="1">
+                        <div class="tape-number">1</div>
+                        <div>Одна лента</div>
+                        <small style="color: var(--color-text-secondary);">Классическая машина</small>
+                    </div>
+                    <div class="tape-card" onclick="selectTapeCount(2)" data-count="2">
+                        <div class="tape-number">2</div>
+                        <div>Две ленты</div>
+                        <small style="color: var(--color-text-secondary);">Рекомендуется</small>
+                    </div>
+                    <div class="tape-card" onclick="selectTapeCount(3)" data-count="3">
+                        <div class="tape-number">3</div>
+                        <div>Три ленты</div>
+                        <small style="color: var(--color-text-secondary);">Для сложных задач</small>
+                    </div>
+                    <div class="tape-card" onclick="selectTapeCount(4)" data-count="4">
+                        <div class="tape-number">4</div>
+                        <div>Четыре ленты</div>
+                        <small style="color: var(--color-text-secondary);">Экспертный уровень</small>
+                    </div>
+                    <div class="tape-card" onclick="selectTapeCount(5)" data-count="5">
+                        <div class="tape-number">5</div>
+                        <div>Пять лент</div>
+                        <small style="color: var(--color-text-secondary);">Максимум</small>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: var(--space-24);">
+                    <button class="btn btn--primary btn--lg" onclick="goToStep(2)" id="step1NextBtn" disabled>
+                        Продолжить →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Program Selection -->
+        <div class="card wizard-step-content hidden" id="step2Content">
+            <div class="card__body">
+                <h3 style="margin-bottom: var(--space-16);">Выберите программу</h3>
+                <div class="examples-grid" id="examplesGrid">
+                    <!-- Examples will be populated here -->
+                </div>
+                <div style="text-align: center; margin-top: var(--space-24); display: flex; gap: var(--space-12); justify-content: center;">
+                    <button class="btn btn--outline" onclick="goToStep(1)">← Назад</button>
+                    <button class="btn btn--primary btn--lg" onclick="goToStep(3)" id="step2NextBtn" disabled>
+                        Продолжить →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Data Configuration -->
+        <div class="card wizard-step-content hidden" id="step3Content">
+            <div class="card__body">
+                <h3 style="margin-bottom: var(--space-16);">Настройка начальных данных лент</h3>
+                <div id="tapeDataEditor">
+                    <!-- Tape editors will be populated here -->
+                </div>
+                <div style="text-align: center; margin-top: var(--space-24); display: flex; gap: var(--space-12); justify-content: center;">
+                    <button class="btn btn--outline" onclick="goToStep(2)">← Назад</button>
+                    <button class="btn btn--primary btn--lg" onclick="goToStep(4)">
+                        Начать симуляцию →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Simulation -->
+        <div class="wizard-step-content hidden" id="step4Content">
+            <!-- Controls -->
+            <div class="controls">
+                <div class="control-group">
+                    <button class="btn btn--primary btn-icon tooltip" data-tooltip="Запуск/Пауза (Space)" onclick="toggleExecution()" id="playBtn">
+                        ▶️
+                    </button>
+                    <button class="btn btn--secondary btn-icon tooltip" data-tooltip="Один шаг (→)" onclick="stepExecution()" id="stepBtn">
+                        ⏭️
+                    </button>
+                    <button class="btn btn--secondary btn-icon tooltip" data-tooltip="Сброс (R)" onclick="resetExecution()" id="resetBtn">
+                        🔄
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <label>Скорость:</label>
+                    <select class="form-control" onchange="setSpeed(this.value)" id="speedSelect">
+                        <option value="500">Медленно</option>
+                        <option value="200" selected>Нормально</option>
+                        <option value="50">Быстро</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <button class="btn btn--outline tooltip" data-tooltip="Показать одноленточную эквивалентность" onclick="showEquivalence()" id="equivalenceBtn">
+                        🔄 Эквивалентность
+                    </button>
+                    <button class="btn btn--outline tooltip" data-tooltip="Показать отладочную информацию" onclick="showDebugInfo()" id="debugBtn">
+                        🔍 Отладка
+                    </button>
+                </div>
+                
+                <div class="status-display" id="machineStatus">
+                    Состояние: q0 | Шаг: 0 | Время: 0мс
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar" style="margin-bottom: var(--space-16);">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+
+            <!-- Tapes Visualization -->
+            <div class="tapes-container" id="tapesContainer">
+                <!-- Tapes will be rendered here -->
+            </div>
+
+            <!-- Transitions Editor -->
+            <div class="transitions-editor">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-16);">
+                    <h4>Правила переходов</h4>
+                    <button class="btn btn--secondary btn--sm" onclick="addTransition()">
+                        + Добавить правило
+                    </button>
+                </div>
+                <div id="transitionsContainer">
+                    <!-- Transition rules will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div style="text-align: center; margin-top: var(--space-24); display: flex; gap: var(--space-12); justify-content: center;">
+                <button class="btn btn--outline" onclick="goToStep(3)">← Назад к настройке</button>
+                <button class="btn btn--secondary" onclick="saveProgram()">
+                    💾 Сохранить программу
+                </button>
+                <button class="btn btn--secondary" onclick="exportLog()">
+                    📄 Экспорт журнала
+                </button>
+            </div>
+        </div>
+
+        <!-- Welcome Modal -->
+        <div class="modal" id="welcomeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Добро пожаловать!</h2>
+                    <button class="close-btn" onclick="closeWelcome()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Добро пожаловать в симулятор многоленточной машины Тьюринга!</p>
+                    <p>Этот инструмент поможет вам изучить принципы работы многоленточных машин Тьюринга и их эквивалентность одноленточным машинам.</p>
+                    
+                    <h4 style="margin: var(--space-16) 0 var(--space-8) 0;">Быстрый старт:</h4>
+                    <ol>
+                        <li>Выберите количество лент (рекомендуем начать с 2)</li>
+                        <li>Загрузите готовый пример "Копирование строки"</li>
+                        <li>Настройте начальные данные лент</li>
+                        <li>Запустите симуляцию и наблюдайте за процессом</li>
+                    </ol>
+                    
+                    <div style="text-align: center; margin-top: var(--space-24);">
+                        <button class="btn btn--primary btn--lg" onclick="closeWelcome()">
+                            Начать работу
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div class="modal" id="helpModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Руководство пользователя</h2>
+                    <button class="close-btn" onclick="closeHelp()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-nav" id="helpNav">
+                        <button class="help-nav-item active" onclick="showHelpSection('quickStart')">Быстрый старт</button>
+                        <button class="help-nav-item" onclick="showHelpSection('concepts')">Основные понятия</button>
+                        <button class="help-nav-item" onclick="showHelpSection('interface')">Интерфейс</button>
+                        <button class="help-nav-item" onclick="showHelpSection('program')">Создание программы</button>
+                        <button class="help-nav-item" onclick="showHelpSection('simulation')">Симуляция</button>
+                        <button class="help-nav-item" onclick="showHelpSection('equivalence')">Эквивалентность</button>
+                        <button class="help-nav-item" onclick="showHelpSection('examples')">Примеры</button>
+                        <button class="help-nav-item" onclick="showHelpSection('hotkeys')">Горячие клавиши</button>
+                        <button class="help-nav-item" onclick="showHelpSection('faq')">FAQ</button>
+                    </div>
+                    
+                    <div class="help-content active" id="helpQuickStart">
+                        <h3>Быстрый старт</h3>
+                        <ol>
+                            <li><strong>Выберите количество лент</strong> - рекомендуем начать с 2 лент для изучения основ</li>
+                            <li><strong>Загрузите пример</strong> - выберите "Копирование строки" для первого знакомства</li>
+                            <li><strong>Настройте данные</strong> - измените начальные значения лент при необходимости</li>
+                            <li><strong>Запустите симуляцию</strong> - нажмите кнопку Play и наблюдайте за процессом</li>
+                            <li><strong>Изучите эквивалентность</strong> - посмотрите, как многоленточная машина преобразуется в одноленточную</li>
+                        </ol>
+                        <div class="status status--info" style="margin-top: var(--space-16);">
+                            💡 Совет: Используйте режим "Медленно" для лучшего понимания процесса
+                        </div>
+                    </div>
+                    
+                    <div class="help-content" id="helpConcepts">
+                        <h3>Основные понятия</h3>
+                        <h4>Машина Тьюринга</h4>
+                        <p>Абстрактная модель вычислений, состоящая из:</p>
+                        <ul>
+                            <li><strong>Лента</strong> - бесконечная последовательность ячеек</li>
+                            <li><strong>Головка</strong> - указывает на текущую ячейку</li>
+                            <li><strong>Состояние</strong> - внутреннее состояние машины</li>
+                            <li><strong>Правила переходов</strong> - определяют поведение машины</li>
+                        </ul>
+                        
+                        <h4>Многоленточная машина</h4>
+                        <p>Расширение классической машины Тьюринга с несколькими независимыми лентами. Каждая лента имеет свою головку чтения/записи.</p>
+                        
+                        <h4>Правило перехода</h4>
+                        <p>Определяет действие машины: <code>(состояние, символы) → (новое_состояние, новые_символы, движения)</code></p>
+                    </div>
+                    
+                    <div class="help-content" id="helpInterface">
+                        <h3>Интерфейс</h3>
+                        <h4>Панель управления</h4>
+                        <ul>
+                            <li><strong>▶️ Play/Pause</strong> - запуск и остановка симуляции</li>
+                            <li><strong>⏭️ Step</strong> - выполнение одного шага</li>
+                            <li><strong>🔄 Reset</strong> - сброс к начальному состоянию</li>
+                            <li><strong>Скорость</strong> - регулировка скорости выполнения</li>
+                        </ul>
+                        
+                        <h4>Визуализация лент</h4>
+                        <ul>
+                            <li><strong>Синяя ячейка</strong> - текущая позиция головки</li>
+                            <li><strong>Желтая ячейка</strong> - недавно измененная ячейка</li>
+                            <li><strong>Номера ячеек</strong> - индексы для навигации</li>
+                        </ul>
+                        
+                        <h4>Индикаторы состояния</h4>
+                        <ul>
+                            <li><strong>Зеленый</strong> - машина работает</li>
+                            <li><strong>Синий</strong> - машина завершена успешно</li>
+                            <li><strong>Красный</strong> - ошибка или зацикливание</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-content" id="helpProgram">
+                        <h3>Создание программы</h3>
+                        <h4>Состояния</h4>
+                        <p>Используйте осмысленные имена: q0 (начальное), q1, q2, qf (финальное)</p>
+                        
+                        <h4>Символы</h4>
+                        <p>Поддерживаются любые символы. Используйте "_" для пустой ячейки.</p>
+                        
+                        <h4>Движения головки</h4>
+                        <ul>
+                            <li><strong>L</strong> - влево</li>
+                            <li><strong>R</strong> - вправо</li>
+                            <li><strong>S</strong> - оставаться на месте</li>
+                        </ul>
+                        
+                        <h4>Пример правила</h4>
+                        <code>q0 + [a,_] → q1 + [a,a] + [R,R]</code><br>
+                        <small>Из состояния q0, читая 'a' на первой ленте и '_' на второй, перейти в q1, записать 'a' на обе ленты и сдвинуть обе головки вправо.</small>
+                    </div>
+                    
+                    <div class="help-content" id="helpSimulation">
+                        <h3>Запуск симуляции</h3>
+                        <h4>Пошаговое выполнение</h4>
+                        <p>Используйте кнопку Step для детального изучения каждого перехода.</p>
+                        
+                        <h4>Автоматическое выполнение</h4>
+                        <p>Нажмите Play для непрерывного выполнения. Регулируйте скорость по необходимости.</p>
+                        
+                        <h4>Отслеживание прогресса</h4>
+                        <ul>
+                            <li>Текущее состояние отображается в статусной строке</li>
+                            <li>Активное правило подсвечивается</li>
+                            <li>Измененные ячейки анимируются</li>
+                            <li>Прогресс-бар показывает выполнение длинных вычислений</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-content" id="helpEquivalence">
+                        <h3>Преобразование в одноленточную машину</h3>
+                        <p>Любая многоленточная машина Тьюринга может быть преобразована в эквивалентную одноленточную машину.</p>
+                        
+                        <h4>Принцип преобразования</h4>
+                        <ol>
+                            <li>Все ленты объединяются в одну с разделителями</li>
+                            <li>Позиции головок отмечаются специальными символами</li>
+                            <li>Каждый шаг многоленточной машины эмулируется серией шагов одноленточной</li>
+                        </ol>
+                        
+                        <h4>Сложность</h4>
+                        <p>Время выполнения может увеличиться квадратично, но вычислимость сохраняется.</p>
+                    </div>
+                    
+                    <div class="help-content" id="helpExamples">
+                        <h3>Примеры использования</h3>
+                        <h4>Копирование строки (2 ленты)</h4>
+                        <p>Копирует входную строку с первой ленты на вторую. Демонстрирует базовые операции чтения и записи.</p>
+                        
+                        <h4>Сложение чисел (3 ленты)</h4>
+                        <p>Складывает два унарных числа. Показывает использование третьей ленты как рабочего пространства.</p>
+                        
+                        <h4>Собственные программы</h4>
+                        <p>Попробуйте создать:</p>
+                        <ul>
+                            <li>Обращение строки</li>
+                            <li>Проверка на палиндром</li>
+                            <li>Умножение чисел</li>
+                            <li>Сортировка символов</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-content" id="helpHotkeys">
+                        <h3>Горячие клавиши</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--space-8); font-family: var(--font-family-mono);">
+                            <strong>Space</strong> <span>Play/Pause симуляции</span>
+                            <strong>→</strong> <span>Выполнить один шаг</span>
+                            <strong>R</strong> <span>Сброс симуляции</span>
+                            <strong>H</strong> <span>Показать/скрыть помощь</span>
+                            <strong>E</strong> <span>Показать эквивалентность</span>
+                            <strong>S</strong> <span>Сохранить программу</span>
+                            <strong>L</strong> <span>Загрузить программу</span>
+                            <strong>Esc</strong> <span>Закрыть модальные окна</span>
+                        </div>
+                    </div>
+                    
+                    <div class="help-content" id="helpFaq">
+                        <h3>Часто задаваемые вопросы</h3>
+                        
+                        <h4>Q: Машина зацикливается, что делать?</h4>
+                        <p>A: Проверьте правила переходов на наличие бесконечных циклов. Убедитесь, что есть условия для достижения финального состояния.</p>
+                        
+                        <h4>Q: Как добавить новое состояние?</h4>
+                        <p>A: Просто введите новое имя состояния в поле правила перехода. Система автоматически распознает новые состояния.</p>
+                        
+                        <h4>Q: Можно ли использовать многосимвольные токены?</h4>
+                        <p>A: Да, но рекомендуется использовать односимвольные для лучшей читаемости и совместимости.</p>
+                        
+                        <h4>Q: Как сохранить свою программу?</h4>
+                        <p>A: Используйте кнопку "Сохранить программу" или горячую клавишу S. Программа сохранится в формате JSON.</p>
+                        
+                        <h4>Q: Есть ли ограничения на количество шагов?</h4>
+                        <p>A: Да, для предотвращения бесконечных циклов установлен лимит в 10000 шагов.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Global state
+        let currentStep = 1;
+        let selectedTapeCount = 0;
+        let selectedExample = null;
+        let machine = {
+            tapes: [],
+            states: [],
+            currentState: 'q0',
+            transitions: [],
+            heads: [],
+            isRunning: false,
+            isPaused: false,
+            stepCount: 0,
+            startTime: 0
+        };
+        let executionSpeed = 200;
+        let executionTimer = null;
+        let maxSteps = 10000;
+        
+        // Examples data with complete transition rules
+        const examples = {
+            2: [
+                {
+                    name: "Копирование строки",
+                    description: "Копирует строку с первой ленты на вторую",
+                    tapeCount: 2,
+                    states: ["q0", "qf"],
+                    initialState: "q0",
+                    finalStates: ["qf"],
+                    alphabet: ["a", "b", "c", "_"],
+                    transitions: [
+                        { from: "q0", read: ["a", "_"], to: "q0", write: ["a", "a"], move: ["R", "R"], description: "Копируем 'a'" },
+                        { from: "q0", read: ["b", "_"], to: "q0", write: ["b", "b"], move: ["R", "R"], description: "Копируем 'b'" },
+                        { from: "q0", read: ["c", "_"], to: "q0", write: ["c", "c"], move: ["R", "R"], description: "Копируем 'c'" },
+                        { from: "q0", read: ["_", "_"], to: "qf", write: ["_", "_"], move: ["S", "S"], description: "Конец строки - останавливаемся" }
+                    ],
+                    initialTapes: [["a", "b", "c"], ["_", "_", "_"]]
+                },
+                {
+                    name: "Проверка палиндрома",
+                    description: "Проверяет, является ли строка палиндромом",
+                    tapeCount: 2,
+                    states: ["q0", "q1", "q2", "q3", "q4", "qaccept", "qreject"],
+                    initialState: "q0",
+                    finalStates: ["qaccept", "qreject"],
+                    alphabet: ["a", "b", "_", "X"],
+                    transitions: [
+                        { from: "q0", read: ["a", "_"], to: "q1", write: ["X", "a"], move: ["R", "R"], description: "Помечаем 'a' и запоминаем" },
+                        { from: "q0", read: ["b", "_"], to: "q2", write: ["X", "b"], move: ["R", "R"], description: "Помечаем 'b' и запоминаем" },
+                        { from: "q0", read: ["_", "_"], to: "qaccept", write: ["_", "_"], move: ["S", "S"], description: "Пустая строка - палиндром" },
+                        { from: "q1", read: ["a", "_"], to: "q1", write: ["a", "_"], move: ["R", "S"], description: "Ищем конец строки" },
+                        { from: "q1", read: ["b", "_"], to: "q1", write: ["b", "_"], move: ["R", "S"], description: "Ищем конец строки" },
+                        { from: "q1", read: ["_", "a"], to: "q3", write: ["_", "X"], move: ["L", "L"], description: "Нашли соответствующую 'a'" },
+                        { from: "q1", read: ["_", "b"], to: "qreject", write: ["_", "b"], move: ["S", "S"], description: "Не палиндром" },
+                        { from: "q2", read: ["a", "_"], to: "q2", write: ["a", "_"], move: ["R", "S"], description: "Ищем конец строки" },
+                        { from: "q2", read: ["b", "_"], to: "q2", write: ["b", "_"], move: ["R", "S"], description: "Ищем конец строки" },
+                        { from: "q2", read: ["_", "b"], to: "q3", write: ["_", "X"], move: ["L", "L"], description: "Нашли соответствующую 'b'" },
+                        { from: "q2", read: ["_", "a"], to: "qreject", write: ["_", "a"], move: ["S", "S"], description: "Не палиндром" },
+                        { from: "q3", read: ["a", "_"], to: "q3", write: ["a", "_"], move: ["L", "S"], description: "Возвращаемся к началу" },
+                        { from: "q3", read: ["b", "_"], to: "q3", write: ["b", "_"], move: ["L", "S"], description: "Возвращаемся к началу" },
+                        { from: "q3", read: ["X", "_"], to: "q0", write: ["X", "_"], move: ["R", "S"], description: "Следующая итерация" },
+                        { from: "q0", read: ["X", "_"], to: "q4", write: ["X", "_"], move: ["R", "S"], description: "Проверяем оставшиеся символы" },
+                        { from: "q4", read: ["X", "_"], to: "q4", write: ["X", "_"], move: ["R", "S"], description: "Пропускаем помеченные" },
+                        { from: "q4", read: ["_", "_"], to: "qaccept", write: ["_", "_"], move: ["S", "S"], description: "Все символы проверены - палиндром" }
+                    ],
+                    initialTapes: [["a", "b", "a"], ["_", "_", "_"]]
+                }
+            ],
+            3: [],
+            1: [
+                {
+                    name: "Простая замена",
+                    description: "Заменяет все символы 'a' на 'b'",
+                    tapeCount: 1,
+                    states: ["q0", "qf"],
+                    initialState: "q0",
+                    finalStates: ["qf"],
+                    alphabet: ["a", "b", "_"],
+                    transitions: [
+                        { from: "q0", read: ["a"], to: "q0", write: ["b"], move: ["R"], description: "Заменяем 'a' на 'b'" },
+                        { from: "q0", read: ["b"], to: "q0", write: ["b"], move: ["R"], description: "Оставляем 'b' как есть" },
+                        { from: "q0", read: ["_"], to: "qf", write: ["_"], move: ["S"], description: "Конец ленты" }
+                    ],
+                    initialTapes: [["a", "b", "a", "a"]]
+                }
+            ]
+        };
+
+        function showSimulationTutorial() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🎆 Первые шаги в симуляции</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-16);">
+                            <div class="card">
+                                <div class="card__body" style="text-align: center;">
+                                    <div style="font-size: 2rem; margin-bottom: var(--space-8);">▶️</div>
+                                    <h5>Запуск</h5>
+                                    <p style="font-size: var(--font-size-sm);">Нажмите Play для автоматического выполнения</p>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card__body" style="text-align: center;">
+                                    <div style="font-size: 2rem; margin-bottom: var(--space-8);">⏭️</div>
+                                    <h5>По шагам</h5>
+                                    <p style="font-size: var(--font-size-sm);">Используйте Step для детального изучения</p>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card__body" style="text-align: center;">
+                                    <div style="font-size: 2rem; margin-bottom: var(--space-8);">🎞️</div>
+                                    <h5>Ленты</h5>
+                                    <p style="font-size: var(--font-size-sm);">Цветные рамки показывают позиции головок</p>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card__body" style="text-align: center;">
+                                    <div style="font-size: 2rem; margin-bottom: var(--space-8);">🔄</div>
+                                    <h5>Правила</h5>
+                                    <p style="font-size: var(--font-size-sm);">Активное правило подсвечивается зелёным</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status status--info" style="margin: var(--space-16) 0;">
+                            ⌨️ <strong>Горячие клавиши:</strong> Space (запуск), → (шаг), R (сброс), H (помощь), E (эквивалентность)
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <button class="btn btn--primary" onclick="this.closest('.modal').remove()">
+                                Понятно, начать! 🚀
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function loadProgram() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const program = JSON.parse(e.target.result);
+                        
+                        // Validate program structure
+                        if (!program.tapeCount || !program.transitions) {
+                            throw new Error('Неверный формат файла');
+                        }
+                        
+                        // Load program
+                        selectedTapeCount = program.tapeCount;
+                        selectedExample = null;
+                        
+                        machine.states = program.states || [];
+                        machine.transitions = program.transitions || [];
+                        machine.tapes = program.initialTapes ? program.initialTapes.map(tape => [...tape]) : [];
+                        
+                        // Ensure we have enough tapes
+                        while (machine.tapes.length < selectedTapeCount) {
+                            machine.tapes.push(['_']);
+                        }
+                        
+                        machine.heads = new Array(selectedTapeCount).fill(0);
+                        machine.currentState = program.initialState || machine.states[0] || 'q0';
+                        
+                        // Go to simulation step
+                        goToStep(4);
+                        
+                        showNotification(`Программа "${program.name || 'Неизвестная'}" загружена!`, 'success');
+                        
+                    } catch (error) {
+                        showNotification('Ошибка загрузки: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            showWelcome();
+            setupKeyboardShortcuts();
+            updateGlobalStatus('Готов к настройке многоленточной машины Тьюринга');
+            
+            // Add load program button to welcome modal
+            setTimeout(() => {
+                const welcomeModal = document.getElementById('welcomeModal');
+                if (welcomeModal && welcomeModal.classList.contains('show')) {
+                    const loadBtn = document.createElement('button');
+                    loadBtn.className = 'btn btn--outline';
+                    loadBtn.innerHTML = '📁 Загрузить программу';
+                    loadBtn.onclick = () => { closeWelcome(); loadProgram(); };
+                    
+                    const buttonContainer = welcomeModal.querySelector('.modal-body > div:last-child');
+                    if (buttonContainer) {
+                        buttonContainer.appendChild(loadBtn);
+                    }
+                }
+            }, 100);
+        });
+
+        // Keyboard shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+                
+                switch(e.code) {
+                    case 'Space':
+                        e.preventDefault();
+                        if (currentStep === 4) toggleExecution();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        if (currentStep === 4) stepExecution();
+                        break;
+                    case 'KeyR':
+                        e.preventDefault();
+                        if (currentStep === 4) resetExecution();
+                        break;
+                    case 'KeyH':
+                        e.preventDefault();
+                        showHelp();
+                        break;
+                    case 'KeyE':
+                        e.preventDefault();
+                        if (currentStep === 4) showEquivalence();
+                        break;
+                    case 'KeyS':
+                        e.preventDefault();
+                        if (currentStep === 4) saveProgram();
+                        break;
+                    case 'Escape':
+                        closeHelp();
+                        closeWelcome();
+                        break;
+                }
+            });
+        }
+
+        // Welcome modal
+        function showWelcome() {
+            document.getElementById('welcomeModal').classList.add('show');
+        }
+
+        function closeWelcome() {
+            document.getElementById('welcomeModal').classList.remove('show');
+        }
+
+        // Help modal
+        function showHelp() {
+            document.getElementById('helpModal').classList.add('show');
+        }
+
+        function closeHelp() {
+            document.getElementById('helpModal').classList.remove('show');
+        }
+
+        function showHelpSection(section) {
+            // Update nav
+            document.querySelectorAll('.help-nav-item').forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.help-content').forEach(content => content.classList.remove('active'));
+            document.getElementById('help' + section.charAt(0).toUpperCase() + section.slice(1)).classList.add('active');
+        }
+
+        // Wizard navigation
+        function goToStep(step) {
+            // Hide current step content
+            document.querySelectorAll('.wizard-step-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show target step content
+            document.getElementById('step' + step + 'Content').classList.remove('hidden');
+            
+            // Update wizard steps
+            for (let i = 1; i <= 4; i++) {
+                const circle = document.getElementById('step' + i + 'Circle');
+                const text = document.getElementById('step' + i + 'Text');
+                
+                circle.classList.remove('active', 'completed');
+                text.classList.remove('active');
+                
+                if (i < step) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '✓';
+                } else if (i === step) {
+                    circle.classList.add('active');
+                    text.classList.add('active');
+                    circle.innerHTML = i;
+                } else {
+                    circle.innerHTML = i;
+                }
+            }
+            
+            currentStep = step;
+            
+            // Step-specific actions
+            if (step === 2) {
+                populateExamples();
+            } else if (step === 3) {
+                setupTapeDataEditor();
+            } else if (step === 4) {
+                initializeSimulation();
+                // Show brief tutorial overlay
+                setTimeout(() => showSimulationTutorial(), 500);
+            }
+            
+            updateGlobalStatus(getStepStatus(step));
+        }
+
+        function getStepStatus(step) {
+            const statuses = {
+                1: 'Выбор количества лент',
+                2: 'Выбор программы',
+                3: 'Настройка данных лент',
+                4: 'Симуляция готова к запуску'
+            };
+            return statuses[step] || 'Неизвестный шаг';
+        }
+
+        // Step 1: Tape count selection
+        function selectTapeCount(count) {
+            selectedTapeCount = count;
+            
+            // Update visual selection
+            document.querySelectorAll('.tape-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-count="${count}"]`).classList.add('selected');
+            
+            // Enable next button
+            document.getElementById('step1NextBtn').disabled = false;
+            
+            showNotification('Выбрано лент: ' + count, 'info');
+        }
+
+        // Step 2: Example selection
+        function populateExamples() {
+            const grid = document.getElementById('examplesGrid');
+            grid.innerHTML = '';
+            
+            // Add custom program option
+            const customCard = document.createElement('div');
+            customCard.className = 'example-card';
+            customCard.innerHTML = `
+                <h4>Создать свою программу</h4>
+                <p>Создайте собственную программу с нуля</p>
+                <small style="color: var(--color-text-secondary);">Для опытных пользователей</small>
+            `;
+            customCard.onclick = () => selectExample(null);
+            grid.appendChild(customCard);
+            
+            // Add examples for selected tape count
+            if (examples[selectedTapeCount]) {
+                examples[selectedTapeCount].forEach(example => {
+                    const card = document.createElement('div');
+                    card.className = 'example-card';
+                    card.innerHTML = `
+                        <h4>${example.name}</h4>
+                        <p>${example.description}</p>
+                        <small style="color: var(--color-text-secondary);">${example.tapeCount} лент, ${example.transitions.length} правил</small>
+                    `;
+                    card.onclick = () => selectExample(example);
+                    grid.appendChild(card);
+                });
+            }
+            
+            // Add examples for other tape counts if none for current
+            if (!examples[selectedTapeCount] || examples[selectedTapeCount].length === 0) {
+                const noExamples = document.createElement('div');
+                noExamples.className = 'card';
+                noExamples.style.gridColumn = '1 / -1';
+                noExamples.innerHTML = `
+                    <div class="card__body" style="text-align: center; color: var(--color-text-secondary);">
+                        <p>Для ${selectedTapeCount} лент пока нет готовых примеров.</p>
+                        <p>Создайте свою программу или выберите другое количество лент.</p>
+                    </div>
+                `;
+                grid.appendChild(noExamples);
+            }
+        }
+
+        function selectExample(example) {
+            selectedExample = example;
+            
+            // Update visual selection
+            document.querySelectorAll('.example-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.example-card').classList.add('selected');
+            
+            // Enable next button
+            document.getElementById('step2NextBtn').disabled = false;
+            
+            if (example) {
+                showNotification('Выбран пример: ' + example.name, 'success');
+            } else {
+                showNotification('Создание собственной программы', 'info');
+            }
+        }
+
+        // Step 3: Tape data editor
+        function setupTapeDataEditor() {
+            const container = document.getElementById('tapeDataEditor');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < selectedTapeCount; i++) {
+                const tapeEditor = document.createElement('div');
+                tapeEditor.className = 'card';
+                tapeEditor.style.marginBottom = 'var(--space-16)';
+                
+                const initialData = selectedExample ? 
+                    (selectedExample.initialTapes[i] || ['_']) : ['_'];
+                
+                tapeEditor.innerHTML = `
+                    <div class="card__body">
+                        <h5 style="margin-bottom: var(--space-8); color: ${['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'][i % 5]};">🎞️ Лента ${i + 1}</h5>
+                        <div style="display: flex; gap: var(--space-8); align-items: center; margin-bottom: var(--space-8);">
+                            <input type="text" class="form-control" 
+                                   placeholder="Введите символы через запятую (напр.: a, b, c)" 
+                                   value="${initialData.join(', ')}" 
+                                   onchange="updateTapeData(${i}, this.value)">
+                            <button class="btn btn--secondary btn--sm tooltip" 
+                                    data-tooltip="Очистить ленту" 
+                                    onclick="clearTape(${i})">
+                                🗑️
+                            </button>
+                            <button class="btn btn--secondary btn--sm tooltip" 
+                                    data-tooltip="Случайные данные" 
+                                    onclick="generateRandomTape(${i})">
+                                🎲
+                            </button>
+                        </div>
+                        <div class="tape-preview" id="tapePreview${i}">
+                            ${initialData.map((symbol, idx) => 
+                                `<span class="tape-cell ${idx === 0 ? 'head' : ''}" style="${idx === 0 ? `border-color: ${['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'][i % 5]};` : ''}">${symbol}</span>`
+                            ).join('')}
+                        </div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-8);">
+                            ℹ️ Используйте "_" для пустых ячеек. Начальная позиция головки: 0
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(tapeEditor);
+            }
+            
+            // Initialize machine tapes
+            machine.tapes = [];
+            machine.heads = [];
+            machine.initialTapes = []; // Store initial configuration
+            for (let i = 0; i < selectedTapeCount; i++) {
+                const initialData = selectedExample ? 
+                    (selectedExample.initialTapes[i] || ['_']) : ['_'];
+                machine.tapes.push([...initialData]);
+                machine.initialTapes.push([...initialData]);
+                machine.heads.push(0);
+            }
+        }
+        
+        function generateRandomTape(tapeIndex) {
+            const symbols = ['a', 'b', 'c', '1', '0'];
+            const length = Math.floor(Math.random() * 5) + 3; // 3-7 symbols
+            const randomTape = [];
+            
+            for (let i = 0; i < length; i++) {
+                randomTape.push(symbols[Math.floor(Math.random() * symbols.length)]);
+            }
+            
+            const input = document.querySelector(`#tapeDataEditor .card:nth-child(${tapeIndex + 1}) input`);
+            input.value = randomTape.join(', ');
+            updateTapeData(tapeIndex, input.value);
+            
+            showNotification(`Лента ${tapeIndex + 1} заполнена случайными данными`, 'info');
+        }
+        
+        function showDebugInfo() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>🔍 Отладочная информация</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16);">
+                            <div class="card">
+                                <div class="card__body">
+                                    <h5>⚡ Состояние машины</h5>
+                                    <ul style="list-style: none; padding: 0; font-family: var(--font-family-mono);">
+                                        <li>Текущее состояние: <code>${machine.currentState}</code></li>
+                                        <li>Шагов выполнено: <code>${machine.stepCount}</code></li>
+                                        <li>Работает: <code>${machine.isRunning ? 'Да' : 'Нет'}</code></li>
+                                        <li>На паузе: <code>${machine.isPaused ? 'Да' : 'Нет'}</code></li>
+                                        <li>Скорость: <code>${executionSpeed}мс</code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card__body">
+                                    <h5>🎞️ Позиции головок</h5>
+                                    <ul style="list-style: none; padding: 0; font-family: var(--font-family-mono);">
+                                        ${machine.heads.map((pos, i) => 
+                                            `<li>Лента ${i+1}: позиция <code>${pos}</code>, символ <code>${machine.tapes[i] ? machine.tapes[i][pos] || '_' : '_'}</code></li>`
+                                        ).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-top: var(--space-16);">
+                            <div class="card__body">
+                                <h5>📈 Статистика</h5>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-8); font-family: var(--font-family-mono);">
+                                    <div>Общие состояния: <strong>${machine.states.length}</strong></div>
+                                    <div>Общие правила: <strong>${machine.transitions.length}</strong></div>
+                                    <div>Ленты: <strong>${selectedTapeCount}</strong></div>
+                                    <div>Лимит шагов: <strong>${maxSteps}</strong></div>
+                                    <div>Алфавит: <strong>${Array.from(new Set(machine.tapes.flat().concat(['_']))).length} символов</strong></div>
+                                    <div>Время работы: <strong>${Date.now() - machine.startTime}мс</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${machine.executionLog && machine.executionLog.length > 0 ? `
+                        <div class="card" style="margin-top: var(--space-16);">
+                            <div class="card__body">
+                                <h5>📜 Последние 5 шагов</h5>
+                                <div style="max-height: 200px; overflow-y: auto; font-family: var(--font-family-mono); font-size: var(--font-size-sm);">
+                                    ${machine.executionLog.slice(-5).map(entry => 
+                                        `<div style="padding: var(--space-4); border-bottom: 1px solid var(--color-border);">
+                                            <strong>Шаг ${entry.step}:</strong> ${entry.rule}<br>
+                                            <span style="color: var(--color-text-secondary);">${entry.description || ''}</span>
+                                        </div>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="text-align: center; margin-top: var(--space-16);">
+                            <button class="btn btn--secondary" onclick="console.log('Machine state:', machine); showNotification('Объект machine выведен в консоль', 'info')">
+                                🖥️ Вывести в консоль
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function updateTapeData(tapeIndex, value) {
+            const symbols = value.split(',').map(s => s.trim()).filter(s => s !== '');
+            if (symbols.length === 0) symbols.push('_');
+            
+            machine.tapes[tapeIndex] = symbols;
+            updateTapePreview(tapeIndex);
+        }
+
+        function clearTape(tapeIndex) {
+            machine.tapes[tapeIndex] = ['_'];
+            const input = document.querySelector(`#tapeDataEditor input:nth-of-type(${tapeIndex * 2 + 1})`);
+            input.value = '_';
+            updateTapePreview(tapeIndex);
+        }
+
+        function updateTapePreview(tapeIndex) {
+            const preview = document.getElementById('tapePreview' + tapeIndex);
+            const tape = machine.tapes[tapeIndex];
+            preview.innerHTML = tape.map((symbol, idx) => 
+                `<span class="tape-cell ${idx === 0 ? 'head' : ''}">${symbol}</span>`
+            ).join('');
+        }
+
+        // Step 4: Simulation
+        function initializeSimulation() {
+            // Initialize machine state
+            if (selectedExample) {
+                machine.states = [...selectedExample.states];
+                machine.transitions = [...selectedExample.transitions];
+                machine.currentState = selectedExample.states[0] || 'q0';
+            } else {
+                machine.states = ['q0', 'qf'];
+                machine.transitions = [];
+                machine.currentState = 'q0';
+            }
+            
+            machine.isRunning = false;
+            machine.isPaused = false;
+            machine.stepCount = 0;
+            machine.startTime = Date.now();
+            
+            // Render interface
+            renderTapes();
+            renderTransitions();
+            updateMachineStatus();
+            updateControls();
+        }
+
+        function renderTapes() {
+            const container = document.getElementById('tapesContainer');
+            container.innerHTML = '';
+            
+            const tapeColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'];
+            
+            machine.tapes.forEach((tape, index) => {
+                const tapeDiv = document.createElement('div');
+                tapeDiv.className = 'tape';
+                tapeDiv.style.borderLeft = `4px solid ${tapeColors[index % tapeColors.length]}`;
+                
+                const extendedTape = [...tape];
+                // Extend tape if needed
+                while (extendedTape.length < machine.heads[index] + 8) {
+                    extendedTape.push('_');
+                }
+                while (machine.heads[index] < 5) {
+                    extendedTape.unshift('_');
+                    machine.heads[index]++;
+                }
+                
+                machine.tapes[index] = extendedTape;
+                
+                tapeDiv.innerHTML = `
+                    <div class="tape-header">
+                        <h5 style="color: ${tapeColors[index % tapeColors.length]};">🎞️ Лента ${index + 1}</h5>
+                        <small>Позиция головки: ${machine.heads[index]} | Символов: ${extendedTape.filter(s => s !== '_').length}</small>
+                    </div>
+                    <div class="tape-cells" id="tapeCells${index}">
+                        ${extendedTape.map((symbol, cellIndex) => `
+                            <div class="tape-cell ${cellIndex === machine.heads[index] ? 'head head-tape-' + (index + 1) : ''}" 
+                                 data-tape="${index}" data-cell="${cellIndex}"
+                                 style="${cellIndex === machine.heads[index] ? `border-color: ${tapeColors[index % tapeColors.length]}; box-shadow: 0 0 0 2px ${tapeColors[index % tapeColors.length]}40;` : ''}">
+                                <div class="tape-cell-index">${cellIndex}</div>
+                                <div class="tape-cell-content">${symbol === '_' ? '&nbsp;' : symbol}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(tapeDiv);
+            });
+            
+            // Add validation warnings
+            const issues = validateProgram();
+            if (issues.length > 0) {
+                const warningDiv = document.createElement('div');
+                warningDiv.className = 'status status--warning';
+                warningDiv.style.margin = 'var(--space-16) 0';
+                warningDiv.innerHTML = `
+                    ⚠️ Обнаружены проблемы: ${issues.join(', ')}
+                    <button class="btn btn--sm" style="margin-left: var(--space-8);" onclick="showValidationDetails()">
+                        Подробнее
+                    </button>
+                `;
+                container.appendChild(warningDiv);
+            }
+        }
+
+        function renderTransitions() {
+            const container = document.getElementById('transitionsContainer');
+            container.innerHTML = '';
+            
+            if (machine.transitions.length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="text-align: center; color: var(--color-text-secondary); padding: var(--space-24);">
+                        <p>📝 Правила переходов пока не определены</p>
+                        <button class="btn btn--primary" onclick="addTransition()">
+                            + Добавить первое правило
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add header with labels
+            const headerDiv = document.createElement('div');
+            headerDiv.style.display = 'grid';
+            headerDiv.style.gridTemplateColumns = '1fr 2fr 1fr 2fr 2fr auto';
+            headerDiv.style.gap = 'var(--space-8)';
+            headerDiv.style.marginBottom = 'var(--space-8)';
+            headerDiv.style.padding = 'var(--space-8)';
+            headerDiv.style.fontWeight = 'var(--font-weight-medium)';
+            headerDiv.style.fontSize = 'var(--font-size-sm)';
+            headerDiv.style.color = 'var(--color-text-secondary)';
+            headerDiv.innerHTML = `
+                <div>Из состояния</div>
+                <div>Читаем символы [${Array.from({length: selectedTapeCount}, (_, i) => `Лента ${i+1}`).join(', ')}]</div>
+                <div>В состояние</div>
+                <div>Записываем символы</div>
+                <div>Движения головок [L/R/S]</div>
+                <div>Действия</div>
+            `;
+            container.appendChild(headerDiv);
+            
+            machine.transitions.forEach((transition, index) => {
+                const transitionDiv = document.createElement('div');
+                transitionDiv.className = 'transition-rule';
+                transitionDiv.id = `transition-${index}`;
+                
+                const isGenerated = transition.description && transition.description.includes('Авто-сгенерированное');
+                if (isGenerated) {
+                    transitionDiv.style.backgroundColor = 'var(--color-bg-2)';
+                    transitionDiv.style.opacity = '0.8';
+                }
+                
+                transitionDiv.innerHTML = `
+                    <input type="text" class="form-control" value="${transition.from}" 
+                           placeholder="q0"
+                           onchange="updateTransition(${index}, 'from', this.value)"
+                           title="Исходное состояние">
+                    <input type="text" class="form-control" value="${transition.read.join(', ')}" 
+                           placeholder="${Array.from({length: selectedTapeCount}, () => '_').join(', ')}"
+                           onchange="updateTransition(${index}, 'read', this.value)"
+                           title="Читаемые символы через запятую">
+                    <input type="text" class="form-control" value="${transition.to}" 
+                           placeholder="q1"
+                           onchange="updateTransition(${index}, 'to', this.value)"
+                           title="Целевое состояние">
+                    <input type="text" class="form-control" value="${transition.write.join(', ')}" 
+                           placeholder="${Array.from({length: selectedTapeCount}, () => '_').join(', ')}"
+                           onchange="updateTransition(${index}, 'write', this.value)"
+                           title="Записываемые символы через запятую">
+                    <input type="text" class="form-control" value="${transition.move.join(', ')}" 
+                           placeholder="${Array.from({length: selectedTapeCount}, () => 'S').join(', ')}"
+                           onchange="updateTransition(${index}, 'move', this.value)"
+                           title="Движения головок: L (влево), R (вправо), S (стоять)">
+                    <div style="display: flex; gap: var(--space-4);">
+                        <button class="btn btn--secondary btn--sm tooltip" 
+                                data-tooltip="Дублировать правило"
+                                onclick="duplicateTransition(${index})">
+                            📋
+                        </button>
+                        <button class="btn btn--secondary btn--sm tooltip" 
+                                data-tooltip="Удалить правило" 
+                                onclick="removeTransition(${index})">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                
+                // Add description if available
+                if (transition.description) {
+                    const descDiv = document.createElement('div');
+                    descDiv.style.gridColumn = '1 / -1';
+                    descDiv.style.fontSize = 'var(--font-size-xs)';
+                    descDiv.style.color = 'var(--color-text-secondary)';
+                    descDiv.style.fontStyle = 'italic';
+                    descDiv.style.marginTop = 'var(--space-4)';
+                    descDiv.textContent = '💬 ' + transition.description;
+                    transitionDiv.appendChild(descDiv);
+                }
+                
+                container.appendChild(transitionDiv);
+            });
+        }
+        
+        function duplicateTransition(index) {
+            const original = machine.transitions[index];
+            const duplicate = {
+                from: original.from,
+                read: [...original.read],
+                to: original.to,
+                write: [...original.write],
+                move: [...original.move],
+                description: (original.description || '') + ' (копия)'
+            };
+            
+            machine.transitions.splice(index + 1, 0, duplicate);
+            renderTransitions();
+            showNotification('Правило продублировано', 'info');
+        }
+
+        function updateTransition(index, field, value) {
+            const transition = machine.transitions[index];
+            
+            if (field === 'read' || field === 'write' || field === 'move') {
+                const values = value.split(',').map(s => s.trim());
+                transition[field] = values;
+            } else {
+                transition[field] = value;
+            }
+            
+            // Update states list if new state added
+            if (field === 'from' || field === 'to') {
+                if (!machine.states.includes(value)) {
+                    machine.states.push(value);
+                }
+            }
+        }
+
+        function addTransition() {
+            const newTransition = {
+                from: 'q0',
+                read: new Array(selectedTapeCount).fill('_'),
+                to: 'q1',
+                write: new Array(selectedTapeCount).fill('_'),
+                move: new Array(selectedTapeCount).fill('S')
+            };
+            
+            machine.transitions.push(newTransition);
+            renderTransitions();
+        }
+
+        function removeTransition(index) {
+            machine.transitions.splice(index, 1);
+            renderTransitions();
+        }
+
+        // Execution control
+        function toggleExecution() {
+            if (machine.isRunning) {
+                pauseExecution();
+            } else {
+                startExecution();
+            }
+        }
+
+        function startExecution() {
+            machine.isRunning = true;
+            machine.isPaused = false;
+            
+            executionTimer = setInterval(() => {
+                if (!stepExecution()) {
+                    pauseExecution();
+                }
+            }, executionSpeed);
+            
+            updateControls();
+            showNotification('Симуляция запущена', 'success');
+        }
+
+        function pauseExecution() {
+            machine.isRunning = false;
+            machine.isPaused = true;
+            
+            if (executionTimer) {
+                clearInterval(executionTimer);
+                executionTimer = null;
+            }
+            
+            updateControls();
+            showNotification('Симуляция приостановлена', 'info');
+        }
+
+        function stepExecution() {
+            if (machine.stepCount >= maxSteps) {
+                showNotification('Достигнут лимит шагов (10,000)', 'warning');
+                pauseExecution();
+                return false;
+            }
+            
+            const currentRead = machine.heads.map((head, i) => machine.tapes[i][head] || '_');
+            
+            // Find matching transition
+            const transition = machine.transitions.find(t => 
+                t.from === machine.currentState && 
+                arraysEqual(t.read, currentRead)
+            );
+            
+            if (!transition) {
+                if (machine.currentState === 'qf' || machine.currentState === 'qaccept' || 
+                    machine.currentState.includes('f') || machine.currentState.includes('accept')) {
+                    showNotification('Машина завершена успешно!', 'success');
+                    updateMachineStatus('Успешно завершено');
+                    pauseExecution();
+                } else if (machine.currentState === 'qreject' || machine.currentState.includes('reject')) {
+                    showNotification('Машина отклонила ввод', 'warning');
+                    updateMachineStatus('Ввод отклонен');
+                    pauseExecution();
+                } else {
+                    const errorMsg = `Ошибка! Нет правила для:\nСостояние: ${machine.currentState}\nЧитаемые символы: [${currentRead.join(', ')}]\n\nПредложение: Добавьте правило для ${machine.currentState} + [${currentRead.join(', ')}]`;
+                    showDetailedError(errorMsg);
+                    updateMachineStatus('Ошибка: недостающее правило');
+                    pauseExecution();
+                }
+                return false;
+            }
+            
+            // Highlight active transition
+            highlightTransition(transition);
+            
+            // Log execution step
+            if (!machine.executionLog) machine.executionLog = [];
+            machine.executionLog.push({
+                step: machine.stepCount,
+                timestamp: Date.now() - machine.startTime,
+                state: machine.currentState,
+                rule: `${transition.from} + [${transition.read.join(', ')}] → ${transition.to} + [${transition.write.join(', ')}] + [${transition.move.join(', ')}]`,
+                tapes: machine.tapes.map(tape => [...tape]),
+                heads: [...machine.heads],
+                description: transition.description
+            });
+            
+            // Apply transition
+            machine.currentState = transition.to;
+            
+            // Write symbols and move heads
+            transition.write.forEach((symbol, index) => {
+                if (index < machine.tapes.length) {
+                    machine.tapes[index][machine.heads[index]] = symbol;
+                    markCellChanged(index, machine.heads[index]);
+                }
+            });
+            
+            transition.move.forEach((direction, index) => {
+                if (index < machine.heads.length) {
+                    if (direction === 'L') {
+                        machine.heads[index] = Math.max(0, machine.heads[index] - 1);
+                        if (machine.heads[index] === 0) {
+                            machine.tapes[index].unshift('_');
+                            machine.heads[index] = 0;
+                        }
+                    } else if (direction === 'R') {
+                        machine.heads[index]++;
+                        if (machine.heads[index] >= machine.tapes[index].length) {
+                            machine.tapes[index].push('_');
+                        }
+                    }
+                    // 'S' means stay
+                }
+            });
+            
+            machine.stepCount++;
+            
+            // Update display
+            renderTapes();
+            updateMachineStatus();
+            updateProgress();
+            
+            return true;
+        }
+
+        function resetExecution() {
+            machine.isRunning = false;
+            machine.isPaused = false;
+            machine.currentState = machine.states[0] || 'q0';
+            machine.stepCount = 0;
+            machine.startTime = Date.now();
+            machine.executionLog = []; // Reset execution log
+            
+            // Reset heads
+            machine.heads = machine.heads.map(() => 0);
+            
+            // Reset tapes to initial state
+            if (selectedExample) {
+                machine.tapes = selectedExample.initialTapes.map(tape => [...tape]);
+            } else {
+                // Keep the configured initial tapes from step 3
+                const initialTapes = machine.initialTapes || machine.tapes.map(() => ['_']);
+                machine.tapes = initialTapes.map(tape => [...tape]);
+            }
+            
+            if (executionTimer) {
+                clearInterval(executionTimer);
+                executionTimer = null;
+            }
+            
+            // Clear transition highlights
+            document.querySelectorAll('.transition-rule').forEach(rule => {
+                rule.classList.remove('active');
+            });
+            
+            renderTapes();
+            updateMachineStatus();
+            updateControls();
+            updateProgress();
+            
+            showNotification('Симуляция сброшена к начальному состоянию', 'info');
+        }
+
+        function setSpeed(speed) {
+            executionSpeed = parseInt(speed);
+            
+            if (machine.isRunning && executionTimer) {
+                clearInterval(executionTimer);
+                executionTimer = setInterval(() => {
+                    if (!stepExecution()) {
+                        pauseExecution();
+                    }
+                }, executionSpeed);
+            }
+        }
+
+        // Helper functions
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, i) => val === b[i]);
+        }
+
+        function highlightTransition(transition) {
+            document.querySelectorAll('.transition-rule').forEach(rule => {
+                rule.classList.remove('active');
+            });
+            
+            const transitionIndex = machine.transitions.indexOf(transition);
+            if (transitionIndex >= 0) {
+                const rule = document.querySelectorAll('.transition-rule')[transitionIndex];
+                if (rule) rule.classList.add('active');
+            }
+        }
+
+        function markCellChanged(tapeIndex, cellIndex) {
+            setTimeout(() => {
+                const cell = document.querySelector(`[data-tape="${tapeIndex}"][data-cell="${cellIndex}"]`);
+                if (cell) {
+                    cell.classList.add('changed');
+                    cell.style.animation = 'cellChange 0.8s ease-in-out';
+                    setTimeout(() => {
+                        cell.classList.remove('changed');
+                        cell.style.animation = '';
+                    }, 800);
+                }
+            }, 100);
+        }
+        
+        function showValidationDetails() {
+            const issues = validateProgram();
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🔍 Валидация программы</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Обнаруженные проблемы:</h4>
+                        <ul>
+                            ${issues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                        
+                        <h4>Рекомендации:</h4>
+                        <ul>
+                            <li>Убедитесь, что для каждого состояния определены переходы для всех возможных комбинаций символов</li>
+                            <li>Добавьте финальные состояния (qf, qaccept, qreject)</li>
+                            <li>Проверьте, что все состояния достижимы</li>
+                        </ul>
+                        
+                        <div style="margin-top: var(--space-16);">
+                            <button class="btn btn--primary" onclick="generateMissingRules()">
+                                ✨ Сгенерировать недостающие правила
+                            </button>
+                            <button class="btn btn--secondary" onclick="this.closest('.modal').remove()">
+                                Закрыть
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function generateMissingRules() {
+            const states = new Set();
+            const symbols = new Set(['_']);
+            
+            // Collect existing states and symbols
+            machine.transitions.forEach(t => {
+                states.add(t.from);
+                states.add(t.to);
+                t.read.forEach(s => symbols.add(s));
+            });
+            
+            machine.tapes.forEach(tape => {
+                tape.forEach(symbol => symbols.add(symbol));
+            });
+            
+            let addedCount = 0;
+            states.forEach(state => {
+                if (state.includes('f') || state.includes('accept') || state.includes('reject')) return;
+                
+                const symbolsArray = Array.from(symbols);
+                const combinations = generateCombinations(symbolsArray, selectedTapeCount);
+                
+                combinations.forEach(combo => {
+                    const hasTransition = machine.transitions.some(t => 
+                        t.from === state && arraysEqual(t.read, combo)
+                    );
+                    
+                    if (!hasTransition && addedCount < 10) { // Limit to 10 auto-generated rules
+                        machine.transitions.push({
+                            from: state,
+                            read: [...combo],
+                            to: 'qf',
+                            write: [...combo],
+                            move: new Array(selectedTapeCount).fill('S'),
+                            description: 'Авто-сгенерированное правило (остановка)'
+                        });
+                        addedCount++;
+                    }
+                });
+            });
+            
+            renderTransitions();
+            showNotification(`Добавлено ${addedCount} правил`, 'success');
+            document.querySelector('.modal').remove();
+            renderTapes(); // Re-render to update warnings
+        }
+
+        function updateMachineStatus(status = null) {
+            const statusElement = document.getElementById('machineStatus');
+            const elapsed = Date.now() - machine.startTime;
+            
+            if (status) {
+                statusElement.textContent = `Состояние: ${status}`;
+            } else {
+                statusElement.textContent = `Состояние: ${machine.currentState} | Шаг: ${machine.stepCount} | Время: ${elapsed}мс`;
+            }
+        }
+
+        function updateControls() {
+            const playBtn = document.getElementById('playBtn');
+            const stepBtn = document.getElementById('stepBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            if (machine.isRunning) {
+                playBtn.innerHTML = '⏸️';
+                playBtn.setAttribute('data-tooltip', 'Пауза');
+                stepBtn.disabled = true;
+            } else {
+                playBtn.innerHTML = '▶️';
+                playBtn.setAttribute('data-tooltip', 'Запуск');
+                stepBtn.disabled = false;
+            }
+        }
+
+        function updateProgress() {
+            const progress = Math.min((machine.stepCount / maxSteps) * 100, 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateGlobalStatus(status) {
+            document.getElementById('globalStatus').textContent = status;
+        }
+
+        // Advanced features
+        function showEquivalence() {
+            const equivalentMachine = convertToSingleTape();
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h2>🔄 Эквивалентная одноленточная машина</h2>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="status status--info" style="margin-bottom: var(--space-16);">
+                            🤖 Любая ${selectedTapeCount}-ленточная машина Тьюринга может быть преобразована в эквивалентную одноленточную
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); margin-bottom: var(--space-24);">
+                            <div class="card">
+                                <div class="card__body">
+                                    <h4>📦 Многоленточная машина</h4>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li>🎞️ Лент: ${selectedTapeCount} шт.</li>
+                                        <li>⚙️ Состояния: ${machine.states.length} шт.</li>
+                                        <li>🔄 Переходы: ${machine.transitions.length} шт.</li>
+                                        <li>📝 Алфавит: ${equivalentMachine.alphabet.length} символов</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card__body">
+                                    <h4>📦 Одноленточная машина</h4>
+                                    <ul style="list-style: none; padding: 0;">
+                                        <li>🎞️ Лент: 1 шт.</li>
+                                        <li>⚙️ Состояния: ${equivalentMachine.states.length} шт.</li>
+                                        <li>🔄 Переходы: ~${equivalentMachine.transitionCount} шт.</li>
+                                        <li>📝 Алфавит: ${equivalentMachine.alphabet.length} символов</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4>🔍 Принцип преобразования:</h4>
+                        <div class="card" style="background: var(--color-bg-1);">
+                            <div class="card__body">
+                                <ol style="line-height: 1.6;">
+                                    <li><strong>Объединение лент:</strong> Все ${selectedTapeCount} ленты объединяются в одну с разделителями <code>#</code></li>
+                                    <li><strong>Маркировка головок:</strong> Позиции всех головок отмечаются специальными символами</li>
+                                    <li><strong>Эмуляция шагов:</strong> Каждый шаг многоленточной машины эмулируется серией шагов</li>
+                                    <li><strong>Сохранение вычислимости:</strong> Класс вычислимых функций остаётся тем же</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <div class="status status--warning" style="margin-top: var(--space-16);">
+                            ⚡ <strong>Оценка сложности:</strong> Время выполнения увеличивается в O(T²) раз, где T - время работы многоленточной машины
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: var(--space-24);">
+                            <button class="btn btn--primary" onclick="demonstrateEquivalence()">
+                                🎬 Показать демонстрацию
+                            </button>
+                            <button class="btn btn--secondary" onclick="this.closest('.modal').remove()">
+                                Закрыть
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function demonstrateEquivalence() {
+    // Получаем текущее состояние машины
+    const k = selectedTapeCount;
+
+    // Собираем содержимое всех лент
+    const tapeContents = machine.tapes.map(tape => {
+        return tape.join('').trim() || '_';
+    });
+
+    // Создаем визуализацию одной ленты с разделителями
+    let singleTapeRepresentation = '';
+    for (let i = 0; i < tapeContents.length; i++) {
+        const tapeStr = tapeContents[i];
+        const headPos = machine.heads[i] || 0;
+
+        // Добавляем содержимое ленты с маркером головки
+        for (let j = 0; j < tapeStr.length; j++) {
+            if (j === headPos) {
+                singleTapeRepresentation += '<span style="background: var(--color-primary); color: white; padding: 2px 4px; border-radius: 2px;">' + 
+                    tapeStr[j] + '*</span>';
+            } else {
+                singleTapeRepresentation += tapeStr[j];
+            }
+        }
+
+        // Добавляем разделитель между лентами
+        if (i < tapeContents.length - 1) {
+            singleTapeRepresentation += '<span style="color: var(--color-error); font-weight: bold;"> # </span>';
+        }
+    }
+
+    // Создаем детальное объяснение
+    const demo = document.createElement('div');
+    demo.style.marginTop = 'var(--space-16)';
+    demo.style.padding = 'var(--space-16)';
+    demo.style.background = 'var(--color-bg-3)';
+    demo.style.borderRadius = 'var(--radius-base)';
+    demo.innerHTML = `
+        <h5>💻 Пример кодирования на одной ленте:</h5>
+
+        <div style="margin: var(--space-16) 0;">
+            <h6 style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-8);">
+                Исходная ${k}-ленточная машина:
+            </h6>
+            ${tapeContents.map((content, idx) => `
+                <div style="font-family: var(--font-family-mono); background: var(--color-surface); 
+                     padding: var(--space-8); border-radius: var(--radius-sm); margin: var(--space-4) 0;">
+                    <span style="color: var(--color-text-secondary);">Лента ${idx + 1}:</span>
+                    <span style="color: var(--color-primary); margin-left: var(--space-8);">${content}</span>
+                    <span style="color: var(--color-text-secondary); margin-left: var(--space-8);">
+                        (головка на позиции ${machine.heads[idx] || 0})
+                    </span>
+                </div>
+            `).join('')}
+        </div>
+
+        <div style="margin: var(--space-16) 0;">
+            <h6 style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-8);">
+                Эквивалентная одноленточная машина:
+            </h6>
+            <div style="font-family: var(--font-family-mono); background: var(--color-surface); 
+                 padding: var(--space-12); border-radius: var(--radius-sm); overflow-x: auto;">
+                <div style="color: var(--color-primary); font-weight: var(--font-weight-medium); font-size: var(--font-size-base);">
+                    ${singleTapeRepresentation}
+                </div>
+            </div>
+        </div>
+
+        <div style="background: var(--color-bg-1); padding: var(--space-12); border-radius: var(--radius-sm); 
+             border-left: 3px solid var(--color-info); margin-top: var(--space-12);">
+            <h6 style="margin-bottom: var(--space-8);">📋 Обозначения:</h6>
+            <ul style="list-style: none; padding: 0; font-size: var(--font-size-sm); line-height: 1.6;">
+                <li>🔷 <code style="background: var(--color-primary); color: white; padding: 2px 6px; border-radius: 2px;">символ*</code> 
+                    — позиция головки (маркированный символ)</li>
+                <li>🔷 <code style="color: var(--color-error); font-weight: bold;">#</code> 
+                    — разделитель между содержимым разных лент</li>
+                <li>🔷 <code>_</code> — пустая ячейка (blank)</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: var(--space-16); padding: var(--space-12); background: var(--color-bg-2); 
+             border-radius: var(--radius-sm);">
+            <h6 style="margin-bottom: var(--space-8);">⚙️ Алгоритм симуляции одного шага:</h6>
+            <ol style="font-size: var(--font-size-sm); line-height: 1.8; padding-left: var(--space-16);">
+                <li><strong>Сканирование:</strong> Пройти ленту слева направо, запомнить все маркированные символы</li>
+                <li><strong>Вычисление:</strong> Применить функцию перехода δ к текущему состоянию и прочитанным символам</li>
+                <li><strong>Запись:</strong> Пройти ленту снова, заменить маркированные символы на новые</li>
+                <li><strong>Перемещение:</strong> Сдвинуть маркеры * согласно направлениям движения (L/R/S)</li>
+            </ol>
+        </div>
+
+        <div style="margin-top: var(--space-12); padding: var(--space-8); background: var(--color-warning-bg); 
+             border-left: 3px solid var(--color-warning); border-radius: var(--radius-sm);">
+            <span style="font-size: var(--font-size-sm); color: var(--color-text);">
+                ⏱️ <strong>Сложность:</strong> Если ${k}-ленточная машина работает за время T, 
+                то одноленточная симуляция требует O(T²) времени
+            </span>
+        </div>
+    `;
+
+    const modalBody = document.querySelector('.modal .modal-body');
+    if (modalBody) {
+        // Удаляем предыдущую демонстрацию, если она есть
+        const existingDemo = modalBody.querySelector('.equivalence-demo');
+        if (existingDemo) {
+            existingDemo.remove();
+        }
+        demo.className = 'equivalence-demo';
+        modalBody.appendChild(demo);
+    }
+}
+
+        function convertToSingleTape() {
+    // Проверка наличия машины
+    if (!machine || !machine.transitions || machine.transitions.length === 0) {
+        return {
+            states: ['q0', 'qaccept', 'qreject'],
+            alphabet: ['_', '#', '*'],
+            transitionCount: 0,
+            error: 'Машина не определена или не имеет переходов'
+        };
+    }
+
+    const k = selectedTapeCount; // количество лент
+    const states = new Set();
+    const alphabet = new Set(['_', '#', '*']); // _ = пустая ячейка, # = разделитель лент, * = маркер головки
+
+    // Собираем состояния и алфавит из исходной машины
+    machine.transitions.forEach(trans => {
+        states.add(trans.from);
+        states.add(trans.to);
+
+        // Собираем символы из входных и выходных символов
+        if (trans.read) {
+            trans.read.forEach(symbol => {
+                if (symbol && symbol !== '_') alphabet.add(symbol);
+            });
+        }
+        if (trans.write) {
+            trans.write.forEach(symbol => {
+                if (symbol && symbol !== '_') alphabet.add(symbol);
+            });
+        }
+    });
+
+    // Добавляем маркированные версии всех символов (для отметки позиций головок)
+    const unmarkedSymbols = Array.from(alphabet);
+    unmarkedSymbols.forEach(symbol => {
+        if (symbol !== '*') {
+            alphabet.add(symbol + '*'); // символ с маркером головки
+        }
+    });
+
+    // Создаем новые состояния для одноленточной машины
+    // Для каждого состояния исходной машины нужны дополнительные состояния
+    // для выполнения одного шага многоленточной машины
+    const singleTapeStates = new Set();
+
+    states.forEach(state => {
+        // Базовое состояние
+        singleTapeStates.add(state);
+
+        // Состояния для сканирования ленты (чтение символов под головками)
+        for (let i = 0; i <= k; i++) {
+            singleTapeStates.add(`${state}_scan_${i}`);
+        }
+
+        // Состояния для обновления ленты (запись и перемещение головок)
+        for (let i = 0; i <= k; i++) {
+            singleTapeStates.add(`${state}_update_${i}`);
+        }
+
+        // Состояния для перемещения головок влево
+        for (let i = 0; i <= k; i++) {
+            singleTapeStates.add(`${state}_moveleft_${i}`);
+        }
+    });
+
+    // Оценка количества переходов
+    // Для каждого перехода многоленточной машины:
+    // - O(k*n) шагов для сканирования (где n - размер используемой части ленты)
+    // - O(k*n) шагов для обновления
+    // В худшем случае это O(k*n) шагов для симуляции одного шага
+    const avgTapeLength = 100; // средняя оценка
+    const stepsPerTransition = k * avgTapeLength * 3; // scan + update + move
+    const estimatedTransitionCount = machine.transitions.length * stepsPerTransition;
+
+    // Информация о преобразовании
+    const conversionInfo = {
+        originalStates: states.size,
+        originalTapes: k,
+        originalTransitions: machine.transitions.length,
+        originalAlphabet: unmarkedSymbols.length,
+
+        newStates: singleTapeStates.size,
+        newTapes: 1,
+        newAlphabet: alphabet.size,
+        newTransitions: estimatedTransitionCount,
+
+        // Структура одной ленты:
+        // [символ_ленты1][маркер?] # [символ_ленты2][маркер?] # ... # [символ_лентыk][маркер?]
+        encoding: `Каждая ячейка на одной ленте содержит k треков:
+        - Трек i (i=1..k): содержимое i-й ленты
+        - Символ с * обозначает позицию головки на этой ленте
+        - Символ # разделяет содержимое разных лент`,
+
+        timeComplexity: `O(T²) где T - время работы ${k}-ленточной машины`,
+
+        simulationSteps: [
+            '1. Форматирование: преобразовать входные данные в формат с разделителями',
+            '2. Сканирование: пройти ленту слева направо, запоминая символы под маркерами',
+            '3. Применение перехода: определить новое состояние и действия',
+            '4. Обновление: пройти ленту, записывая новые символы',
+            '5. Перемещение маркеров: сдвинуть маркеры согласно направлениям движения',
+            '6. Повторить шаги 2-5 до достижения финального состояния'
+        ]
+    };
+
+    return {
+        states: Array.from(singleTapeStates),
+        alphabet: Array.from(alphabet),
+        transitionCount: estimatedTransitionCount,
+        conversionInfo: conversionInfo
+    };
+}
+
+        function saveProgram() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>💾 Сохранение программы</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Название программы:</label>
+                            <input type="text" id="programName" class="form-control" value="Моя машина Тьюринга ${selectedTapeCount}-лент">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Описание (опционально):</label>
+                            <textarea id="programDescription" class="form-control" rows="2" placeholder="Опишите, что делает эта программа..."></textarea>
+                        </div>
+                        
+                        <div class="card" style="background: var(--color-bg-1); margin: var(--space-16) 0;">
+                            <div class="card__body">
+                                <h5>📊 Информация о программе:</h5>
+                                <ul style="list-style: none; padding: 0; margin: 0;">
+                                    <li>🎞️ Лент: ${selectedTapeCount}</li>
+                                    <li>⚙️ Состояния: ${machine.states.length}</li>
+                                    <li>🔄 Правила: ${machine.transitions.length}</li>
+                                    <li>📦 Размер: ~${JSON.stringify({ tapeCount: selectedTapeCount, states: machine.states, transitions: machine.transitions, initialTapes: machine.tapes.map(tape => [...tape]) }).length} байт</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; display: flex; gap: var(--space-12); justify-content: center;">
+                            <button class="btn btn--primary" onclick="downloadProgram()">
+                                💾 Скачать JSON
+                            </button>
+                            <button class="btn btn--secondary" onclick="copyToClipboard()">
+                                📋 Копировать в буфер
+                            </button>
+                            <button class="btn btn--outline" onclick="this.closest('.modal').remove()">
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function downloadProgram() {
+            const name = document.getElementById('programName').value || 'Моя программа';
+            const description = document.getElementById('programDescription').value;
+            
+            const program = {
+                name: name,
+                description: description,
+                created: new Date().toISOString(),
+                version: '1.0',
+                tapeCount: selectedTapeCount,
+                states: machine.states,
+                initialState: machine.currentState,
+                finalStates: machine.states.filter(s => s.includes('f') || s.includes('accept') || s.includes('reject')),
+                transitions: machine.transitions.map(t => ({
+                    from: t.from,
+                    read: [...t.read],
+                    to: t.to,
+                    write: [...t.write],
+                    move: [...t.move],
+                    description: t.description || ''
+                })),
+                initialTapes: machine.tapes.map(tape => [...tape]),
+                metadata: {
+                    stepCount: machine.stepCount,
+                    maxSteps: maxSteps,
+                    alphabet: Array.from(new Set(machine.tapes.flat().concat(['_'])))
+                }
+            };
+            
+            const dataStr = JSON.stringify(program, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = name.replace(/\s+/g, '_') + '.json';
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showNotification('Программа "' + name + '" сохранена!', 'success');
+            document.querySelector('.modal').remove();
+        }
+        
+        function copyToClipboard() {
+            const name = document.getElementById('programName').value || 'Моя программа';
+            const description = document.getElementById('programDescription').value;
+            
+            const program = {
+                name: name,
+                description: description,
+                tapeCount: selectedTapeCount,
+                states: machine.states,
+                transitions: machine.transitions,
+                initialTapes: machine.tapes.map(tape => [...tape])
+            };
+            
+            navigator.clipboard.writeText(JSON.stringify(program, null, 2)).then(() => {
+                showNotification('Программа скопирована в буфер!', 'success');
+                document.querySelector('.modal').remove();
+            }).catch(err => {
+                showNotification('Ошибка копирования', 'error');
+            });
+        }
+
+        function exportLog() {
+            const executionLog = machine.executionLog || [];
+            
+            if (executionLog.length === 0) {
+                showNotification('Нет данных для экспорта. Запустите симуляцию!', 'warning');
+                return;
+            }
+            
+            const header = ['Шаг', 'Время', 'Состояние', 'Применённое правило'];
+            
+            // Add tape columns
+            for (let i = 0; i < selectedTapeCount; i++) {
+                header.push(`Лента ${i+1}`, `Головка ${i+1}`);
+            }
+            
+            const rows = [header];
+            
+            executionLog.forEach((entry, index) => {
+                const row = [
+                    index,
+                    entry.timestamp,
+                    entry.state,
+                    entry.rule || 'Начальное состояние'
+                ];
+                
+                for (let i = 0; i < selectedTapeCount; i++) {
+                    row.push(
+                        entry.tapes[i] ? entry.tapes[i].join('') : '',
+                        entry.heads[i] || 0
+                    );
+                }
+                
+                rows.push(row);
+            });
+            
+            const csvContent = rows.map(row => 
+                row.map(cell => 
+                    typeof cell === 'string' && cell.includes(',') ? `"${cell}"` : cell
+                ).join(',')
+            ).join('\n');
+            
+            const dataBlob = new Blob([csvContent], {type: 'text/csv;charset=utf-8'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `turing_machine_log_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showNotification(`Журнал экспортирован (${executionLog.length} шагов)`, 'success');
+        }
+        
+        function takeScreenshot() {
+            // Create a canvas to capture the current state
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = 1200;
+            canvas.height = 800;
+            
+            // Fill background
+            ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add title
+            ctx.fillStyle = getComputedStyle(document.body).color;
+            ctx.font = '24px FKGroteskNeue, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Симулятор многоленточной машины Тьюринга', canvas.width / 2, 40);
+            
+            // Add machine state info
+            ctx.font = '16px FKGroteskNeue, sans-serif';
+            ctx.textAlign = 'left';
+            const stateInfo = [
+                `Состояние: ${machine.currentState}`,
+                `Шаг: ${machine.stepCount}`,
+                `Лент: ${selectedTapeCount}`,
+                `Правил: ${machine.transitions.length}`,
+                `Время: ${Date.now() - machine.startTime}мс`
+            ];
+            
+            stateInfo.forEach((info, index) => {
+                ctx.fillText(info, 50, 80 + index * 25);
+            });
+            
+            // Add timestamp
+            ctx.textAlign = 'right';
+            ctx.fillText(new Date().toLocaleString('ru'), canvas.width - 50, 80);
+            
+            // Draw tapes representation
+            let yOffset = 180;
+            const tapeColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'];
+            
+            machine.tapes.forEach((tape, tapeIndex) => {
+                // Tape label
+                ctx.fillStyle = tapeColors[tapeIndex % tapeColors.length];
+                ctx.font = '18px FKGroteskNeue, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Лента ${tapeIndex + 1}:`, 50, yOffset);
+                
+                // Draw cells
+                const cellWidth = 40;
+                const cellHeight = 40;
+                const startX = 150;
+                const headPos = machine.heads[tapeIndex];
+                
+                tape.slice(Math.max(0, headPos - 10), headPos + 10).forEach((symbol, cellIndex) => {
+                    const actualIndex = Math.max(0, headPos - 10) + cellIndex;
+                    const x = startX + cellIndex * (cellWidth + 2);
+                    const y = yOffset - 30;
+                    
+                    // Cell background
+                    if (actualIndex === headPos) {
+                        ctx.fillStyle = tapeColors[tapeIndex % tapeColors.length];
+                    } else {
+                        ctx.fillStyle = '#f0f0f0';
+                    }
+                    ctx.fillRect(x, y, cellWidth, cellHeight);
+                    
+                    // Cell border
+                    ctx.strokeStyle = '#ccc';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, cellWidth, cellHeight);
+                    
+                    // Symbol
+                    ctx.fillStyle = actualIndex === headPos ? 'white' : '#333';
+                    ctx.font = '16px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(symbol === '_' ? '∅' : symbol, x + cellWidth/2, y + cellHeight/2 + 5);
+                    
+                    // Cell index
+                    ctx.fillStyle = '#999';
+                    ctx.font = '10px monospace';
+                    ctx.fillText(actualIndex.toString(), x + cellWidth/2, y - 5);
+                });
+                
+                yOffset += 80;
+            });
+            
+            // Convert to blob and download
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `turing_machine_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.png`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showNotification('Скриншот сохранён!', 'success');
+            }, 'image/png');
+        }
+
+        // Enhanced error handling
+        function showDetailedError(message) {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 style="color: var(--color-error);">⚠️ Ошибка выполнения</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <pre style="white-space: pre-wrap; font-family: var(--font-family-base); background: var(--color-bg-4); padding: var(--space-16); border-radius: var(--radius-base); margin: var(--space-16) 0;">${message}</pre>
+                        <div style="display: flex; gap: var(--space-12); margin-top: var(--space-16);">
+                            <button class="btn btn--primary" onclick="suggestAutofix()">
+                                🛠️ Автоисправление
+                            </button>
+                            <button class="btn btn--secondary" onclick="this.closest('.modal').remove()">
+                                Закрыть
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function suggestAutofix() {
+            const currentRead = machine.heads.map((head, i) => machine.tapes[i][head] || '_');
+            const suggestedTransition = {
+                from: machine.currentState,
+                read: [...currentRead],
+                to: 'qf',
+                write: [...currentRead],
+                move: new Array(selectedTapeCount).fill('S'),
+                description: 'Авто-сгенерированное правило'
+            };
+            
+            const confirmMsg = `Добавить правило:\n${suggestedTransition.from} + [${suggestedTransition.read.join(', ')}] → ${suggestedTransition.to} + [${suggestedTransition.write.join(', ')}] + [${suggestedTransition.move.join(', ')}]?`;
+            
+            if (confirm(confirmMsg)) {
+                machine.transitions.push(suggestedTransition);
+                renderTransitions();
+                showNotification('Правило добавлено!', 'success');
+                document.querySelector('.modal').remove();
+            }
+        }
+        
+        function validateProgram() {
+            const issues = [];
+            const states = new Set();
+            const symbols = new Set(['_']);
+            
+            // Collect states and symbols
+            machine.transitions.forEach(t => {
+                states.add(t.from);
+                states.add(t.to);
+                t.read.forEach(s => symbols.add(s));
+                t.write.forEach(s => symbols.add(s));
+            });
+            
+            machine.tapes.forEach(tape => {
+                tape.forEach(symbol => symbols.add(symbol));
+            });
+            
+            // Check for missing transitions
+            let missingCount = 0;
+            states.forEach(state => {
+                if (state.includes('f') || state.includes('accept') || state.includes('reject')) return;
+                
+                const symbolsArray = Array.from(symbols);
+                const combinations = generateCombinations(symbolsArray, selectedTapeCount);
+                
+                combinations.forEach(combo => {
+                    const hasTransition = machine.transitions.some(t => 
+                        t.from === state && arraysEqual(t.read, combo)
+                    );
+                    
+                    if (!hasTransition) {
+                        missingCount++;
+                    }
+                });
+            });
+            
+            if (missingCount > 0) {
+                issues.push(`Недостаёт ${missingCount} правил переходов`);
+            }
+            
+            return issues;
+        }
+        
+        function generateCombinations(symbols, count) {
+            if (count === 1) return symbols.map(s => [s]);
+            
+            const result = [];
+            const smaller = generateCombinations(symbols, count - 1);
+            
+            symbols.forEach(symbol => {
+                smaller.forEach(combo => {
+                    result.push([symbol, ...combo]);
+                });
+            });
+            
+            return result;
+        }
+
+        // Enhanced notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = message;
+            notification.className = `notification ${type} show`;
+            
+            // Auto-hide after different times based on type
+            const hideTime = type === 'error' ? 5000 : type === 'warning' ? 4000 : 3000;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, hideTime);
+        }
+    </script>
+</body>
+</html>

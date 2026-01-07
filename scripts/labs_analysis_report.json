@@ -1,0 +1,876 @@
+[
+  {
+    "name": "Искусственная жизнь",
+    "repo": "Artificial_life",
+    "section": "intelligent_systems",
+    "lab_id": "artificial_life",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "js/simulation.js",
+          "js/config.js",
+          "js/vector2d.js",
+          "js/environment.js",
+          "js/finite-automaton.js",
+          "js/agent.js"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Машина Зенона",
+    "repo": "Automats_Lab_1",
+    "section": "turing_machines",
+    "lab_id": "zeno_machine",
+    "analysis": {
+      "type": "unknown",
+      "framework": null,
+      "entry_points": [],
+      "static_files": {
+        "js": [],
+        "css": [],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Гексагональные КА",
+    "repo": "DM-3-hexagonal-life-like-cellular-automata",
+    "section": "cellular_graph",
+    "lab_id": "hexagonal_ca",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "Software/index.html"
+      ],
+      "static_files": {
+        "js": [
+          "Software/js/io.js",
+          "Software/js/renderer.js",
+          "Software/js/rules.js",
+          "Software/js/grid.js",
+          "Software/js/simulation.js",
+          "Software/js/main.js",
+          "Software/js/analytics.js",
+          "Software/js/settings.js",
+          "Software/js/orchestrator.js"
+        ],
+        "css": [
+          "Software/styles/main.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Симулятор ДКА",
+    "repo": "DM3_Automaton_System",
+    "section": "finite_automata",
+    "lab_id": "dfa_simulator",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "ui.js",
+          "system.js",
+          "automata.js",
+          "sequential.js",
+          "app.js",
+          "examples.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Автомат Мили",
+    "repo": "DM3_Mealy_simulator",
+    "section": "finite_automata",
+    "lab_id": "mealy_machine",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "controlsManager.js",
+          "themeSwitcher.js",
+          "animationManager.js",
+          "mealySimulator.js",
+          "validator.js",
+          "tableVisualizer.js",
+          "automatonParser.js",
+          "main.js",
+          "graphVisualizer.js"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Квантовая МТ",
+    "repo": "KvantMachineTuring",
+    "section": "turing_machines",
+    "lab_id": "quantum_tm",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "main.js",
+          "ui/StateVectorDisplay.js",
+          "ui/TaskManager.js",
+          "ui/TapeVisualizer.js",
+          "ui/TransitionEditor.js",
+          "core/UnitaryVerifier.js",
+          "core/QuantumTape.js",
+          "core/TransitionTable.js",
+          "core/QTMSimulator.js",
+          "core/QuantumState.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "ГПСЧ на ЭКлА",
+    "repo": "Lab_Auto_Pseudorandomness",
+    "section": "cellular_graph",
+    "lab_id": "prng_eca",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "main.js",
+          "modules/core.js",
+          "modules/visualModule.js",
+          "modules/uiController.js",
+          "modules/randomnessAnalyzer.js",
+          "modules/dataManager.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": [
+          "ПЗ/12.png",
+          "ПЗ/new.png",
+          "ПЗ/scheme.png"
+        ]
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "КА CoDi",
+    "repo": "Laba_DM-3",
+    "section": "cellular_graph",
+    "lab_id": "codi_automata",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "scripts/charts.js",
+          "scripts/main.js",
+          "scripts/ca-engine.js",
+          "scripts/csv-export.js",
+          "scripts/storage.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Алгорифмы Маркова",
+    "repo": "MarkovsAlgorythms",
+    "section": "formal_systems",
+    "lab_id": "markov_algorithms",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "markov-algorithm-simulator/index.html"
+      ],
+      "static_files": {
+        "js": [
+          "markov-algorithm-simulator/js/ExamplesLibrary.js",
+          "markov-algorithm-simulator/js/AnimationEngine.js",
+          "markov-algorithm-simulator/js/main.js",
+          "markov-algorithm-simulator/js/UIController.js",
+          "markov-algorithm-simulator/js/MarkovEngine.js",
+          "markov-algorithm-simulator/js/Visualizer.js",
+          "markov-algorithm-simulator/js/DataManager.js"
+        ],
+        "css": [
+          "markov-algorithm-simulator/styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Минимизация ДКА",
+    "repo": "Minimization_of_deterministic_finite_state_machines",
+    "section": "finite_automata",
+    "lab_id": "dfa_minimization",
+    "analysis": {
+      "type": "unknown",
+      "framework": null,
+      "entry_points": [],
+      "static_files": {
+        "js": [],
+        "css": [],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Автомат Мура",
+    "repo": "Moore_machine_lab",
+    "section": "finite_automata",
+    "lab_id": "moore_machine",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "app.js"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Многоленточная МТ",
+    "repo": "Multitape_Turing_machine",
+    "section": "turing_machines",
+    "lab_id": "multitape_tm",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [],
+        "css": [],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Симулятор НКА",
+    "repo": "NFA-simulator",
+    "section": "finite_automata",
+    "lab_id": "nfa_simulator",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "Project/index.html"
+      ],
+      "static_files": {
+        "js": [
+          "Project/scripts/matrix-editor.js",
+          "Project/scripts/visualizer.js",
+          "Project/scripts/nfa.js",
+          "Project/scripts/simulator.js",
+          "Project/scripts/app.js"
+        ],
+        "css": [
+          "Project/style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "НКА в ДКА",
+    "repo": "NFA_to_DFA",
+    "section": "finite_automata",
+    "lab_id": "nfa_to_dfa",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "scripts/main.js",
+          "scripts/ui/graphCanvas.js",
+          "scripts/ui/subsetTable.js",
+          "scripts/ui/tapeView.js",
+          "scripts/ui/toolbar.js",
+          "scripts/grading/equiv.js",
+          "scripts/core/simulate.js",
+          "scripts/core/epsilon.js",
+          "scripts/core/nfa.js",
+          "scripts/core/alphabet.js",
+          "scripts/core/subset.js",
+          "scripts/core/serializer.js",
+          "scripts/core/dfa.js",
+          "scripts/state/store.js",
+          "scripts/state/persistence.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Нейронная МТ",
+    "repo": "Neural_Turing_Machine",
+    "section": "intelligent_systems",
+    "lab_id": "neural_tm",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "NTM/index.html"
+      ],
+      "static_files": {
+        "js": [
+          "NTM/js/app.js",
+          "NTM/js/ntm /HabrMath.js"
+        ],
+        "css": [
+          "NTM/Styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Недетерминированная МТ",
+    "repo": "Non-deterministic_Turing_machine",
+    "section": "turing_machines",
+    "lab_id": "nondeterministic_tm",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "nmt_visualizer.html"
+      ],
+      "static_files": {
+        "js": [],
+        "css": [],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Сети Петри",
+    "repo": "PetNet",
+    "section": "formal_systems",
+    "lab_id": "petri_nets",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "src/index.html",
+        "src/info.html"
+      ],
+      "static_files": {
+        "js": [
+          "src/static/js/help.js",
+          "src/static/js/script.js"
+        ],
+        "css": [
+          "src/static/css/style.css",
+          "src/static/css/help.css"
+        ],
+        "assets": [
+          "src/favicon.ico"
+        ]
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Вероятностные автоматы",
+    "repo": "Probabilistic_automaton",
+    "section": "finite_automata",
+    "lab_id": "probabilistic_automata",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html",
+        "maket.html"
+      ],
+      "static_files": {
+        "js": [
+          "scripts/main.js",
+          "scripts/ui/graphView.js",
+          "scripts/ui/probabilityPanel.js",
+          "scripts/ui/simulationControl.js",
+          "scripts/ui/stateVisualization.js",
+          "scripts/core/automata.js",
+          "scripts/core/state.js",
+          "scripts/core/transitions.js",
+          "scripts/core/model.js",
+          "scripts/core/probability.js",
+          "scripts/core/simulator.js",
+          "scripts/algorithms/markov.js",
+          "scripts/algorithms/statistics.js",
+          "scripts/algorithms/ergodicity.js",
+          "scripts/state/store.js",
+          "scripts/state/persistence.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Квантовые вычисления",
+    "repo": "Quantum_simulator",
+    "section": "intelligent_systems",
+    "lab_id": "quantum_computing",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "scripts/main.js",
+          "scripts/ui/theme.js",
+          "scripts/ui/i18n.js",
+          "scripts/core/gates.js",
+          "scripts/core/measurement.js",
+          "scripts/core/unitary.js",
+          "scripts/core/circuit.js",
+          "scripts/core/qstate.js",
+          "scripts/core/complex.js",
+          "scripts/core/partialTrace.js",
+          "scripts/core/linalg.js",
+          "scripts/core/simulator.js",
+          "scripts/exporters/openqasm3.js",
+          "scripts/exporters/quil.js",
+          "scripts/algorithms/deutsch.js",
+          "scripts/algorithms/grover.js",
+          "scripts/utils/assert.js",
+          "scripts/utils/format.js",
+          "scripts/utils/dom.js",
+          "scripts/state/store.js",
+          "scripts/state/persistence.js",
+          "scripts/presets/list.js",
+          "scripts/ui/components/presets.js",
+          "scripts/ui/components/probChart.js",
+          "scripts/ui/components/gatePalette.js",
+          "scripts/ui/components/blochView.js",
+          "scripts/ui/components/matrixModal.js",
+          "scripts/ui/components/header.js",
+          "scripts/ui/components/circuitGrid.js",
+          "scripts/ui/components/statePanel.js",
+          "scripts/ui/components/toolbar.js",
+          "scripts/ui/components/modal.js",
+          "scripts/ui/components/footer.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": [
+          "assets/logo.svg"
+        ]
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "RAM-машина",
+    "repo": "RAM",
+    "section": "turing_machines",
+    "lab_id": "ram_machine",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "app.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Функции Гёделя",
+    "repo": "Recursive_Godel_functions",
+    "section": "formal_systems",
+    "lab_id": "godel_functions",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "app.js"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Обратимые КА",
+    "repo": "Simulation_of_reversible_cellular_automata",
+    "section": "cellular_graph",
+    "lab_id": "reversible_ca",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "simulator_fixed (1)/simulator.html"
+      ],
+      "static_files": {
+        "js": [
+          "simulator_fixed (1)/presets.js",
+          "simulator_fixed (1)/ui.js",
+          "simulator_fixed (1)/engine.js"
+        ],
+        "css": [
+          "simulator_fixed (1)/styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Машина Поста",
+    "repo": "ThePostMachine",
+    "section": "turing_machines",
+    "lab_id": "post_machine",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "PostMachine.js",
+          "ui.js",
+          "examples.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": [
+          "инерфейс.png"
+        ]
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Турмиты",
+    "repo": "Turmites_and_Langtons_ants",
+    "section": "cellular_graph",
+    "lab_id": "turmites",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "js/main.js",
+          "js/ui/presets.js",
+          "js/ui/theme.js",
+          "js/ui/uiController.js",
+          "js/core/ant.js",
+          "js/core/ruleset.js",
+          "js/core/grid.js",
+          "js/core/simulator.js",
+          "js/render/renderer.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": [
+          "img/favicon.ico"
+        ]
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Универсальная МТ",
+    "repo": "UniversalTuringMachineSimulator",
+    "section": "turing_machines",
+    "lab_id": "universal_tm",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "LabaTuring/src/index.html"
+      ],
+      "static_files": {
+        "js": [
+          "LabaTuring/src/js/ui.js",
+          "LabaTuring/src/js/turing-machine.js",
+          "LabaTuring/src/js/simulator.js",
+          "LabaTuring/src/js/app.js"
+        ],
+        "css": [
+          "LabaTuring/src/styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Бильярдный компьютер",
+    "repo": "billiard-computer",
+    "section": "formal_systems",
+    "lab_id": "billiard_computer",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "js/renderer.js",
+          "js/ui.js",
+          "js/logic.js",
+          "js/logger.js",
+          "js/physics.js",
+          "js/app.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Мозг Брайана",
+    "repo": "brian_brain",
+    "section": "cellular_graph",
+    "lab_id": "brian_brain",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "app.js",
+          "ui/renderer.js",
+          "ui/controls.js",
+          "ui/theme.js",
+          "core/constants.js",
+          "core/briansBrain.js",
+          "state/store.js",
+          "state/persistence.js"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "КА на треугольниках",
+    "repo": "cellular_automaton_on_triangular_lattices",
+    "section": "cellular_graph",
+    "lab_id": "triangular_ca",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "io.js",
+          "presets.js",
+          "rules.js",
+          "sim.js",
+          "grid-tri.js",
+          "render.js",
+          "charts.js",
+          "analytics.js",
+          "analytics-panel.js",
+          "ui-controls.js",
+          "app.js"
+        ],
+        "css": [
+          "styles.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Граф-автоматы",
+    "repo": "graph-automata",
+    "section": "cellular_graph",
+    "lab_id": "graph_automata",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "core/index.html"
+      ],
+      "static_files": {
+        "js": [
+          "core/graph.js",
+          "core/rules.js",
+          "core/dsl.js",
+          "core/simulation.js",
+          "core/script.js",
+          "core/analytics.js"
+        ],
+        "css": [
+          "core/style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  },
+  {
+    "name": "Динамические граф-автоматы",
+    "repo": "graph-automata-simulator",
+    "section": "cellular_graph",
+    "lab_id": "dynamic_graph",
+    "analysis": {
+      "type": "static_html",
+      "framework": "Plain HTML/JS/CSS",
+      "entry_points": [
+        "index.html"
+      ],
+      "static_files": {
+        "js": [
+          "app.js"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "assets": []
+      },
+      "has_backend": false,
+      "notes": []
+    }
+  }
+]

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NTM  — лента + правила</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>Neural Turing Machine </h1>
+    <p class="subtitle">Чтение (2), запись erase+add (3–4), адресация (5–9). Loss = BCE(σ(r), y).</p>
+  </div>
+  <div class="top-actions">
+    <button id="clearCache" class="btn btn-outline">Сброс кэша</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ЛЕНТА -->
+  <section class="card">
+    <h2>Лента (входная последовательность)</h2>
+
+    <div id="tapeViewport" class="tape-viewport" aria-label="Лента"></div>
+
+    <div class="tape-quick">
+      <label>Слово:</label>
+      <input id="wordInput" class="input" placeholder="0101#"/>
+      <button id="placeWord" class="btn">Поместить</button>
+      <button id="clearTape" class="btn btn-outline">Очистить</button>
+    </div>
+
+    <div class="machine-controls">
+      <div class="left">
+        <button id="runBtn" class="btn primary">Запустить</button>
+        <button id="stepBtn" class="btn">Шаг</button>
+        <button id="stopBtn" class="btn">Стоп</button>
+        <button id="resetBtn" class="btn btn-danger">Сброс памяти</button>
+      </div>
+      <div class="right">
+        <span id="stepsInfo" class="badge">Шагов: 0</span>
+        <span id="lossInfo" class="badge">Loss: 0.00</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПРАВИЛА -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Правила: Если / То / Иначе</h2>
+      <small>Проверяются сверху вниз. «Иначе: продолжить» — перейти дальше. «остановиться» — стоп.</small>
+    </div>
+
+    <div id="ruleTableHost" class="ruletable"></div>
+
+    <div class="micro-actions" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+      <button id="addRule" class="btn btn-outline">Добавить правило</button>
+
+      <button id="presetCopy" class="btn">Copy</button>
+      <button id="presetReverse" class="btn btn-outline">Reverse</button>
+      <button id="presetPredict" class="btn btn-outline">Predict</button>
+      <button id="presetEcho" class="btn btn-outline">Echo (Predict→Right)</button>
+      <button id="presetLearn" class="btn btn-outline">Learn-only</button>
+      <button id="presetZigZag" class="btn btn-outline">ZigZag</button>
+    </div>
+  </section>
+
+  <!-- ПАРАМЕТРЫ АДРЕСАЦИИ -->
+  <section class="card">
+    <h2>Параметры NTM</h2>
+    <div class="params">
+      <label>β</label><input id="beta" type="range" min="0" max="10" step="0.1" value="5"/>
+      <label>g</label><input id="gate" type="range" min="0" max="1" step="0.01" value="0.9"/>
+      <label>γ (≥1)</label><input id="gamma" type="range" min="1" max="4" step="0.1" value="2"/>
+      <label>erase</label><input id="erase" type="range" min="0" max="1" step="0.01" value="0.3"/>
+      <label>shift [L,0,R]</label>
+      <input id="shiftL" type="number" class="input input-xs" value="0" step="0.1"/>
+      <input id="shiftC" type="number" class="input input-xs" value="1" step="0.1"/>
+      <input id="shiftR" type="number" class="input input-xs" value="0" step="0.1"/>
+      <button id="applyParams" class="btn">Применить</button>
+      <span class="chip" id="dimInfo">N×M: 64×16</span>
+    </div>
+  </section>
+
+  <!-- ПАМЯТЬ / ВЕСА / LOSS -->
+  <section class="grid-2">
+    <section class="card">
+      <h2>Память M (heatmap)</h2>
+      <canvas id="memHeatmap" width="560" height="300" class="canvas"></canvas>
+      <div class="legend"><small>Ярче = больше значение ячейки памяти.</small></div>
+    </section>
+
+    <section class="card">
+      <h2>Веса w<sub>t</sub> и Loss</h2>
+
+      <!-- Панель управления графиком -->
+      <div class="chart-controls">
+        <label class="chk"><input id="lossShowRaw" type="checkbox" checked> Raw</label>
+        <label class="chk"><input id="lossShowEMA" type="checkbox" checked> EMA</label>
+      </div>
+
+      <div class="train-grid">
+        <canvas id="weights" width="560" height="80" class="canvas"></canvas>
+        <canvas id="lossChart" width="560" height="160" class="canvas"></canvas>
+      </div>
+      <div class="legend">
+        <small>Сверху — распределение w<sub>t</sub> (белее — выше вес). Ниже — кривая BCE(σ(r), y).</small>
+      </div>
+    </section>
+  </section>
+
+  <!-- ЖУРНАЛ -->
+  <section class="card">
+    <h2>Журнал</h2>
+    <pre id="log" class="log"></pre>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  function logLine(msg){
+    const el = document.getElementById('log'); if (!el) return;
+    el.textContent += msg + "\n"; el.scrollTop = el.scrollHeight;
+  }
+  window.addEventListener('error', e => logLine("ERROR: " + e.message + " @ " + (e.filename||"") + ":" + (e.lineno||"")));
+  window.addEventListener('unhandledrejection', e => logLine("PROMISE: " + (e.reason && e.reason.message ? e.reason.message : e.reason)));
+})();
+</script>
+<!-- Важно: без type="module" -->
+<script src="js/app.js"></script>
+</body>
+</html>

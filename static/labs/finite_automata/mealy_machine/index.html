@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Симулятор конечного автомата Мили - интерактивная система с визуализацией переходов">
+    <title>Симулятор автомата Мили</title>
+    
+    <!-- Cytoscape.js для визуализации графов -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+    
+    <!-- Стили приложения -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ЗАГОЛОВОК ПРИЛОЖЕНИЯ -->
+    <header class="app-header">
+        <h1 class="header-title">Симулятор автомата Мили</h1>
+        <div class="header-controls">
+            <button id="infoBtn" class="btn btn-small" title="Помощь">
+                ℹ️ Справка
+            </button>
+            <button id="themeToggle" class="btn btn-small" title="Переключить тему">
+                🌙 Тема
+            </button>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЕ СОДЕРЖИМОЕ -->
+    <div class="app-main">
+        <!-- БОКОВАЯ ПАНЕЛЬ УПРАВЛЕНИЯ -->
+        <aside class="sidebar">
+            <!-- РАЗДЕЛ: ПРАВИЛА АВТОМАТА -->
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">Определение автомата</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="rulesInput">Правила переходов</label>
+                    <textarea 
+                        id="rulesInput" 
+                        class="input" 
+                        placeholder="state,input -> nextState,output&#10;Пример:&#10;s0,0 -> s0,0&#10;s0,1 -> s1,0&#10;s1,0 -> s0,1&#10;s1,1 -> s1,0">
+                    </textarea>
+                </div>
+
+                <button id="applyRules" class="btn primary" style="width:100%">
+                    Применить
+                </button>
+
+                <!-- БЛОК ОШИБОК -->
+                <div id="parseErrors" class="error-box" style="display:none;"></div>
+            </div>
+
+            <!-- РАЗДЕЛ: НАЧАЛЬНОЕ СОСТОЯНИЕ И ВХОДНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ -->
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">Параметры симуляции</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="startState">Начальное состояние</label>
+                    <input 
+                        type="text" 
+                        id="startState" 
+                        class="input" 
+                        placeholder="s0" 
+                        value="s0"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inputSeq">Входная последовательность</label>
+                    <input 
+                        type="text" 
+                        id="inputSeq" 
+                        class="input" 
+                        placeholder="0110101"
+                    >
+                </div>
+            </div>
+
+            <!-- РАЗДЕЛ: УПРАВЛЕНИЕ СИМУЛЯЦИЕЙ -->
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">Управление</h2>
+                <div class="btn-group">
+                    <button id="startSim" class="btn primary btn-small">▶ Старт</button>
+                    <button id="stepSim" class="btn btn-small">⏭ Шаг</button>
+                    <button id="stopSim" class="btn btn-small" disabled>⏸ Стоп</button>
+                    <button id="resetSim" class="btn btn-small">🔄 Сброс</button>
+                </div>
+            </div>
+
+            <!-- РАЗДЕЛ: СТАТУС СИМУЛЯЦИИ -->
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">Статус</h2>
+                <div class="status-area">
+                    <div class="status-item">
+                        <span class="status-label">Состояние:</span>
+                        <span id="currentState" class="status-value">—</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Шаг:</span>
+                        <span id="currentStep" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Время:</span>
+                        <span id="simTime" class="status-value">00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- РАЗДЕЛ: ИМПОРТ/ЭКСПОРТ -->
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">Файлы</h2>
+                <div class="btn-group">
+                    <button id="importRules" class="btn btn-small">📥 Импорт</button>
+                    <button id="exportRules" class="btn btn-small">📤 Экспорт</button>
+                </div>
+                <input type="file" id="importFile" accept=".txt" style="display:none;">
+            </div>
+
+            <!-- РАЗДЕЛ: ПРЕСЕТЫ -->
+            <div class="sidebar-section">
+                <h2 class="sidebar-title">Примеры</h2>
+                <div class="preset-group">
+                    <button class="preset-btn" data-preset="det01" title="Детектор '01'">
+                        '01'
+                    </button>
+                    <button class="preset-btn" data-preset="det101" title="Детектор '101'">
+                        '101'
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ОСНОВНАЯ ВИЗУАЛЬНАЯ ОБЛАСТЬ -->
+        <main class="visual">
+            <!-- ГРАФ АВТОМАТА -->
+            <div class="graph" id="graphContainer">
+                <!-- Cytoscape отрисует граф здесь -->
+            </div>
+
+            <!-- ТАБЛИЦА ПЕРЕХОДОВ И ВЫВОД -->
+            <div style="display: flex; gap: 10px; flex: 0 0 auto;">
+                <!-- ТАБЛИЦА ПЕРЕХОДОВ -->
+                <div class="table-wrap" style="flex: 1;">
+                    <table class="table" id="automatonTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- ОБЛАСТЬ ВЫВОДА -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <label class="form-label" style="margin: 0;">Выходная последовательность</label>
+                    <div class="output-area" id="outputArea"></div>
+                    <button id="resetView" class="btn btn-small" style="width:100%">
+                        Сбросить вид графа
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО СПРАВКИ -->
+    <div id="infoModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Справка пользователя</h2>
+                <button class="modal-close" title="Закрыть">✕</button>
+            </div>
+            <div style="color: var(--text); line-height: 1.6; font-size: 14px;">
+                <h3>Определение автомата</h3>
+                <p>
+                    Правила задаются в текстовом формате:<br>
+                    <code>состояние,вход -> следующее_состояние,выход</code>
+                </p>
+                <p>
+                    Пример:<br>
+                    <code>
+                        s0,0 -> s0,0<br>
+                        s0,1 -> s1,0<br>
+                        s1,0 -> s0,1<br>
+                        s1,1 -> s1,0
+                    </code>
+                </p>
+
+                <h3>Взаимодействие с графом</h3>
+                <ul>
+                    <li><strong>Двойной щелчок на пустом месте:</strong> добавить вершину</li>
+                    <li><strong>Двойной щелчок на вершине:</strong> удалить вершину</li>
+                    <li><strong>Клик на вершину (выбор):</strong> отметить как исходную</li>
+                    <li><strong>Клик на другую вершину:</strong> создать переход</li>
+                    <li><strong>Перетаскивание вершины:</strong> изменить позицию</li>
+                </ul>
+
+                <h3>Симуляция</h3>
+                <ol>
+                    <li>Введите правила и нажмите <strong>Применить</strong></li>
+                    <li>Укажите начальное состояние и входную последовательность</li>
+                    <li>Нажмите <strong>Старт</strong> для непрерывного выполнения</li>
+                    <li>Или используйте <strong>Шаг</strong> для пошагового режима</li>
+                </ol>
+
+                <h3>Файлы</h3>
+                <ul>
+                    <li><strong>Экспорт:</strong> сохраняет текущие правила в файл</li>
+                    <li><strong>Импорт:</strong> загружает правила из файла</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- === ЗАГРУЗКА СКРИПТОВ (ВАЖНЫЙ ПОРЯДОК!) === -->
+    
+    <!-- Парсер и валидатор -->
+    <script src="automatonParser.js"></script>
+    <script src="validator.js"></script>
+    
+    <!-- Ядро симулятора -->
+    <script src="mealySimulator.js"></script>
+    
+    <!-- Визуализация -->
+    <script src="graphVisualizer.js"></script>
+    <script src="tableVisualizer.js"></script>
+    <script src="animationManager.js"></script>
+    
+    <!-- Управление темой (ПЕРЕД controlsManager!) -->
+    <script src="themeSwitcher.js"></script>
+    
+    <!-- Управление интерфейсом (ПОСЛЕ themeSwitcher!) -->
+    <script src="controlsManager.js"></script>
+    
+    <!-- Инициализация приложения -->
+    <script src="main.js"></script>
+</body>
+</html>

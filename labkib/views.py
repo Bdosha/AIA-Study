@@ -1,19 +1,177 @@
-from random import choice
+"""
+Лабораторные работы по кибернетике и теории систем.
+
+Структура упрощена - все лабы в одном списке:
+- /labkib/ - главная страница со всеми лабами
+- /labkib/{lab}/ - страница конкретной лабы (iframe)
+"""
+
+import json
+import os
+from random import choice, random, randint, uniform
+
 import numpy as np
 from sklearn.linear_model import LinearRegression
-import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
-from PIL.ImagePalette import random
+import matplotlib.pyplot as plt
+
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from random import random, randint, uniform
-import os
-import json
+from django.http import Http404
 
+
+# =============================================================================
+# РЕЕСТР ЛАБОРАТОРНЫХ РАБОТ ПО КИБЕРНЕТИКЕ (плоский список)
+# =============================================================================
+
+LABKIB_REGISTRY = {
+    # Основные понятия кибернетики (внутренние с бэкендом)
+    'black_box': {
+        'title': 'Чёрный ящик',
+        'description': 'Идентификация системы по входным и выходным данным',
+        'icon': '🔲',
+        'type': 'internal',
+    },
+    'feedback': {
+        'title': 'Обратная связь',
+        'description': 'Поиск оптимума функции методами градиентного спуска',
+        'icon': '🔄',
+        'type': 'internal',
+    },
+    'regulation': {
+        'title': 'Регулирование',
+        'description': 'Настройка PID-регулятора для стабилизации системы',
+        'icon': '🎛️',
+        'type': 'internal',
+    },
+    'control': {
+        'title': 'Управление',
+        'description': 'Подбор траектории космического корабля',
+        'icon': '🚀',
+        'type': 'internal',
+    },
+    
+    # Моделирование систем
+    'flow_inventory': {
+        'title': 'Потоки и запасы',
+        'description': 'Моделирование потоков и запасов ресурсов в системах жизнеобеспечения',
+        'icon': '📊',
+        'type': 'static',
+        'path': 'modeling/flow_inventory',
+    },
+    'bio_sync': {
+        'title': 'Синхронизация биоритмов',
+        'description': 'Исследование эмерджентности через модель Курамото',
+        'icon': '🧬',
+        'type': 'static',
+        'path': 'modeling/bio_sync',
+    },
+    
+    # Системный анализ
+    'system_analysis': {
+        'title': 'Системный анализ',
+        'description': 'SWOT-анализ и исследование структуры системы на графе',
+        'icon': '🔬',
+        'type': 'static',
+        'path': 'analysis/system_analysis',
+    },
+    'stability': {
+        'title': 'Устойчивость к помехам',
+        'description': 'Анализ устойчивости бортовых систем к космическим шумам',
+        'icon': '📡',
+        'type': 'static',
+        'path': 'analysis/stability',
+    },
+    
+    # Автоматизация
+    'state_machine': {
+        'title': 'Машина состояний',
+        'description': 'Построение и анализ детерминированного конечного автомата',
+        'icon': '⚙️',
+        'type': 'static',
+        'path': 'automation/state_machine',
+    },
+    'hierarchical_control': {
+        'title': 'Иерархическое управление',
+        'description': 'Симулятор распределённой сети контроллеров',
+        'icon': '🤖',
+        'type': 'static',
+        'path': 'automation/hierarchical_control',
+    },
+    
+    # Распределённые системы
+    'distributed_systems': {
+        'title': 'Сетевые системы',
+        'description': 'Визуализация методов маршрутизации в распределённых системах',
+        'icon': '🌐',
+        'type': 'static',
+        'path': 'distributed/distributed_systems',
+    },
+    
+    # Кодирование
+    'error_correction': {
+        'title': 'Коды исправления ошибок',
+        'description': 'Код Хэмминга и код Рида-Соломона для защиты данных',
+        'icon': '🔐',
+        'type': 'static',
+        'path': 'coding/error_correction',
+    },
+}
+
+
+# =============================================================================
+# VIEWS ДЛЯ НОВОГО ДИЗАЙНА
+# =============================================================================
+
+def labkib_index(request: HttpRequest):
+    """Главная страница модуля кибернетики со всеми лабами"""
+    labs = []
+    for lab_id, lab_data in LABKIB_REGISTRY.items():
+        labs.append({
+            'id': lab_id,
+            'title': lab_data['title'],
+            'description': lab_data['description'],
+            'icon': lab_data['icon'],
+        })
+    return render(request, 'labkib/index.html', {'labs': labs})
+
+
+def labkib_detail(request: HttpRequest, lab: str):
+    """Страница конкретной лабораторной работы"""
+    if lab not in LABKIB_REGISTRY:
+        raise Http404("Лабораторная работа не найдена")
+    
+    lab_data = LABKIB_REGISTRY[lab]
+    
+    # Для внутренних лаб (с бэкендом) - перенаправляем на старые URL
+    if lab_data.get('type') == 'internal':
+        internal_urls = {
+            'black_box': '/labkib/legacy/systems/',
+            'feedback': '/labkib/legacy/feedback/',
+            'regulation': '/labkib/legacy/regulation/',
+            'control': '/labkib/legacy/control/',
+        }
+        iframe_src = internal_urls.get(lab, f'/static/labkib/{lab}/index.html')
+    else:
+        # Статические лабы загружаются из static
+        path = lab_data.get('path', lab)
+        iframe_src = f'/static/labkib/{path}/index.html'
+    
+    return render(request, 'labkib/lab_detail.html', {
+        'lab_id': lab,
+        'lab_title': lab_data['title'],
+        'lab_description': lab_data['description'],
+        'lab_icon': lab_data['icon'],
+        'iframe_src': iframe_src,
+    })
+
+
+# =============================================================================
+# LEGACY VIEWS (старые лабораторные работы с бэкендом)
+# =============================================================================
 
 def get_table_data(data):
     table_data = json.loads(data)
-
     x = table_data.split('\n')[0].split(',')[1:]
     y = table_data.split('\n')[1].split(',')[1:]
     x = list(map(float, x))
@@ -23,8 +181,9 @@ def get_table_data(data):
 
 def clear_data():
     folder = 'static/graphics'
-    for filename in os.listdir(folder):
-        os.remove(os.path.join(folder, filename))
+    if os.path.exists(folder):
+        for filename in os.listdir(folder):
+            os.remove(os.path.join(folder, filename))
 
 
 def get_linear_regression(x, y):
@@ -40,53 +199,125 @@ def get_linear_regression(x, y):
 
     x1 = np.array([-1000] + x + [1000])
     y1 = x1 * k + b
+    
+    # Dark theme styling
+    plt.style.use('dark_background')
+    fig, ax = plt.subplots(facecolor='#0f0f14')
+    ax.set_facecolor('#0f0f14')
+    
     plt.rc('font', size=13)
+    plt.rcParams['text.color'] = '#f4f4f5'
+    plt.rcParams['axes.labelcolor'] = '#a1a1aa'
+    plt.rcParams['xtick.color'] = '#71717a'
+    plt.rcParams['ytick.color'] = '#71717a'
+    plt.rcParams['axes.edgecolor'] = '#71717a'
+    plt.rcParams['axes.facecolor'] = '#0f0f14'
 
-    plt.plot(x1, y1, color='red', label='Линия регрессии')
-    plt.scatter(x_train, y_train, color='blue', label='Данные')
+    plt.plot(x1, y1, color='#00d4ff', label='Линия регрессии', linewidth=2)
+    plt.scatter(x_train, y_train, color='#a855f7', label='Данные', s=60, alpha=0.8)
 
     plt.xlim(min(x) - 5, max(x) + 5)
     plt.ylim(min(y) - 5, max(y) + 5)
 
-    plt.xlabel('Вход')
-    plt.ylabel('Выход')
-    plt.title('Система')
-    plt.legend()
-    plt.grid(True)
+    plt.xlabel('Вход', color='#a1a1aa')
+    plt.ylabel('Выход', color='#a1a1aa')
+    plt.title('Система', color='#f4f4f5')
+    plt.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
+    plt.grid(True, alpha=0.2, color='#71717a')
     file = randint(10000, 1000000)
-    plt.savefig(f"static/graphics/{file}.jpg")
-    plt.savefig("output1", facecolor='y', bbox_inches="tight",
-                pad_inches=0.3, transparent=True)
+    
+    os.makedirs('static/graphics', exist_ok=True)
+    plt.savefig(f"static/graphics/{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
 
     y_pred = model.predict(x_train)
-
     mae = mean_absolute_error(y_train, y_pred)
 
     return k, b, file, mae
 
 
 def systems(request: HttpRequest):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
-    return render(request, 'lab/black_box/boxes.html')
+    """Выбор системы для чёрного ящика"""
+    context = {
+        'page_icon': '🔲',
+        'page_title': 'Изучение природы чёрного ящика',
+        'page_description': 'Проведите эксперименты и выявите скрытые закономерности внутри системы',
+        'anime_image': 'img/black_boxes.png',
+        'options': [
+            {
+                'tag': 'Биология',
+                'tag_color': 'green',
+                'icon': '🌱',
+                'title': 'Рост растения',
+                'description': 'Какой будет высота растения в зависимости от объёма полива?',
+                'url': '/labkib/legacy/systems/plant/',
+                'image': 'img/plant.jpg',
+                'action_text': 'Исследовать',
+            },
+            {
+                'tag': 'Электроника',
+                'tag_color': 'blue',
+                'icon': '📱',
+                'title': 'Разряд телефона',
+                'description': 'Как быстро разрядится батарея в зависимости от времени разговора?',
+                'url': '/labkib/legacy/systems/phone/',
+                'image': 'img/phone.jpg',
+                'action_text': 'Исследовать',
+            },
+            {
+                'tag': 'Механика',
+                'tag_color': 'red',
+                'icon': '🚗',
+                'title': 'Скорость автомобиля',
+                'description': 'Какая скорость будет у автомобиля при нажатии на педаль газа?',
+                'url': '/labkib/legacy/systems/car/',
+                'image': 'img/car.jpg',
+                'action_text': 'Исследовать',
+            },
+            {
+                'tag': 'Физика',
+                'tag_color': 'amber',
+                'icon': '🌻',
+                'title': 'Вес семян',
+                'description': 'Сколько будет весить кучка семян в зависимости от их количества?',
+                'url': '/labkib/legacy/systems/seeds/',
+                'image': 'img/seeds.jpg',
+                'action_text': 'Исследовать',
+            },
+            {
+                'tag': 'Загадка',
+                'tag_color': 'purple',
+                'icon': '❓',
+                'title': 'Неведомое создание',
+                'description': 'Что ответит неведомое создание на ваш вопрос? Раскройте тайну неизвестной системы.',
+                'url': '/labkib/legacy/systems/unknown/',
+                'image': 'img/unknown.jpg',
+                'action_text': 'Исследовать тайну',
+                'featured': True,
+            },
+        ],
+    }
+    return render(request, 'lab/selection.html', context)
 
 
 def main_work(request: HttpRequest, system):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
+    """Работа с конкретной системой чёрного ящика"""
     if request.method == 'POST':
         temp = request.POST.get('table_data')
         if temp:
-            x,y = get_table_data(temp)
+            x, y = get_table_data(temp)
             if not x:
                 return HttpResponse('no data')
             k, b, file, mae = get_linear_regression(x, y)
-            data = {'k': round(k, 2), 'b': round(b, 2), 'file': f'/static/graphics/{file}.jpg', 'mae': round(mae, 2),
-                    'x': x, 'y': y}
-
+            data = {
+                'k': round(k, 2), 
+                'b': round(b, 2), 
+                'file': f'/static/graphics/{file}.jpg', 
+                'mae': round(mae, 2),
+                'x': x, 
+                'y': y
+            }
             return render(request, 'lab/black_box/result.html', context=data)
+    
     kbu = {
         'phone': [-random() * 1.5 - 0.5, random() * 20 + 5, random() * 5 + 1],
         'plant': [random() * 2 + 1, random() * 10 + 5, random() * 3 + 1],
@@ -108,14 +339,23 @@ def main_work(request: HttpRequest, system):
         'car': ['число', 'число'],
         'unknown': ['значение', 'результат']
     }
-    text = {'phone': '📱 Мобильный телефон: как быстро разрядится батарея в зависимости от времени разговора?',
-            'plant': '🌱 Рост растения: какой будет высота растения в зависимости от полива?',
-            'seeds': '🌻 Вес семян: сколько будет весить кучка семян в зависимости от количества семян в ней?',
-            'car': '🚗 Скорость автомобиля: с какой скоростью поедет автомобиль в зависимости от силы нажатия на педаль акселерации?',
-            'unknown': '❓ Неведомое: что ответит неведомое создание на вопрос?'}
+    text = {
+        'phone': '📱 Мобильный телефон: как быстро разрядится батарея в зависимости от времени разговора?',
+        'plant': '🌱 Рост растения: какой будет высота растения в зависимости от полива?',
+        'seeds': '🌻 Вес семян: сколько будет весить кучка семян в зависимости от количества семян в ней?',
+        'car': '🚗 Скорость автомобиля: с какой скоростью поедет автомобиль в зависимости от силы нажатия на педаль акселерации?',
+        'unknown': '❓ Неведомое: что ответит неведомое создание на вопрос?'
+    }
 
-    data = {'system': system, 'kbu': [i / 1.2 for i in kbu[system]], 'slider': slider[system], 'inout': inout[system],
-            'text': text[system], 'photo': f'/static/img/{system}.jpg', 'action': f'/systems/{system}/'}
+    data = {
+        'system': system, 
+        'kbu': [i / 1.2 for i in kbu[system]], 
+        'slider': slider[system], 
+        'inout': inout[system],
+        'text': text[system], 
+        'photo': f'/static/img/{system}.jpg', 
+        'action': f'/labkib/legacy/systems/{system}/'
+    }
     return render(request, f'lab/black_box/black_box.html', context=data)
 
 
@@ -148,54 +388,61 @@ def make_parabola(a, b, c, xes, number):
     final_x = np.array([number])
     final_y = a * (final_x ** 2) + b * final_x + c
 
+    # Dark theme styling
+    plt.style.use('dark_background')
     plt.rc('font', size=13)
+    plt.rcParams['text.color'] = '#f4f4f5'
+    plt.rcParams['axes.labelcolor'] = '#a1a1aa'
+    plt.rcParams['xtick.color'] = '#71717a'
+    plt.rcParams['ytick.color'] = '#71717a'
+    plt.rcParams['axes.edgecolor'] = '#71717a'
+    plt.rcParams['axes.facecolor'] = '#0f0f14'
 
-    plt.scatter(x1, y1, color='red', label='Данные')
-    plt.scatter(x0, y0, color='green', label='Вершина')
-    plt.scatter(final_x, final_y, color='purple', label='Итог')
+    fig, ax = plt.subplots(facecolor='#0f0f14')
+    ax.set_facecolor('#0f0f14')
 
-    plt.plot(x, y)
-    plt.legend()
-    plt.grid(True)
+    plt.scatter(x1, y1, color='#f87171', label='Данные', s=60, alpha=0.8)
+    plt.scatter(x0, y0, color='#34d399', label='Вершина', s=100, zorder=5)
+    plt.scatter(final_x, final_y, color='#c084fc', label='Итог', s=100, zorder=5)
 
-    # temp_x = np.array(xes + [round(-b / (2 * a), 2)])
-    # plt.xlim(-min(temp_x) - 3, max(temp_x) + 3)
-    # plt.title('Система')
-    # file = randint(1000, 10000000)
-    # plt.savefig(f"feedback/static/graphics/{file}.jpg")
+    plt.plot(x, y, color='#00d4ff', linewidth=2)
+    plt.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
+    plt.grid(True, alpha=0.2, color='#71717a')
 
     plt.xlim(-33, 33)
-    plt.title('Полный график')
+    plt.title('Полный график', color='#f4f4f5')
+    
+    os.makedirs('static/graphics', exist_ok=True)
     filee = randint(1000, 10000000)
-    plt.savefig(f"static/graphics/{filee}.jpg")
+    plt.savefig(f"static/graphics/{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
     plt.gcf().clear()
 
-    plt.rc('font', size=13)
+    # Second plot
+    fig, ax = plt.subplots(facecolor='#0f0f14')
+    ax.set_facecolor('#0f0f14')
 
-    plt.scatter(x0, y0, color='green', label='Вершина')
-    plt.scatter(final_x, final_y, color='purple', label='Ваш ответ')
-    plt.axvline(x0, color='green')
-    plt.axvline(final_x, color='purple')
-    plt.plot(x, y)
-    plt.legend()
-    plt.grid(True)
+    plt.scatter(x0, y0, color='#34d399', label='Вершина', s=100, zorder=5)
+    plt.scatter(final_x, final_y, color='#c084fc', label='Ваш ответ', s=100, zorder=5)
+    plt.axvline(x0, color='#34d399', linewidth=2, linestyle='--', alpha=0.7)
+    plt.axvline(final_x, color='#c084fc', linewidth=2, linestyle='--', alpha=0.7)
+    plt.plot(x, y, color='#00d4ff', linewidth=2)
+    plt.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
+    plt.grid(True, alpha=0.2, color='#71717a')
     plt.xlim(x0 - 2, x0 + 2)
-    plt.title('Оптимальные значения')
+    plt.title('Оптимальные значения', color='#f4f4f5')
     file = randint(1000, 10000000)
 
-    plt.axvline(x=x0 - 0.7, color='r', label='Ограничения')
-    plt.axvline(x=x0 + 0.7, color='r')
-    plt.legend()
+    plt.axvline(x=x0 - 0.7, color='#f87171', label='Ограничения', linewidth=2, linestyle=':', alpha=0.7)
+    plt.axvline(x=x0 + 0.7, color='#f87171', linewidth=2, linestyle=':', alpha=0.7)
+    plt.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
 
-    plt.savefig(f"static/graphics/{file}.jpg")
+    plt.savefig(f"static/graphics/{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
 
     return x0, round(abs(number - x0), 2), file, filee, cool
 
 
 def get_fb(request: HttpRequest, system):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
+    """Работа с обратной связью"""
     if request.method == 'POST':
         table_data = request.POST.get('table_data')
         a = float(request.POST.get('a').replace(',', '.'))
@@ -205,14 +452,18 @@ def get_fb(request: HttpRequest, system):
         if table_data:
             x, y = get_table_data(table_data)
             x0, delta, file, filee, cool = make_parabola(a, b, c, x, number)
-            data = {'x0': x0, 'file': f'/static/graphics/{file}.jpg',
-                    'filee': f'/static/graphics/{filee}.jpg',
-                    'cool': cool,
-                    'lens': len(x),
-                    'delta': delta,
-                    'x': x, 'y': y}
-
+            data = {
+                'x0': x0, 
+                'file': f'/static/graphics/{file}.jpg',
+                'filee': f'/static/graphics/{filee}.jpg',
+                'cool': cool,
+                'lens': len(x),
+                'delta': delta,
+                'x': x, 
+                'y': y
+            }
             return render(request, 'lab/feedback/result.html', context=data)
+    
     abc = random_c()
 
     inout = {
@@ -220,69 +471,141 @@ def get_fb(request: HttpRequest, system):
         'ternary_search': ['точка', 'Значение'],
         'simple': ['точка', 'Расстояние до минимума']
     }
-    text = {'gradient': '🦄 С помощью производной вам нужно найти минимум функции с помощью Градиентного спуска',
-            'ternary_search': '🔎 Алгоритмы добрались даже сюда. Здесь, ориентируясь по значеням функции нужно найти ее минимум',
-            'simple': '📊 Через перебор значений нужно подобраться к минимуму как можно ближе'}
+    text = {
+        'gradient': '🦄 С помощью производной вам нужно найти минимум функции с помощью Градиентного спуска',
+        'ternary_search': '🔎 Алгоритмы добрались даже сюда. Здесь, ориентируясь по значеням функции нужно найти ее минимум',
+        'simple': '📊 Через перебор значений нужно подобраться к минимуму как можно ближе'
+    }
 
-    data = {'system': system,
-            'abc': abc,
-            'inout': inout[system],
-            'text': text[system],
-            'action': f'/feedback/{system}/'
-            }
+    data = {
+        'system': system,
+        'abc': abc,
+        'inout': inout[system],
+        'text': text[system],
+        'action': f'/labkib/legacy/feedback/{system}/'
+    }
     return render(request, f'lab/feedback/feedback.html', context=data)
 
 
 def feedback(request):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
-    return render(request, 'lab/feedback/feedbacks.html')
+    """Выбор метода для обратной связи"""
+    context = {
+        'page_icon': '🔄',
+        'page_title': 'Капитан, срочно стабилизируй температуру двигателя!',
+        'page_description': 'Выбери алгоритм для поиска оптимума. У тебя будет всего 10 попыток, чтобы выровнять показатели',
+        'alert_text': '⚠️ Критическая ситуация — времени мало!',
+        'alert_color': 'red',
+        'anime_image': 'img/feedbacks'
+                       '.png',
+        'options': [
+            {
+                'tag': 'Алгоритм',
+                'tag_color': 'green',
+                'icon': '🔎',
+                'title': 'Тернарный поиск',
+                'description': 'Поиск минимума путём деления отрезка на три части и сравнения значений функции',
+                'url': '/labkib/legacy/feedback/ternary_search/',
+                'image_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/GoldenSectionSearch.png/800px-GoldenSectionSearch.png',
+                'action_text': 'Применить метод',
+            },
+            {
+                'tag': 'Базовый',
+                'tag_color': 'cyan',
+                'icon': '📊',
+                'title': 'Перебор значений',
+                'description': 'Поиск вершины через анализ расстояний до минимума функции',
+                'url': '/labkib/legacy/feedback/simple/',
+                'image_url': 'https://dspncdn.com/a1/media/originals/da/1d/4c/da1d4c7e38b426eca93a6c2e60398a06.jpg',
+                'action_text': 'Применить метод',
+            },
+            {
+                'tag': 'Машинное обучение',
+                'tag_color': 'rose',
+                'icon': '🦄',
+                'title': 'Градиентный спуск',
+                'description': 'Мощный метод оптимизации через производную функции. Основа современного машинного и глубокого обучения.',
+                'url': '/labkib/legacy/feedback/gradient/',
+                'image_url': 'https://www.researchgate.net/profile/Matteo-Roffilli/publication/242416179/figure/fig9/AS:669404463394819@1536609869080/A-bowl-shaped-function-to-be-minimized_Q320.jpg',
+                'action_text': 'Применить метод',
+                'featured': True,
+            },
+        ],
+    }
+    return render(request, 'lab/selection.html', context)
 
 
 def graphic(v, t, e, b, w, last_t):
     clear_data()
     plt.gcf().clear()
-    # create 1000 equally spaced points between -10 and 10
     x = np.linspace(0, max(last_t, 8), 1000)
     x1 = np.array(last_t)
     y1 = v + 2.7 ** (-b * x1) * np.cos(w * x1)
-    # calculate the y value for each element of the x vector
     y = v + 2.7 ** (-b * x) * np.cos(w * x)
-    fig, ax = plt.subplots()
-    ax.plot(x, y)
-    ax.scatter(x1, y1, color='purple', label='Найденное минимальное время')
-    ax.axhline(y=v - e, color='red', linestyle='--', linewidth=2, label='Допустимое отклонение')
-    ax.axhline(y=v + e, color='red', linestyle='--', linewidth=2)
-
-    # Вертикальная линия на уровне x=3
-    ax.axvline(x=t, color='green', linestyle=':', linewidth=2, label='Максимальное время')
-    ax.legend()
+    
+    # Dark theme styling
+    plt.style.use('dark_background')
+    plt.rcParams['text.color'] = '#f4f4f5'
+    plt.rcParams['axes.labelcolor'] = '#a1a1aa'
+    plt.rcParams['xtick.color'] = '#71717a'
+    plt.rcParams['ytick.color'] = '#71717a'
+    plt.rcParams['axes.edgecolor'] = '#71717a'
+    plt.rcParams['axes.facecolor'] = '#0f0f14'
+    
+    fig, ax = plt.subplots(facecolor='#0f0f14')
+    ax.set_facecolor('#0f0f14')
+    ax.plot(x, y, color='#00d4ff', linewidth=2)
+    ax.scatter(x1, y1, color='#c084fc', label='Найденное минимальное время', s=100, zorder=5)
+    ax.axhline(y=v - e, color='#f87171', linestyle='--', linewidth=2, label='Допустимое отклонение', alpha=0.7)
+    ax.axhline(y=v + e, color='#f87171', linestyle='--', linewidth=2, alpha=0.7)
+    ax.axvline(x=t, color='#34d399', linestyle=':', linewidth=2, label='Максимальное время', alpha=0.7)
+    ax.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
+    ax.grid(True, alpha=0.2, color='#71717a')
+    
+    os.makedirs('static/graphics', exist_ok=True)
     filee = randint(1000, 10000000)
-    plt.savefig(f"static/graphics/{filee}.jpg")
+    plt.savefig(f"static/graphics/{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
     return filee
 
 
 def regulation(request):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
-    return render(request, 'lab/regulation/regulations.html')
+    """Выбор регулятора"""
+    context = {
+        'page_icon': '🎛️',
+        'page_title': 'Перегрев сказался на работе двигателя',
+        'page_description': 'Настройки PID-регулятора слетели. Без него мы не сможем продолжить полёт. Настрой регулятор!',
+        'alert_text': '⚠️ Требуется калибровка системы',
+        'alert_color': 'amber',
+        'show_pid_formula': True,
+        'anime_image': 'img/reg_anime.png',
+        'options': [
+            {
+                'tag': 'Теория управления',
+                'tag_color': 'blue',
+                'icon': '🎛️',
+                'title': 'PID-регулятор',
+                'description': 'Устройство в управляющем контуре с обратной связью. Комбинирует пропорциональный, интегральный и дифференциальный компоненты для оптимального управления.',
+                'url': '/labkib/legacy/regulation/PID/',
+                'image': 'img/pidd.png',
+                'action_text': 'Настроить регулятор',
+                'featured': True,
+            },
+        ],
+    }
+    return render(request, 'lab/selection.html', context)
 
 
 def pid(request):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
+    """Работа с PID-регулятором"""
     if request.method == 'POST':
-        con = {'v': float(request.POST['v'].replace(',', '.')),
-               'b': float(request.POST['b'].replace(',', '.')),
-               'w': float(request.POST['w'].replace(',', '.')),
-               't': float(request.POST['t'].replace(',', '.')),
-               'e': float(request.POST['e'].replace(',', '.'))}
+        con = {
+            'v': float(request.POST['v'].replace(',', '.')),
+            'b': float(request.POST['b'].replace(',', '.')),
+            'w': float(request.POST['w'].replace(',', '.')),
+            't': float(request.POST['t'].replace(',', '.')),
+            'e': float(request.POST['e'].replace(',', '.'))
+        }
 
         table_data = request.POST.get('table_data')
-
         table_data = [i.split(',')[1:] for i in table_data[1:-1].split('\\n')]
         con['table'] = table_data
         con['tryes'] = len(con['table'][0])
@@ -298,28 +621,45 @@ def pid(request):
         con['filee'] = f'/static/graphics/{filee}.jpg'
         return render(request, 'lab/regulation/result.html', con)
 
-    con = {'v': round(uniform(5, 10), 2),
-           't': round(uniform(1, 3.5), 2),
-           'e': round(uniform(0.1, 0.5), 2),
-           'b': round(uniform(0.1, 0.9), 2),
-           'w': round(uniform(2, 10), 2)}
+    con = {
+        'v': round(uniform(5, 10), 2),
+        't': round(uniform(1, 3.5), 2),
+        'e': round(uniform(0.1, 0.5), 2),
+        'b': round(uniform(0.1, 0.9), 2),
+        'w': round(uniform(2, 10), 2)
+    }
 
     return render(request, 'lab/regulation/regulation.html', context=con)
 
 
-# Create your views here.
-
 def control(request):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
-    return render(request, 'lab/control/controls.html')
+    """Выбор типа управления"""
+    context = {
+        'page_icon': '🚀',
+        'page_title': 'На пути плотный пояс астероидов!',
+        'page_description': 'Подбери идеальную траекторию, чтобы хватило топлива и удалось эвакуировать как можно больше исследовательских станций!',
+        'alert_text': '☄️ Экстренная ситуация — действуй быстро!',
+        'alert_color': 'red',
+        'anime_image': 'img/panic.jpg',
+        'options': [
+            {
+                'tag': 'Оптимизация',
+                'tag_color': 'cyan',
+                'icon': '📉',
+                'title': 'Подбор траектории',
+                'description': 'С помощью интерактивной карты подбери самую удачную траекторию полёта. Топливо ограничено, и в разных зонах оно тратится с разной скоростью.',
+                'url': '/labkib/legacy/control/track/',
+                'image': 'img/map.jpg',
+                'action_text': 'Начать миссию',
+                'featured': True,
+            },
+        ],
+    }
+    return render(request, 'lab/selection.html', context)
 
 
 def get_control(request):
-    # from django.http import HttpResponseRedirect
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
+    """Работа с управлением траекторией"""
     if request.method == 'POST':
         table_data = request.POST.get('table_data')
         table_data = [i.split(',')[1:] for i in table_data[1:-1].split('\\n')]
@@ -341,8 +681,8 @@ def get_control(request):
                 con['sv'] = int(table_data[3][i])
                 con['fuel'] = int(table_data[4][i])
                 con['mx'] = int(table_data[5][i])
-
                 mx = con['mx']
+        
         d = randint(1, 10000)
         text = f'''документ(ГОСТ-7-32-2017)
         --
@@ -401,6 +741,7 @@ def get_control(request):
         + Заключение
         Вывод: в ходе лабораторной работы было изучено понятие "управление" в области кибернетики. После использования 5 доступных попыток наилучший результат составил {con['mx']} очков.'''
 
+        os.makedirs('static/works', exist_ok=True)
         with open(f'static/works/{d}.txt', "w") as f:
             f.write(text)
             f.close()
@@ -410,7 +751,8 @@ def get_control(request):
     return render(request, 'lab/control/control.html')
 
 
+# Старая главная страница (для совместимости)
 def lab_index(request):
-    # if not request.COOKIES.get('good'):
-    #     return HttpResponseRedirect('/sorry')
-    return render(request, 'lab/index.html')
+    """Редирект на новую главную страницу"""
+    from django.shortcuts import redirect
+    return redirect('/labkib/')

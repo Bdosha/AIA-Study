@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$", right: "$", display: false},
+        {left: "$$", right: "$$", display: true},
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\[", right: "\]", display: true}
+      ],
+      ignoredTags: ["script", "noscript", "style", "textarea", "pre"],
+      ignoredClasses: ['no-math'],
+      onlyRenderAfterDOMContentLoaded: true,
+      // Рендерим только элементы с классом "формула"
+      selectors: ['.формула']
+    });
+  });
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Синхронизация биоритмов экобиомодулей v2.0</title>
+    <link rel="stylesheet" href="styles_test9.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Лабораторная работа №5: Синхронизация биоритмов экобиомодулей v2.0</h1>
+            <p class="mission-text">
+                <strong>Задача модуля:</strong> Исследование эмерджентности и самоорганизации в многоагентных системах 
+                через моделирование синхронизации биоритмов с управлением топологией связей и стохастическими возмущениями
+            </p>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="emergency-alert" class="emergency-alert" style="display: none;">
+        ⚠️ АВАРИЙНАЯ СИТУАЦИЯ: Система нестабильна!
+    </div>
+
+    <div id="success-alert" class="success-alert" style="display: none;">
+        ✅ СИСТЕМА СИНХРОНИЗИРОВАНА!
+    </div>
+
+    <div class="main-container">
+        <!-- Левая панель управления -->
+        <div class="control-panel">
+            <h2>🎛️ Панель управления</h2>
+
+            <div class="parameter-group">
+                <label for="coupling-strength">Сила связи ($K$)</label>
+                <p class="param-description">Интенсивность взаимодействия между модулями</p>
+                <input type="range" id="coupling-strength" min="0" max="2" step="0.1" value="0.5">
+                <div class="value-display" id="coupling-display">0.5</div>
+            </div>
+
+            <div class="parameter-group">
+                <label for="frequency-spread">Разброс частот ($σ$)</label>
+                <p class="param-description">Неоднородность собственных частот</p>
+                <input type="range" id="frequency-spread" min="0.1" max="1" step="0.1" value="0.3">
+                <div class="value-display" id="spread-display">0.3</div>
+            </div>
+
+            <div class="parameter-group">
+                <label for="interaction-radius">Радиус взаимодействия ($R$)</label>
+                <p class="param-description">Количество соседей, с которыми взаимодействует каждый модуль</p>
+                <input type="range" id="interaction-radius" min="1" max="10" step="1" value="10">
+                <div class="value-display" id="radius-display">10 (полная связь)</div>
+            </div>
+
+            <div class="parameter-group">
+                <label for="iterations">Время наблюдения</label>
+                <p class="param-description">Количество итераций моделирования</p>
+                <input type="range" id="iterations" min="100" max="500" step="50" value="300">
+                <div class="value-display" id="iterations-display">300 итераций</div>
+            </div>
+
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="start-btn">▶ Запуск</button>
+                <button class="btn btn-secondary" id="pause-btn">⏸ Пауза</button>
+                <button class="btn btn-danger" id="reset-btn">🔄 Сброс</button>
+            </div>
+
+            <div class="status-panel">
+                <h3>📊 Состояние системы</h3>
+                <div class="stat-item">
+                    <span>Синхронизация:</span>
+                    <span class="stat-value" id="sync-level">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span>Итерация:</span>
+                    <span class="stat-value" id="current-iteration">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Время синхронизации:</span>
+                    <span class="stat-value" id="sync-time">—</span>
+                </div>
+                <div class="stat-item">
+                    <span>Амплитуда шума ($\xi$):</span>
+                    <span class="stat-value" id="noise-level">?</span>
+                </div>
+                <div class="stat-item">
+                    <span>Критическое $K$:</span>
+                    <span class="stat-value" id="critical-k">~0.5</span>
+                </div>
+                <div class="status-message status-chaos" id="status-message">
+                    Хаотическое состояние
+                </div>
+            </div>
+        </div>
+
+        <!-- Центральная область визуализации -->
+        <div class="visualization-area">
+            <h2>🔬 Экобиомодули корабля</h2>
+            <div class="canvas-container">
+                <canvas id="oscillator-canvas" width="450" height="450"></canvas>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="color-indicator" style="background: #6c757d;"></div>
+                    <span>Пассивная фаза</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-indicator" style="background: #00d4ff;"></div>
+                    <span>Активная фаза</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-indicator" style="background: #50fa7b;"></div>
+                    <span>Максимальная активность</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая панель с графиком -->
+        <div class="chart-area">
+            <h2>📈 Параметр порядка $r(t)$</h2>
+            <canvas id="order-chart" width="330" height="250"></canvas>
+            <div class="chart-description">
+                <strong>Параметр порядка ($r$):</strong><br>
+                • r = 0 → полный хаос<br>
+                • r = 1 → полная синхронизация<br><br>
+                <strong>Возможности v2.0:</strong><br>
+                • Управление радиусом взаимодействия<br>
+                • Случайный шум добавляет реализм<br>
+                • Вывод формул после эксперимента
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно с результатами -->
+    <div id="results-modal" class="modal">
+        <div class="modal-content">
+            <h2>📋 Результаты эксперимента</h2>
+            
+            <div class="formula-section">
+                <h3>Использованные формулы</h3>
+                <div class="formula">
+<!--                    комментарий θᵢ(t+1) = θᵢ(t) + ωᵢ + (K/N_eff) Σⱼ∈neighbors(i,R) sin(θⱼ(t) - θᵢ(t)) + ξ·η(t)-->
+                    $\theta_i(t+1) = \theta_i(t) + w_i + \left( {K \over N_eff} \right) \sum_{j \in Neighbors(i,R)} sin(\theta_j(t) - \theta_i(t)) + \xi \cdot \eta \\$
+
+                </div>
+                <p style="color: var(--text-secondary-x); margin-top: 10px; font-size: 16px;">
+<!--                    где $N_eff$ — эффективное количество соседей в радиусе $R$,<br>-->
+<!--                    $\xi$ — амплитуда шума, $\eta{(t)} \sim N{(0,1)}$ — гауссовский шум-->
+                    где:<br>
+
+
+                    - $\theta_i$ — фаза i-го модуля в момент времени t<br>
+                    - $w_i$ — собственная частота i-го модуля<br>
+                    - $K$ — сила связи между модулями (управляющий параметр)<br>
+                    - $R$ — радиус взаимодействия (управляемый параметр)<br>
+                    - $N_eff$ — эффективное количество соседей в радиусе $R$<br>
+                    - $Neighbors{(i,R)}$ — множество индексов соседей на кольце<br>
+                    - $\xi$ — амплитуда шума (случайный скрытый параметр)<br>
+                    - $\eta{(t)} \sim N{(0,1)}$ — гауссовский белый шум<br>
+                </p>
+                
+                <div class="formula" style="margin-top: 15px;">
+<!--r(t) = |1/N Σⱼ₌₁ᴺ exp(iθⱼ(t))|-->
+                    $r(t) = \left| \frac{1}{N} \sum_{j=1}^{N} e^{i\theta_j(t)} \right|$
+                </div>
+                <p style="color: var(--text-secondary-x); margin-top: 10px; font-size: 16px;">
+                    Параметр порядка — мера синхронизации системы
+                </p>
+            </div>
+
+            <div class="formula-section">
+                <h3>Параметры эксперимента</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Значение</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody id="params-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="close-btn" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Подключение модулей JavaScript -->
+    <script src="js/ThemeManager.js"></script>
+    <script src="js/KuramotoSimulator.js"></script>
+    <script src="js/ChartRenderer.js"></script>
+    <script src="js/UIController.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

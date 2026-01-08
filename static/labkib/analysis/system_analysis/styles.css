@@ -1,0 +1,492 @@
+/* styles.css */
+
+/* Центральный файл стилей */
+:root {
+  /* Тема по умолчанию — тёмная */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #121212;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --border-color: #333;
+  --node-active: #03dac6;
+  --node-inactive: #444444;
+  --link-strong: #ff4081;
+  --link-medium: #ffb300;
+  --link-weak: #00b0ff;
+  --button-bg: #1f1f1f;
+  --button-hover: #333333;
+  --panel-bg: #1a1a1a;
+  --panel-border: #2a2a2a;
+  --gauge-bg: #222;
+  --gauge-low: #f44336;
+  --gauge-mid: #ff9800;
+  --gauge-high: #4caf50;
+  --accent: #6200ea;
+  --glass-bg: rgba(26, 26, 26, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+  background-size: cover;
+  background-attachment: fixed;
+  overflow-x: hidden;
+  overflow-y: hidden; /* --- ОТКЛЮЧАЕМ ВЕРТИКАЛЬНЫЙ СКРОЛЛ --- */
+}
+
+.container {
+  padding: 1rem;
+  max-width: 100%;
+  margin: 0 auto;
+  height: 100vh; /* --- ФИКСИРУЕМ ВЫСОТУ КОНТЕЙНЕРА --- */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Вступительный экран */
+.intro-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 10, 10, 0.98);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  transition: opacity 0.5s ease;
+}
+
+.intro-content {
+  text-align: center;
+  max-width: 700px;
+  padding: 2.5rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--link-medium);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 179, 0, 0.3);
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.story {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.warning {
+  color: var(--gauge-low);
+  font-weight: bold;
+  margin-bottom: 2rem;
+  padding: 0.8rem;
+  background: rgba(244, 67, 54, 0.1);
+  border-radius: 8px;
+  border: 1px solid var(--gauge-low);
+}
+
+.start-btn {
+  padding: 1rem 2.5rem;
+  font-size: 1.3rem;
+  background: linear-gradient(45deg, var(--accent), #03dac6);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(98, 0, 234, 0.4);
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(98, 0, 234, 0.6);
+}
+
+.hidden {
+  display: none;
+}
+
+/* Основной интерфейс */
+.main-interface {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-grow: 1; /* --- ЗАПОЛНЯЕТ ОСТАВШЕЕСЯ ПРОСТРАНСТВО --- */
+}
+
+header {
+  display: contents; /* --- ИСПОЛЬЗУЕМ GRID ДЛЯ ЦЕНТРИРОВКИ --- */
+  grid-template-columns: 1fr auto 1fr; /* --- Три колонки --- */
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-title {
+  grid-column: 2; /* --- ПОМЕЩАЕМ ЗАГОЛОВОК ВО ВТОРУЮ КОЛОНКУ --- */
+  text-align: center; /* --- ЦЕНТРИРУЕМ ТЕКСТ ВНУТРИ ЯЧЕЙКИ --- */
+  font-size: 2.2rem; /* --- УВЕЛИЧЕН РАЗМЕР --- */
+  color: #ffffff; /* --- ЯРКИЙ БЕЛЫЙ ЦВЕТ --- */
+  font-weight: 600;
+  /* --- УБИРАЕМ ТЕНИ И БЛЮР --- */
+}
+
+.header-controls {
+  grid-column: 3; /* --- ПОМЕЩАЕМ КНОПКИ В ТРЕТЬЮ КОЛОНКУ --- */
+  justify-self: end; /* --- ПРИЖИМАЕМ КНОПКИ К КРАЮ --- */
+  display: flex;
+  gap: 1rem;
+}
+
+.theme-toggle-btn, .reset-btn {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--button-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-btn {
+  background-color: #444;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reset-btn:hover {
+  background-color: #555;
+}
+
+/* Основная сетка */
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 2fr minmax(280px, 1fr);
+  gap: 1.5rem;
+  flex-grow: 1; /* --- ЗАПОЛНЯЕТ ОСТАВШЕЕСЯ ПРОСТРАНСТВО --- */
+  overflow: hidden; /* --- СКРЫВАЕМ ПРОКРУТКУ ВНУТРИ СЕТКИ --- */
+}
+
+.control-panel {
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* --- СКРОЛЛ ТОЛЬКО ЕСЛИ КОНТЕНТ ДЛИННЫЙ --- */
+  max-height: calc(100vh - 120px);
+  font-size: 0.9rem;
+}
+
+.control-panel h3 {
+  text-align: center; /* --- ЦЕНТРИРУЕМ ЗАГОЛОВКИ --- */
+  margin-bottom: 0.5rem;
+}
+
+.control-panel label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+#config-select {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: var(--button-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.stability-indicator {
+  margin-top: auto; /* Прижимаем к низу */
+}
+
+.gauge {
+  width: 100%;
+  height: 25px;
+  background-color: var(--gauge-bg);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.instructions {
+  background-color: var(--panel-bg);
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.instructions h3 {
+  color: var(--link-weak);
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  text-align: center; /* --- ЦЕНТРИРУЕМ ЗАГОЛОВКИ --- */
+}
+
+.instructions ol {
+  padding-left: 1rem;
+}
+
+.instructions li {
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.attempts {
+  background-color: var(--panel-bg);
+  border-radius: 8px;
+  padding: 0.8rem;
+  text-align: center;
+  font-weight: bold;
+  color: var(--gauge-low);
+  font-size: 0.9rem;
+}
+
+/* Основной контент */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Уменьшен промежуток */
+  overflow: hidden;
+  flex-grow: 1;
+  margin: -1rem; /* --- УБИРАЕМ ВНЕШНИЕ ОТСТУПЫ --- */
+}
+
+.graph-container {
+  flex: 1; /* --- ЗАПОЛНЯЕТ ВСЁ ПРОСТРАНСТВО --- */
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px; /* --- СКРУГЛЁННЫЕ УГЛЫ --- */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 0.1rem; /* --- ПОЧТИ ПОЛНОСТЬЮ УБРАНЫ ОТСТУПЫ --- */
+}
+
+.graph-svg {
+  width: 100%;
+  height: 100%;
+  min-height: 0; /* --- ПОЗВОЛЯЕТ СЖИМАТЬСЯ --- */
+  flex-grow: 1; /* --- ЗАПОЛНЯЕТ ВСЁ ПРОСТРАНСТВО --- */
+}
+
+/* Панель результатов */
+.results-panel {
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto; /* --- СКРОЛЛ ТОЛЬКО ЕСЛИ КОНТЕНТ ДЛИННЫЙ --- */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  max-height: calc(100vh - 120px);
+  font-size: 0.85rem;
+}
+
+.results-panel h3 {
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-align: center; /* --- ЦЕНТРИРУЕМ ЗАГОЛОВКИ --- */
+}
+
+.swot-panel, .recommendations-panel {
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+  padding: 0.7rem;
+  font-size: 0.8rem;
+}
+
+/* --- НОВЫЕ СТИЛИ ДЛЯ ВЕРСТКИ СПИСКОВ --- */
+.swot-panel ul, .recommendations-panel ul {
+  padding-left: 1.2em;
+  margin: 0;
+  list-style-position: inside;
+}
+
+.swot-panel li, .recommendations-panel li {
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+/* --- КОНЕЦ НОВЫХ СТИЛЕЙ --- */
+
+.light-theme {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --border-color: #ccc;
+  --node-active: #009688;
+  --node-inactive: #6c757d;
+  --link-strong: #d32f2f;
+  --link-medium: #f57c00;
+  --link-weak: #388e3c;
+  --button-bg: #e0e0e0;
+  --button-hover: #ccc;
+  --panel-bg: #f9f9f9;
+  --panel-border: #ddd;
+  --gauge-bg: #e0e0e0;
+  --gauge-low: #f44336;
+  --gauge-mid: #ff9800;
+  --gauge-high: #4caf50;
+  --accent: #6200ea;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.1);
+}
+
+/* --- ЯВНО ПЕРЕОПРЕДЕЛЯЕМ ЦВЕТ В СВЕТЛОЙ ТЕМЕ --- */
+.light-theme .header-title {
+  color: #ffffff; /* Убеждаемся, что даже в светлой теме — белый */
+}
+
+/* Стили для SVG узлов */
+.node {
+  cursor: pointer;
+  transition: stroke-width 0.2s ease, fill 0.2s ease;
+}
+
+.node:hover {
+  stroke-width: 4;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .main-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .results-panel {
+    order: 3;
+  }
+  header {
+    grid-template-columns: 1fr; /* --- Для мобильных версий возвращаем обычный макет --- */
+    display: flex;
+  }
+  .header-title {
+    grid-column: auto; /* --- Возвращаем обычное позиционирование --- */
+    flex-grow: 1;
+    text-align: center;
+  }
+  .header-controls {
+    grid-column: auto; /* --- Возвращаем обычное позиционирование --- */
+    justify-self: auto; /* --- Возвращаем обычное позиционирование --- */
+  }
+}
+
+@media (max-width: 768px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+  .header-controls {
+    flex-direction: column;
+  }
+  .title {
+    font-size: 2.2rem;
+  }
+  .subtitle {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+  .intro-content {
+    padding: 1.5rem;
+  }
+  .title {
+    font-size: 1.8rem;
+  }
+  .story {
+    font-size: 1rem;
+  }
+  .start-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Стили для облачка информации об узле */
+.graph-tooltip {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  max-width: 200px;
+  font-size: 14px;
+  pointer-events: auto;
+  position: fixed;
+  color: var(--text-primary);
+}
+.graph-tooltip button {
+  margin-top: 8px;
+  padding: 5px 10px;
+  background-color: var(--button-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  width: 100%;
+}
+.graph-tooltip button:hover {
+  background-color: var(--button-hover);
+}

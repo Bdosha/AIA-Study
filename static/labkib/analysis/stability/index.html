@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализ устойчивости систем корабля к шумам</title>
+
+    <!-- Подключение CSS файлов -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+<body class="dark-theme">
+<!-- Основная страница тестирования -->
+<div class="container" id="mainPage">
+    <div class="header">
+        <h1>АНАЛИЗ УСТОЙЧИВОСТИ СИСТЕМЫ КОРАБЛЯ К ПОМЕХАМ</h1>
+        <p>Моделирование устойчивости бортовых систем корабля к космическим помехам и электромагнитным шумам</p>
+    </div>
+
+    <div class="theme-switcher">
+        <button id="themeToggle">🌙 Переключить тему</button>
+    </div>
+
+    <div class="test-counter">
+        Проведено тестов: <span id="testCount">0</span>/15
+    </div>
+
+    <div class="control-panel">
+        <div class="panel-section">
+            <h3>КОМПОНЕНТ СИСТЕМЫ КОРАБЛЯ</h3>
+            <select id="moduleSelect">
+                <option value="navigation">🧭 Навигация</option>
+                <option value="shields">🛡️ Щиты</option>
+                <option value="reactor">🔋 Реактор</option>
+            </select>
+        </div>
+
+        <div class="panel-section">
+            <h3>КОСМИЧЕСКИЕ ПОМЕХИ</h3>
+            <div>Уровень: <span id="noiseValue">2.5</span></div>
+            <input type="range" id="noiseLevel" min="0" max="5" step="0.5" value="2.5">
+        </div>
+    </div>
+
+    <div class="parameters">
+        <div class="param-item">
+            <label>ТОЧНОСТЬ ДАТЧИКОВ (1-10):</label>
+            <input type="number" id="sensorAccuracy" min="1" max="10" value="5">
+            <div class="param-name">1-низкая, 10-высокая точность</div>
+        </div>
+        <div class="param-item">
+            <label>МОЩНОСТЬ СИСТЕМЫ (1-10):</label>
+            <input type="number" id="systemPower" min="1" max="10" value="5">
+            <div class="param-name">1-минимальная, 10-максимальная</div>
+        </div>
+    </div>
+
+    <div class="test-controls">
+        <button id="startTest">▶ ТЕСТИРОВАТЬ</button>
+        <button id="resetTest">⟲ СБРОС</button>
+        <button id="finishAnalysis">📊 ЗАВЕРШИТЬ АНАЛИЗ</button>
+    </div>
+
+    <div class="results">
+        <div class="status-indicator">
+            <div class="status-light" id="statusLight"></div>
+            <div id="statusText">Готов к тестированию</div>
+        </div>
+        <div>Эффективность системы: <span id="kpeValue">-</span></div>
+    </div>
+
+    <div class="test-history">
+        <h3>ИСТОРИЯ ТЕСТОВ:</h3>
+        <table class="history-table">
+            <thead>
+            <tr>
+                <th>Система</th>
+                <th>Точность</th>
+                <th>Мощность</th>
+                <th>Помехи</th>
+                <th>Эффективность</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody id="historyBody">
+            <!-- История тестов будет здесь -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Страница результатов -->
+<div class="container results-page" id="resultsPage">
+    <div class="header">
+        <h1>РЕЗУЛЬТАТЫ АНАЛИЗА УСТОЙЧИВОСТИ</h1>
+        <div>Отчет по испытаниям систем корабля</div>
+    </div>
+
+    <div class="conclusion">
+        <h2>ВЫВОДЫ ПО РЕЗУЛЬТАТАМ ТЕСТИРОВАНИЯ</h2>
+
+        <div id="bestSystemResult">
+            <!-- Сюда вставится результат о наиболее устойчивой системе -->
+        </div>
+
+        <div class="optimal-params" id="optimalParams">
+            <!-- Сюда вставятся оптимальные параметры -->
+        </div>
+
+        <div id="generalConclusion">
+            <!-- Общий вывод -->
+        </div>
+    </div>
+
+    <div class="test-history">
+        <h3>ИСТОРИЯ ТЕСТОВ:</h3>
+        <table class="history-table">
+            <thead>
+            <tr>
+                <th>Система</th>
+                <th>Точность</th>
+                <th>Мощность</th>
+                <th>Помехи</th>
+                <th>Эффективность</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody id="finalHistoryBody">
+            <!-- Полная история тестов -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-controls">
+        <button id="newAnalysis">🔄 НОВЫЙ АНАЛИЗ</button>
+    </div>
+</div>
+
+<!-- Подключение JS файлов -->
+<script type="module" src="js/utils.js"></script>
+<script type="module" src="js/ThemeManager.js"></script>
+<script type="module" src="js/StabilityTester.js"></script>
+<script type="module" src="js/ResultsAnalyzer.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

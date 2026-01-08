@@ -2,288 +2,535 @@
 {% load static %}
 
 {% block head %}
+    <title>Результаты — Управление</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
+        .results-hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 24px;
+            margin-bottom: 2rem;
+        }
 
+        .results-hero-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
 
-        canvas {
-            width: 100%; /* Установите нужную ширину картинок */
-            height: auto; /* Пропорциональное изменение высоты */
-            margin-top: 20px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            border: 1px solid black;
-            border-radius: 2px;
+        .results-hero h1 {
+            font-size: 2rem;
+            color: #34d399;
+            margin-bottom: 0.5rem;
+        }
+
+        .results-hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        .map-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .map-panel h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        #imageCanvas {
+            border-radius: 16px;
+            border: 4px solid var(--bg-secondary);
+            width: 100%;
+            max-width: none;
+            height: auto;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
             image-rendering: pixelated;
         }
 
-        @media screen and (max-width: 768px) {
-            canvas {
-                width: 100%; /* Установите нужную ширину картинок */
-                height: auto; /* Автоматическая высота */
-                margin-top: 20px;
-                margin-bottom: 20px;
-                box-sizing: border-box;
-                border: 1px solid black;
-                border-radius: 2px;
-                image-rendering: pixelated;
+        .data-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .data-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.15));
+            border-radius: 10px;
+        }
+
+        .data-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .data-scroll {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td:first-child {
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 1.25rem;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        /* Story Section */
+        .story-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .story-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .story-toggle:hover {
+            color: var(--accent-cyan);
+        }
+
+        .story-content {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .story-content.show {
+            display: block;
+        }
+
+        .story-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .story-image {
+            max-width: 500px;
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+        }
+
+        .story-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .story-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .story-btn-primary {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            color: white;
+        }
+
+        .story-btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .story-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .code-panel {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .code-panel.show {
+            display: block;
+        }
+
+        .code-panel textarea {
+            width: 100%;
+            height: 300px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+            color: white;
+        }
+
+        .action-btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .action-btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+    </style>
+    <script>
+        function toggleStory() {
+            const content = document.getElementById('storyContent');
+            const icon = document.getElementById('toggleIcon');
+            content.classList.toggle('show');
+            icon.textContent = content.classList.contains('show') ? '▼' : '▶';
+        }
+
+        function toggleCode() {
+            const content = document.getElementById('codePanel');
+            content.classList.toggle('show');
+        }
+
+        function handleFirstOption() {
+            document.getElementById('storyText').textContent = 'Да... Я поняла, капитан... Обещаю, что такого больше не повторится... Пожалуй я пойду...';
+            document.getElementById('storyImage').src = '{% static "img/sad.png" %}';
+            document.getElementById('storyButtons').innerHTML = '';
+        }
+
+        function handleSecondOption() {
+            document.getElementById('storyText').textContent = 'Спасибо вам огромное... И знаете.. В честь завершения нашей миссии я подготовила для вас кое-что. Пусть это совсем мелочь, но мне было важно как-то отблагодарить вас!';
+            document.getElementById('storyImage').src = '{% static "img/paper.png" %}';
+            document.getElementById('storyButtons').innerHTML = '<button class="story-btn story-btn-primary" onclick="handleNext()">📄 Взять отчёт</button>';
+            // Show code button after accepting apologies
+            const codeButtonContainer = document.getElementById('codeButtonContainer');
+            if (codeButtonContainer) {
+                codeButtonContainer.style.display = 'block';
             }
         }
 
-        #instruction {
-            display: none; /* Изначально скрыто */
-            margin-top: 10px;
-            align-items: center;
-
+        function handleNext() {
+            document.getElementById('storyText').textContent = 'Спасибо вам огромное за эту миссию. Я обязательно расскажу Роману Викторовичу обо всех ваших подвигах! Капитан {{ fio }}';
+            document.getElementById('storyImage').src = '{% static "img/bye.png" %}';
+            document.getElementById('storyButtons').innerHTML = '';
+            
+            // Download file
+            const link = document.createElement('a');
+            link.href = "{{ file }}";
+            link.download = "report.txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        .toggle-btn {
-            cursor: pointer;
-            color: #333333;
-        }
+        window.onload = function() {
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            // Отключаем сглаживание для резкости пикселей
+            ctx.imageSmoothingEnabled = false;
+            ctx.mozImageSmoothingEnabled = false;
+            ctx.webkitImageSmoothingEnabled = false;
+            ctx.msImageSmoothingEnabled = false;
 
-        #image {
-            max-width: 100%;
-            margin-bottom: 20px;
-            border-radius: 20px;
+            let img = new Image();
+            img.src = '{% static "img/map_small.jpg" %}';
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                updateLine();
+            };
 
-        }
+            function updateLine() {
+                const x1 = parseInt({{ x1 }});
+                const x2 = parseInt({{ x2 }});
 
-        #text {
-            text-align: center;
-        }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
 
-        #buttons {
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        {#textarea {#}
-        {#    width: 100%;#}
-        {#    height: 200px;#}
-        {#    padding: 10px;#}
-        {#    font-size: 16px;#}
-        {#    line-height: 1.5;#}
-        {#    font-family: Arial, sans-serif;#}
-        {#    color: #333;#}
-        {#    background-color: #f9f9f9;#}
-        {#    border: 1px solid #ccc;#}
-        {#    border-radius: 5px;#}
-        {#    resize: none; /* Отключить изменение размера */#}
-        {#}#}
-    </style>
-    <title>Результаты лабораторной работы</title>
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
 
-    <link rel="stylesheet" href="{% static "styles/result.css" %}">
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(img.height - 1);
+                const sx = x1 < x2 ? 1 : -1;
+                const sy = 1;
+                let err = dx - dy;
+                let x = x1;
+                let y = 0;
 
+                while (true) {
+                    const index = (y * canvas.width + x) * 4;
+                    const r = data[index];
+                    const g = data[index + 1];
+                    const b = data[index + 2];
 
-    <script>
-        function toggleInstruction() {
-            const instruction = document.getElementById('instruction');
-            instruction.style.display = (instruction.style.display === 'none') ? 'block' : 'none';
-        }
-    </script>
-    <script>
-        function toggleInstruction2() {
-            const instruction = document.getElementById('codes');
-            instruction.style.display = (instruction.style.display === 'none') ? 'block' : 'none';
-        }
-    </script>
-
-{% endblock head %}
-
-
-{% block content %}
-
-    <div class="container my-4">
-        <div class="row featurette d-flex justify-content-center align-items-center">
-            <div class="col-md-9 order-md-2">
-                <h2 class="featurette-heading">Поздравляем, капитан! <span class="text-muted">Нам удалось подобрать траекторию полёта для возвращения домой!</span>
-                </h2>
-                <p class="lead">Итог работы: Корабль успешно преодолел пояс астероидов</p>
-                <p>Лучшая {{ tr }}: \( X_1 = {{ x1 }}\), \( X_2 = {{ x2 }}\), станции - \({{ sv }}\), топливо -
-                    \({{ fuel }}\), очки - \( {{ mx }}\)
-                </p>
-
-                <canvas id="imageCanvas" class="map"></canvas>
-
-                <h3>Все попытки:</h3>
-
-                <div id="resultsSection" class="big-table">
-
-                    <table id="resultsTable">
-                        <thead>
-                        <tr>
-                            <th>Номер попытки</th>
-                            {% for i in table.0 %}
-                                <th>{{ i }}</th>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr>
-                            <td>Введенный \( X_1 \)</td>
-                            {% for i in table.1 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Введенный \( X_2 \)</td>
-                            {% for i in table.2 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Спасено станций</td>
-                            {% for i in table.3 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Оставшееся топливо</td>
-                            {% for i in table.4 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Очки</td>
-                            {% for i in table.5 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <br>
-                <h3 class="toggle-btn" onclick="toggleInstruction()">▶ Важное обращение (тык)</h3>
-
-                <div id="instruction" style="display: none">
-                    <div class="container">
-                        <h5 id="text">К-капитан... Тут такое дело... Сейчас была проведена диагностика корабля и
-                            оказалось что... Все эти неполадки во время полета произошли из-за того, что я забыла при
-                            старте установить один нам небольшой ЛабКиб-модуль... <br>Простите! Простите меня пожалуста!
-                            Я не хотела...</h5>
-                        <img id="image" src="{% static 'img/sorry.png' %}" alt="Начальная картинка">
-                        <div id="buttons">
-                            <button onclick="handleFirstOption()">Накричать</button>
-                            <button onclick="handleSecondOption()">Принять извинения</button>
-                        </div>
-                        <h3 class="toggle-btn2" onclick="toggleInstruction2()">▶ Важное обращение (тык)</h3>
-                        <label>
-<textarea readonly id="codes"  style="display: none">
-{{ tx }}</textarea>
-                        </label>
-                    </div>
-
-                    <script>
-                        function handleFirstOption() {
-                            document.getElementById('text').textContent = 'Да... Я поняла, капитан... Обещаю, что такого больше не повторится... Пожалуй я пойду...';
-                            document.getElementById('image').src = '{% static "img/sad.png" %}';
-                            document.getElementById('image').alt = 'Картинка для первого варианта';
-                            document.getElementById('buttons').innerHTML = ''; // Убираем кнопки
-                        }
-
-                        function handleSecondOption() {
-                            document.getElementById('text').textContent = 'Спасибо вам огромное... И знаете.. В честь завершения нашей миссии я подготовила для вас кое-что. Пусть это совсем мелочь, но мне было важно как-то отблагодарить вас за столь прекрасное командование! Мне многому предстоит у вас научиться';
-                            document.getElementById('image').src = '{% static "img/paper.png" %}';
-                            document.getElementById('buttons').innerHTML = '<button onclick="handleNext()">Взять отчёт</button>';
-                        }
-
-                        function handleNext() {
-                            document.getElementById('text').textContent = 'Спасибо вам огромное за эту миссию. Я обязательно расскажу Роману Викторовичу обо всех ваших подвигах! И я очень надеюсь, что мы с вами еще свидимся... Капитан {{ fio }}';
-                            document.getElementById('image').src = '{% static "img/bye.png" %}';
-                            document.getElementById('image').alt = 'Картинка перед скачиванием';
-                            const link = document.createElement('a');
-                            link.href = "{{file}}"; // Укажите путь к вашему файлу
-                            link.download = "{{file}}";
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            document.getElementById('buttons').innerHTML = ''; // Убираем кнопки
-
-                        }
-
-                    </script>
-                    <script>window.onload = function () {
-                        const canvas = document.getElementById('imageCanvas');
-                        const ctx = canvas.getContext('2d');
-
-
-                        let img = new Image();
-                        img.src = '{% static "img/map_small.jpg" %}';  // Загрузка изображения через Django static
-                        img.onload = function () {
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            ctx.drawImage(img, 0, 0);
-                            updateLine(); // Обновляем линию сразу после загрузки изображения
-                        };
-
-                        // Функция для обновления линии
-                        function updateLine() {
-                            const x1 = parseInt({{x1}});
-                            const x2 = parseInt({{x2}});
-
-                            // Очищаем канвас и перерисовываем исходное изображение
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0);
-
-                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                            const data = imageData.data;
-
-                            // Рисуем линию
-                            const dx = Math.abs(x2 - x1);
-                            const dy = Math.abs(img.height - 1);
-                            const sx = x1 < x2 ? 1 : -1;
-                            const sy = 1;
-                            let err = dx - dy;
-                            let x = x1;
-                            let y = 0;
-
-                            // Пройдем по пикселям и будем округлять по максимальному компоненту цвета
-                            while (true) {
-                                const index = (y * canvas.width + x) * 4;
-                                const r = data[index];
-                                const g = data[index + 1];
-                                const b = data[index + 2];
-
-                                // Округление до максимального цвета
-                                const maxColorValue = Math.max(r, g, b);
-                                if (maxColorValue === r) {
-                                    data[index] = 255; // Красный
-                                    data[index + 1] = 0;
-                                    data[index + 2] = 0;
-                                } else if (maxColorValue === g) {
-                                    data[index] = 0; // Зеленый
-                                    data[index + 1] = 255;
-                                    data[index + 2] = 0;
-                                } else {
-                                    data[index] = 255; // Синий
-                                    data[index + 1] = 255;
-                                    data[index + 2] = 255;
-                                }
-
-                                if (x === x2 && y === img.height - 1) break;
-                                const e2 = 2 * err;
-                                if (e2 > -dy) {
-                                    err -= dy;
-                                    x += sx;
-                                }
-                                if (e2 < dx) {
-                                    err += dx;
-                                    y += sy;
-                                }
-                            }
-
-                            // Обновляем изображение с нарисованной линией
-                            ctx.putImageData(imageData, 0, 0);
-                        }
+                    const maxColorValue = Math.max(r, g, b);
+                    if (maxColorValue === r) {
+                        data[index] = 255;
+                        data[index + 1] = 0;
+                        data[index + 2] = 0;
+                    } else if (maxColorValue === g) {
+                        data[index] = 0;
+                        data[index + 1] = 255;
+                        data[index + 2] = 0;
+                    } else {
+                        data[index] = 255;
+                        data[index + 1] = 255;
+                        data[index + 2] = 255;
                     }
 
-                    </script>
-                </div>
+                    if (x === x2 && y === img.height - 1) break;
+                    const e2 = 2 * err;
+                    if (e2 > -dy) { err -= dy; x += sx; }
+                    if (e2 < dx) { err += dx; y += sy; }
+                }
 
+                ctx.putImageData(imageData, 0, 0);
+            }
+        };
+    </script>
+{% endblock head %}
+
+{% block content %}
+    <div class="results-hero">
+        <div class="results-hero-icon">🎉</div>
+        <h1>Поздравляем, капитан!</h1>
+        <p>Нам удалось подобрать траекторию полёта для возвращения домой. Корабль успешно преодолел пояс астероидов!</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon">📍</div>
+            <div class="metric-value">{{ x1 }}</div>
+            <div class="metric-label">X₁</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">📍</div>
+            <div class="metric-value">{{ x2 }}</div>
+            <div class="metric-label">X₂</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🛰️</div>
+            <div class="metric-value">{{ sv }}</div>
+            <div class="metric-label">Станций</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">⛽</div>
+            <div class="metric-value">{{ fuel }}</div>
+            <div class="metric-label">Топливо</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🏆</div>
+            <div class="metric-value">{{ mx }}</div>
+            <div class="metric-label">Очки</div>
+        </div>
+    </div>
+
+    <div class="map-panel">
+        <h3>🗺️ Лучшая траектория — {{ tr }}</h3>
+        <canvas id="imageCanvas"></canvas>
+    </div>
+
+    <div class="data-panel">
+        <div class="data-header">
+            <div class="data-icon">📊</div>
+            <div class="data-title">Все попытки</div>
+        </div>
+        <div class="data-scroll">
+            <table class="data-table">
+                <tr>
+                    <td>Попытка</td>
+                    {% for i in table.0 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>X₁</td>
+                    {% for i in table.1 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>X₂</td>
+                    {% for i in table.2 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Станции</td>
+                    {% for i in table.3 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Топливо</td>
+                    {% for i in table.4 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Очки</td>
+                    {% for i in table.5 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="story-panel">
+        <div class="story-toggle" onclick="toggleStory()">
+            <span id="toggleIcon">▶</span>
+            🎭 Важное обращение от помощника
+        </div>
+        <div class="story-content" id="storyContent">
+            <p class="story-text" id="storyText">
+                К-капитан... Тут такое дело... Сейчас была проведена диагностика корабля и оказалось что... 
+                Все эти неполадки во время полета произошли из-за того, что я забыла при старте установить один 
+                небольшой ЛабКиб-модуль... Простите! Простите меня пожалуйста! Я не хотела...
+            </p>
+            <img id="storyImage" class="story-image" src="{% static 'img/sorry.png' %}" alt="Помощник">
+            <div class="story-buttons" id="storyButtons">
+                <button class="story-btn story-btn-secondary" onclick="handleFirstOption()">😤 Накричать</button>
+                <button class="story-btn story-btn-primary" onclick="handleSecondOption()">🤝 Принять извинения</button>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: none;" id="codeButtonContainer">
+                <button class="story-btn story-btn-secondary" onclick="toggleCode()">📝 Показать код отчёта</button>
+            </div>
+            <div class="code-panel" id="codePanel">
+                <textarea readonly>{{ tx }}</textarea>
             </div>
         </div>
+    </div>
+
+    <div class="actions">
+        <a href="/labkib/legacy/control/" class="action-btn action-btn-secondary" onclick="if(window.top !== window.self) { window.top.location.href = this.href; return false; }">
+            ← Попробовать снова
+        </a>
+        <a href="/labkib/" class="action-btn action-btn-primary" onclick="if(window.top !== window.self) { window.top.location.href = this.href; return false; }">
+            🏠 К списку работ
+        </a>
     </div>
 {% endblock content %}

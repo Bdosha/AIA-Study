@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система автоматизации корабля | ДКА</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-space-theme">
+    <div class="container">
+        <header class="header">
+            <button id="themeToggleBtn">Сменить тему</button>
+            <h1>⚙️ МАШИНА СОСТОЯНИЙ И АВТОМАТИЗАЦИЯ ПРОЦЕССОВ</h1>
+            <p class="subtitle">Лабораторная работа по дисциплине "Кибернетка и теория систем" № X | Построение детерминированного конечного автомата</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Левая панель: конфигурация автомата -->
+            <section class="config-section">
+                <h2>⚡ КОНФИГУРАЦИЯ АВТОМАТА КОРАБЛЯ</h2>
+                <p class="section-desc">M = (Q, Σ, δ, q₀, F) — цифровая машина аварийного переключения</p>
+
+                <!-- Легенда переменных -->
+                <div class="legend-box">
+                    <h3>📋 ЛЕГЕНДА ПЕРЕМЕННЫХ:</h3>
+                    <p><strong>Q</strong> — множество состояний: {q0, q1, q2, q3}</p>
+                    <p><strong>Σ</strong> — алфавит событий/сигналов: {v1, v2}</p>
+                    <p><strong>δ</strong> — функция переходов (таблица δ)</p>
+                    <p><strong>q₀</strong> — начальное состояние: q0</p>
+                    <p><strong>F</strong> — допускающее состояние: {q0, q2}</p>
+                </div>
+
+                <!-- Таблица переходов -->
+                <div class="table-wrapper">
+                    <h3>📊 ТАБЛИЦА ФУНКЦИИ ПЕРЕХОДОВ δ(Состояние, Сигнал) → Новое состояние:</h3>
+                    <table class="transitions-table">
+                        <thead>
+                            <tr>
+                                <th>δ / Состояния (Q)</th>
+                                <th>v1 ∈ Σ</th>
+                                <th>v2 ∈ Σ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transitionsTable">
+                            <!-- Заполняется через JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Кнопка проверки -->
+                <button id="validateBtn" class="btn-primary">🔍 ДИАГНОСТИРОВАТЬ СИСТЕМУ</button>
+            </section>
+
+            <!-- Правая панель: результаты и визуализация -->
+            <section class="results-section">
+                <div class="results-panel">
+                    <h2>📊 РЕЗУЛЬТАТЫ ДИАГНОСТИКИ</h2>
+                    <div id="validationContent" class="validation-content">
+                        <!-- Результаты выводятся сюда -->
+                    </div>
+                </div>
+
+                <div class="diagram-panel">
+                    <h2>🔗 ДИАГРАММА ПЕРЕХОДОВ СОСТОЯНИЙ</h2>
+                    <canvas id="automatonCanvas" class="automaton-canvas"></canvas>
+                    <p class="canvas-legend">● Начальное (q0) | ◯◯ Допускающее (q2) | ⟶ Переход по событию</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© Система навигации корабля | Детерминированный конечный автомат</p>
+        </footer>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/dfa.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,129 @@
+/* Кастомизация (тёмная тема по умолчанию) */
+:root {
+  --background-image: url("bg_dark.png"); /*фон*/
+  --background: #20232a; /*цвет основного блока*/
+  --box-shadow: 5px 10px 60px #fff; /*тень основного блока*/
+  --h1-color: #7e7e7e; /*цвет заголовков*/
+  --text-shadow: 1px 1px 2.5px rgb(68, 73, 83); /*тени заголовков*/
+  --label-color: #7e7e7e; /*цвет блоков*/
+  --input-background: #474747; /*цвет фона полей ввода*/
+  --resultblock-background: #474747; /*цвет фона полей вывода*/
+  --body-color: #d3d2d2; /*цвет основного текста*/
+  --input-color: #d3d2d2; /*цвет вводимого текста*/
+  --button-background: #7e7e7e; /*цвет кнопок*/
+  --button-hover-background: #464646; /*цвет кнопок при наведении*/
+}
+[data-theme="light"] {
+  --background-image: url("bg_light.png");
+  --background: #eef2f7;
+  --box-shadow: 10px 10px 40px #000;
+  --h1-color: #3262a8;
+  --text-shadow: 1px 1px 2.5px rgb(26, 82, 204);
+  --label-color: #444;
+  --input-background: #f7fafc;
+  --resultblock-background: #f7fafc;
+  --body-color: #000;
+  --input-color: #000;
+  --button-background: #47a3f3;
+  --button-hover-background: #3262a8;
+}
+/* Общие стили */
+body {
+  background: var(--background);
+  color: var(--body-color);
+  font-family: "BetterVCR";
+  background-image: var(--background-image);
+  background-attachment: fixed;
+}
+/* Основной блок */
+.container {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 24px 52px 40px 28px; /* Отступ: сверху справа снизу слева */
+  background: var(--background);
+  border-radius: 16px;
+  box-shadow: var(--box-shadow);
+}
+/* Кастомизация заголовков */
+h1 {
+  text-align: center;
+  color: var(--h1-color);
+  font-size: 40px;
+  text-shadow: var(--text-shadow);
+  margin-bottom: 30px;
+}
+/* Блоки ввода */
+label {
+  display: block;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  color: var(--label-color);
+}
+input[type="text"], textarea, select {
+  color: var(--input-color);
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 18px;
+  border: 1px solid #c7d2e1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: "BetterVCR";
+  background: var(--input-background);
+}
+textarea {
+  min-height: 62px;
+  max-height: 150px;
+}
+.row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.row .col {
+  flex: 1;
+  min-width: 300px;
+}
+/* Кнопка */
+button, a.button {
+  background: var(--button-background);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 11px 28px;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(49,114,233,0.08);
+  text-decoration: none;
+  display: inline-block;
+  font-family: "BetterVCR";
+  margin-left: 30px;
+}
+button:hover, a.button:hover {
+  background: var(--button-hover-background);
+}
+/* Блоки вывода */
+.resultblock {
+  background: var(--resultblock-background);
+  border: 1px solid #d1def3;
+  border-radius: 7px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  min-height: auto;
+  height: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-height: 150px;
+  overflow-y: auto;
+}
+/* Шрифт */
+@font-face {
+    font-family: "BetterVCR";
+    src: url("Better_VCR_Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* Мобильная версия */
+@media (max-width: 600px) {
+  .container { padding: 12px 5px; }
+  .row { flex-direction: column; gap: 0; }
+}

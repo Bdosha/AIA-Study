@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сетевые и распределенные системы</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="header-content">
+                <h1 class="app-title">Сетевые и распределенные системы</h1>
+            </div>
+
+            <div class="theme-toggle" id="themeToggle" title="Переключить тему">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Параметры моделирования</h2>
+            
+            <div class="control-section">
+                <label class="control-label">Метод маршрутизации</label>
+                <select id="routingMethod" class="form-control">
+                    <option value="flooding">Лавинная</option>
+                    <option value="static">Статическая</option>
+                    <option value="adaptive">Адаптивная</option>
+                    <option value="hybrid">Гибридная</option>
+                </select>
+            </div>
+
+            <div class="control-section">
+                <label class="control-label">Скорость визуализации</label>
+                <input type="range" id="speedSlider" min="0.1" max="2" step="0.1" value="1" class="slider">
+                <div class="speed-value" id="speedValue">1.0x</div>
+            </div>
+
+            <div class="control-section">
+                <button id="visualizeBtn" class="btn btn--primary btn--full-width">Выполнить визуализацию</button>
+                <button id="strikeBtn" class="btn btn--danger btn--full-width">Микрометеоритный удар</button>
+            </div>
+
+            <div class="info-text">
+                <p><strong>Белые ребра</strong> — основные каналы связи</p>
+                <p><strong>Пунктирные рёбра</strong> — резервные каналы связи</p>
+                <p class="formula-text">Вероятность: p<sub>i</sub> = нагрузка<sub>i</sub> / Σнагрузка</p>
+                <p class="formula-text">Энтропия: H = -Σ(p<sub>i</sub> × log₂(p<sub>i</sub>))</p>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+        </aside>
+
+        <main class="main-content">
+            <div class="canvas-container">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+
+            <div id="warningArea" class="warning-area" style="display: none;">
+                <!-- Warning messages will be added here dynamically -->
+            </div>
+
+            <div class="metrics-section">
+                <h3>Параметры модулей</h3>
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th class="metric-label">Метрика</th>
+                            <th class="node-header">Антенна</th>
+                            <th class="node-header">Энергоблок</th>
+                            <th class="node-header">ИИ-ядро</th>
+                            <th class="node-header">Мостик</th>
+                            <th class="node-header">Двигатель</th>
+                            <th class="node-header">Медпункт</th>
+                            <th class="node-header">Лаборатория</th>
+                            <th class="node-header">Щиты</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="loads">
+                            <td class="metric-label">Нагрузка</td>
+                            <td class="metric-value" id="load-antenna">0</td>
+                            <td class="metric-value" id="load-energoblock">0</td>
+                            <td class="metric-value" id="load-ai_core">0</td>
+                            <td class="metric-value" id="load-mostik">0</td>
+                            <td class="metric-value" id="load-engine">0</td>
+                            <td class="metric-value" id="load-medpunkt">0</td>
+                            <td class="metric-value" id="load-lab">0</td>
+                            <td class="metric-value" id="load-shields">0</td>
+                        </tr>
+                        <tr id="probs">
+                            <td class="metric-label">Вероятность</td>
+                            <td class="metric-value" id="prob-antenna">0.00</td>
+                            <td class="metric-value" id="prob-energoblock">0.00</td>
+                            <td class="metric-value" id="prob-ai_core">0.00</td>
+                            <td class="metric-value" id="prob-mostik">0.00</td>
+                            <td class="metric-value" id="prob-engine">0.00</td>
+                            <td class="metric-value" id="prob-medpunkt">0.00</td>
+                            <td class="metric-value" id="prob-laboratoriya">0.00</td>
+                            <td class="metric-value" id="prob-shields">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/graph.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/routing.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

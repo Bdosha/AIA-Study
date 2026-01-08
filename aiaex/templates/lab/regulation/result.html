@@ -2,149 +2,342 @@
 {% load static %}
 
 {% block head %}
+    <title>Результаты — PID-регулятор</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        img {
-            width: 55%; /* Установите нужную ширину картинок */
-            height: auto; /* Автоматическая высота */
-            padding: 10px; /* Промежуток между картинками */
+        .results-hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 24px;
+            margin-bottom: 2rem;
         }
 
-        @media screen and (max-width: 768px) {
-            img {
-                width: 100%; /* Установите нужную ширину картинок */
-                height: auto; /* Автоматическая высота */
-                padding: 10px; /* Промежуток между картинками */
-            }
+        .results-hero-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
         }
 
-        #instruction {
-            display: none; /* Изначально скрыто */
-            margin-top: 10px;
+        .results-hero h1 {
+            font-size: 2rem;
+            color: #34d399;
+            margin-bottom: 0.5rem;
         }
 
-        .toggle-btn {
+        .results-hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .chart-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .chart-panel img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        .data-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .data-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(168, 85, 247, 0.15));
+            border-radius: 10px;
+        }
+
+        .data-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .data-scroll {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td:first-child {
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 1.25rem;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .formulas-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .formulas-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             cursor: pointer;
-            color: #333333;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .formulas-toggle:hover {
+            color: var(--accent-cyan);
+        }
+
+        .formulas-content {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .formulas-content.show {
+            display: block;
+        }
+
+        .formulas-content ol {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 2;
+        }
+
+        .formulas-content li {
+            margin-bottom: 1rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+            color: white;
+        }
+
+        .action-btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .action-btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
         }
     </style>
-    <title>Результаты лабораторной работы</title>
-
-    <link rel="stylesheet" href="{% static "styles/result.css" %}">
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-
     <script>
-        function toggleInstruction() {
-            const instruction = document.getElementById('instruction');
-            instruction.style.display = (instruction.style.display === 'none') ? 'block' : 'none';
+        function toggleFormulas() {
+            const content = document.getElementById('formulasContent');
+            const icon = document.getElementById('toggleIcon');
+            content.classList.toggle('show');
+            icon.textContent = content.classList.contains('show') ? '▼' : '▶';
         }
-    </script>{% endblock head %}
-
+    </script>
+{% endblock head %}
 
 {% block content %}
+    <div class="results-hero">
+        <div class="results-hero-icon">🚀</div>
+        <h1>Поздравляем, капитан!</h1>
+        <p>Нам удалось подобрать ключевые параметры для нашего вылета. Корабль успешно покинул космопорт!</p>
+    </div>
 
-    <div class="container my-4">
-        <div class="row featurette d-flex justify-content-center align-items-center">
-            <div class="container">
-                <div class="row d-flex justify-content-center align-items-center">
-                    <img class="img-fluid" src="{{ filee }}" alt="График">
-                </div>
-            </div>
-            <div class="col-md-9 order-md-2">
-                <h2 class="featurette-heading">Поздравляем, капитан! <span class="text-muted">Нам удалось подобрать ключевые параметры для нашего вылета!</span>
-                </h2>
-                <p class="lead">Итог работы: Корабль успешно покинул ремонтный космопорт </p>
-                <p>Конечные введенные значения \( K_P = {{ arr.0 }}\), \( K_I = {{ arr.1 }} \), \( K_D = {{ arr.2 }}\)
-                </p>
-                <p>Найденное минимальное время = {{ arr.3 }}</p>
-                <p class="lead">Всего потребовалось {{ tryes }} попыток<br>
-                    \( V = {{ v }}\) <br> \( t_{\text{max}} = {{ t }}\) <br> \( \varepsilon = {{ e }}\)
-                    <br> \( \beta = {{ b }} \)<br> \( \omega = {{ w }}\)</p>
-                <p class="lead"></p>
-                <br>
-                <h3>Результаты настройки:</h3>
-
-                <div id="resultsSection" class="big-table">
-
-                    <table id="resultsTable">
-                        <thead>
-                        <tr>
-                            <th>Номер попытки</th>
-                            {% for i in table.0 %}
-                                <th>{{ i }}</th>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr>
-                            <td>Введенный \( K_P \)</td>
-                            {% for i in table.1 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Введенный \( K_I \)</td>
-                            {% for i in table.2 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Введенный \( K_D \)</td>
-                            {% for i in table.3 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        <tr>
-                            <td>Затраченное время</td>
-                            {% for i in table.4 %}
-                                <td>{{ i }}</td>
-                            {% endfor %}
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <br>
-                <h3 class="toggle-btn" onclick="toggleInstruction()">▶ Расчеты лабораторной работы (тык)</h3>
-
-                <div id="instruction" style="display: none">
-                    <ol>
-                        <li>При старте лабораторной работы случайным образом устанавливаются значения всех параметров
-                            модели \( V \), \( t_{\text{max}} \), \( \varepsilon \), \( \beta \), \( \omega \). Эти
-                            значения были для вас недоступны.
-                        </li>
-
-                        <li>Далее вы должен вводили значения коэффициентов \( K_P \), \( K_I \), \( K_D \)
-                        </li>
-
-                        <li>После этого рассчитывается значение времени \( t \), при котором переходный процесс
-                            стабилизировался.
-                        </li>
-
-                        <li>Функция переходного процесса рассчитывается по формуле:
-                            \[
-                            o(t) = V + e^{-\beta t} \cos(\omega t).
-                            \]
-                        </li>
-
-                        <li>Функция ошибки рассчитывается по формуле:
-                            \[
-                            e(t) = V - o(t) = -e^{-\beta t} \cos(\omega t).
-                            \]
-                        </li>
-
-                        <li>Функция регулирования рассчитывается по формуле:
-                            \[
-                            r(t) = K_P e(t) + K_I \int_0^t e(\tau) d\tau + K_D \frac{de(t)}{dt}.
-                            \]
-                        </li>
-
-                        <li>Итоговое значение - минимальное \( t \), при котором \( |o(t) + r(t)| < \varepsilon \).
-                        </li>
-                    </ol>
-                </div>
-
-            </div>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon">🎛️</div>
+            <div class="metric-value">{{ arr.0 }}</div>
+            <div class="metric-label">K<sub>P</sub></div>
         </div>
+        <div class="metric-card">
+            <div class="metric-icon">∫</div>
+            <div class="metric-value">{{ arr.1 }}</div>
+            <div class="metric-label">K<sub>I</sub></div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">∂</div>
+            <div class="metric-value">{{ arr.2 }}</div>
+            <div class="metric-label">K<sub>D</sub></div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">⏱️</div>
+            <div class="metric-value">{{ arr.3 }}</div>
+            <div class="metric-label">Мин. время</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon">🔬</div>
+            <div class="metric-value">{{ tryes }}</div>
+            <div class="metric-label">Попыток</div>
+        </div>
+    </div>
+
+    <div class="chart-panel">
+        <img src="{{ filee }}" alt="График регулятора">
+    </div>
+
+    <div class="data-panel">
+        <div class="data-header">
+            <div class="data-icon">📋</div>
+            <div class="data-title">Журнал настроек</div>
+        </div>
+        <div class="data-scroll">
+            <table class="data-table">
+                <tr>
+                    <td>Попытка</td>
+                    {% for i in table.0 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>K<sub>P</sub></td>
+                    {% for i in table.1 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>K<sub>I</sub></td>
+                    {% for i in table.2 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>K<sub>D</sub></td>
+                    {% for i in table.3 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Время</td>
+                    {% for i in table.4 %}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="formulas-panel">
+        <div class="formulas-toggle" onclick="toggleFormulas()">
+            <span id="toggleIcon">▶</span>
+            Расчёты лабораторной работы
+        </div>
+        <div class="formulas-content" id="formulasContent">
+            <ol>
+                <li>При старте устанавливаются случайные значения: \( V = {{ v }}\), \( t_{\text{max}} = {{ t }}\), \( \varepsilon = {{ e }}\), \( \beta = {{ b }}\), \( \omega = {{ w }}\)</li>
+                <li>Функция переходного процесса: \[ o(t) = V + e^{-\beta t} \cos(\omega t) \]</li>
+                <li>Функция ошибки: \[ e(t) = V - o(t) = -e^{-\beta t} \cos(\omega t) \]</li>
+                <li>Функция регулирования: \[ r(t) = K_P e(t) + K_I \int_0^t e(\tau) d\tau + K_D \frac{de(t)}{dt} \]</li>
+                <li>Итоговое значение — минимальное \( t \), при котором \( |o(t) + r(t)| < \varepsilon \)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="/labkib/legacy/regulation/" class="action-btn action-btn-secondary" onclick="if(window.top !== window.self) { window.top.location.href = this.href; return false; }">
+            ← Попробовать снова
+        </a>
+        <a href="/labkib/" class="action-btn action-btn-primary" onclick="if(window.top !== window.self) { window.top.location.href = this.href; return false; }">
+            🏠 К списку работ
+        </a>
     </div>
 {% endblock content %}

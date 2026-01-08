@@ -1,0 +1,174 @@
+/**
+ * Файл тем приложения
+ * Файл: themes.css
+ * Назначение: Стили для светлой и тёмной тем
+ */
+
+/* Тёмная тема (по умолчанию) */
+.dark-theme {
+    background: #0a0a2a;
+    color: #00ffcc;
+}
+
+.dark-theme .container {
+    background: rgba(0, 20, 40, 0.9);
+    border: 2px solid #00ffcc;
+}
+
+.dark-theme .header {
+    border-bottom-color: #00ffcc;
+}
+
+.dark-theme .theme-switcher button {
+    background: #0066cc;
+    color: white;
+}
+
+.dark-theme .theme-switcher button:hover {
+    background: #0088ff;
+}
+
+.dark-theme .panel-section {
+    background: rgba(0, 40, 80, 0.6);
+    border-color: #0088cc;
+}
+
+.dark-theme h3 {
+    color: #00ccff;
+}
+
+.dark-theme select,
+.dark-theme input[type="range"],
+.dark-theme input[type="number"] {
+    background: #001133;
+    border: 1px solid #00ffcc;
+    color: #00ffcc;
+}
+
+.dark-theme .param-item label {
+    color: #00ccff;
+}
+
+.dark-theme .results {
+    background: rgba(0, 40, 80, 0.6);
+    border-color: #0088cc;
+}
+
+.dark-theme .history-table {
+    background: #001133;
+}
+
+.dark-theme .history-table th,
+.dark-theme .history-table td {
+    border-color: #00ffcc;
+}
+
+.dark-theme .history-table th {
+    background: rgba(0, 80, 160, 0.6);
+    color: #00ccff;
+}
+
+.dark-theme .conclusion {
+    background: rgba(0, 40, 80, 0.6);
+    border-color: #0088cc;
+}
+
+.dark-theme .conclusion h2 {
+    color: #00ccff;
+}
+
+.dark-theme .param-card {
+    background: rgba(0, 60, 120, 0.6);
+    border-color: #00ffcc;
+}
+
+.dark-theme .param-card h4 {
+    color: #00ccff;
+}
+
+/* Светлая тема */
+.light-theme {
+    background: #f0f8ff;
+    color: #2c3e50;
+}
+
+.light-theme .container {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #3498db;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .header {
+    border-bottom-color: #3498db;
+}
+
+.light-theme .theme-switcher button {
+    background: #3498db;
+    color: white;
+}
+
+.light-theme .theme-switcher button:hover {
+    background: #2980b9;
+}
+
+.light-theme .panel-section {
+    background: rgba(236, 240, 241, 0.8);
+    border-color: #bdc3c7;
+}
+
+.light-theme h3 {
+    color: #2c3e50;
+}
+
+.light-theme select,
+.light-theme input[type="range"],
+.light-theme input[type="number"] {
+    background: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    color: #2c3e50;
+}
+
+.light-theme .param-item label {
+    color: #34495e;
+}
+
+.light-theme .results {
+    background: rgba(236, 240, 241, 0.8);
+    border-color: #bdc3c7;
+}
+
+.light-theme .history-table {
+    background: #ecf0f1;
+}
+
+.light-theme .history-table th,
+.light-theme .history-table td {
+    border-color: #bdc3c7;
+}
+
+.light-theme .history-table th {
+    background: rgba(52, 152, 219, 0.8);
+    color: white;
+}
+
+.light-theme .conclusion {
+    background: rgba(236, 240, 241, 0.8);
+    border-color: #bdc3c7;
+}
+
+.light-theme .conclusion h2 {
+    color: #2c3e50;
+}
+
+.light-theme .param-card {
+    background: rgba(189, 195, 199, 0.3);
+    border-color: #7f8c8d;
+}
+
+.light-theme .param-card h4 {
+    color: #34495e;
+}
+
+/* Общие стили для статусов в светлой теме */
+.light-theme .stable-text { color: #27ae60; }
+.light-theme .unstable-text { color: #e74c3c; }

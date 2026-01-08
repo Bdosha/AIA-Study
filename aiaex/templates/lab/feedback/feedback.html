@@ -1,135 +1,502 @@
 {% extends "lab/base.html" %}
-
 {% load static %}
 
 {% block head %}
-
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Обратная связь — {{ system|title }}</title>
+    <style>
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лабораторная работа по кибернетике и теории систем № 2: Обратная связь</title>
-    <link rel="stylesheet" href="{% static "styles/feedback.css" %}">
-    <script defer="" src="{% static "scripts/feedback.js" %}"></script>
-    <title>Лабораторная работа №2: Обратная связь</title>
+        .attempts-counter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .attempts-icon {
+            font-size: 1.5rem;
+        }
+
+        .attempts-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .attempts-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .attempts-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f87171;
+        }
+
+        .attempts-value.warning {
+            color: #fbbf24;
+        }
+
+        .attempts-value.ok {
+            color: #34d399;
+        }
+
+        .experiment-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .experiment-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.15));
+            border-radius: 12px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .panel-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .engine-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .engine-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 4px solid var(--bg-secondary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .engine-image.danger {
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .input-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .slider-track {
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, #ef4444, #fbbf24, #22c55e);
+            border-radius: 5px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .slider-track::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-align: center;
+            margin-top: 0.75rem;
+        }
+
+        .output-section {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .output-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fbbf24;
+            min-height: 3.5rem;
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-panel {
+            grid-column: 1 / -1;
+        }
+
+        .results-scroll {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .results-table {
+            width: 100%;
+            min-width: 400px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th:first-child,
+        .results-table td:first-child {
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 1.25rem;
+            position: sticky;
+            left: 0;
+        }
+
+        .results-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .answer-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+    </style>
+    <script>
+        let attemptsLeft = 10;
+
+        function updateSliderValue() {
+            const slider = document.getElementById('inputSlider');
+            const display = document.getElementById('sliderValue');
+            display.textContent = slider.value;
+        }
+
+        function updateAttemptsDisplay() {
+            const el = document.getElementById('attemptsValue');
+            el.textContent = attemptsLeft;
+            el.className = 'attempts-value';
+            if (attemptsLeft <= 3) el.classList.add('warning');
+            else if (attemptsLeft > 5) el.classList.add('ok');
+            
+            if (attemptsLeft <= 0) {
+                document.getElementById('submitButton').disabled = true;
+            }
+        }
+
+        function applyInput(a, b, c, system) {
+            if (attemptsLeft <= 0) return;
+            
+            const input = parseFloat(document.getElementById('inputSlider').value);
+            let output;
+            
+            if (system === 'gradient') {
+                output = (2 * parseFloat(a) * input + parseFloat(b)).toFixed(2);
+            } else if (system === 'ternary_search') {
+                output = (parseFloat(a) * input * input + parseFloat(b) * input + parseFloat(c)).toFixed(2);
+            } else {
+                const x0 = -parseFloat(b) / (2 * parseFloat(a));
+                output = Math.abs(input - x0).toFixed(2);
+            }
+            
+            document.getElementById('outputValue').textContent = output;
+            
+            // Add to table
+            const inputRow = document.getElementById('inputRow');
+            const outputRow = document.getElementById('outputRow');
+            
+            const inputCell = document.createElement('td');
+            inputCell.textContent = input;
+            inputRow.appendChild(inputCell);
+            
+            const outputCell = document.createElement('td');
+            outputCell.textContent = output;
+            outputRow.appendChild(outputCell);
+            
+            // Hide empty state
+            const emptyState = document.querySelector('.empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+            
+            attemptsLeft--;
+            updateAttemptsDisplay();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSliderValue();
+            updateAttemptsDisplay();
+            
+            document.getElementById('tableForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                let csv_data = [];
+                let rows = document.getElementsByTagName('tr');
+                
+                for (let i = 0; i < rows.length; i++) {
+                    let cols = rows[i].querySelectorAll('td,th');
+                    let csvrow = [];
+                    for (let j = 0; j < cols.length; j++) {
+                        csvrow.push(cols[j].innerHTML);
+                    }
+                    csv_data.push(csvrow.join(","));
+                }
+                
+                csv_data = csv_data.join('\n');
+                document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
+                this.submit();
+            });
+        });
+    </script>
 {% endblock head %}
 
 {% block content %}
-    <div id="mainContainer" class="box">
-        <div class="system-selection-container">
+    <div class="description-box" style="margin-bottom: 1.5rem;">
+        <h3>{{ text }}</h3>
+    </div>
 
-            <div id="description" class="description-box" style="display: block;">
-                <h3>{{ text }}</h3>
+    <div class="status-bar">
+        <div class="attempts-counter">
+            <span class="attempts-icon">⏱️</span>
+            <div class="attempts-info">
+                <span class="attempts-label">Осталось попыток</span>
+                <span class="attempts-value" id="attemptsValue">10</span>
+            </div>
+        </div>
+        <div class="alert-badge" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 0.5rem 1rem; border-radius: 100px; font-size: 0.85rem;">
+            ⚠️ Критическая температура!
+        </div>
+    </div>
+
+    <div class="experiment-container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon">🎯</div>
+                <div>
+                    <div class="panel-title">Выбор точки</div>
+                    <div class="panel-subtitle">{{ inout.0 }}</div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <label class="input-label">Значение параметра</label>
+                <input type="range" 
+                       id="inputSlider" 
+                       class="slider-track"
+                       min="-30" 
+                       max="30" 
+                       step="0.05"
+                       value="0" 
+                       oninput="updateSliderValue()">
+                <div class="slider-value" id="sliderValue">0</div>
+            </div>
+
+            <button class="check-btn" id="submitButton" onclick="applyInput('{{ abc.0 }}', '{{ abc.1 }}', '{{ abc.2 }}', '{{ system }}')">
+                🔥 Проверить двигатель
+            </button>
+        </div>
+
+        <!-- Engine Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon">⚙️</div>
+                <div>
+                    <div class="panel-title">Двигатель</div>
+                    <div class="panel-subtitle">Мониторинг состояния</div>
+                </div>
+            </div>
+
+            <div class="engine-visual">
+                <img src="https://i.pinimg.com/736x/5d/e1/ce/5de1cea3a44011c456d7500765e9188f.jpg" alt="Двигатель" class="engine-image danger">
+
+                <div class="output-section" style="width: 100%;">
+                    <label class="input-label">{{ inout.1 }}</label>
+                    <div class="output-value" id="outputValue">—</div>
+                </div>
             </div>
         </div>
 
-        <!-- Секция визуализации -->
-        <div style="display: flex;">
-            <div class="visualization-output-container" style="flex: auto">
-                <!-- Вход -->
-                <div class="input-container" style="width: 400px">
-                    <label for="inputSlider" class="input-label" id="left">Осталось 10 попыток</label>
-                    <input type="range" id="inputSlider" min='-30' max="30" step="0.05"
-                           value="{{ slider.3 }}" oninput="updateSliderValue()">
-                    <span id="sliderValue"></span>
-                    <button id="submitButton"
-                            onclick="applyInput('{{ abc.0 }}', '{{ abc.1 }}', '{{ abc.2 }}', '{{ system }}')"
-                            style="border-radius: 20px">
-                        Проверить двигатель
-                    </button>
+        <!-- Results Panel -->
+        <div class="panel results-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📊</div>
+                <div>
+                    <div class="panel-title">Журнал измерений</div>
+                    <div class="panel-subtitle">Анализируй данные и найди оптимум</div>
+                </div>
+            </div>
 
-                    <img src="{% static "img/arr.png" %}" alt="Стрелка Вход-Изображение"
-                         style="width: 30px; height: auto;  transform: rotate(90deg) ">
-                    <img src="https://i.pinimg.com/736x/5d/e1/ce/5de1cea3a44011c456d7500765e9188f.jpg"
-                         alt="Стрелка Вход-Изображение"
-                         style="width: 150px; height: auto; border-radius: 20px;border: 5px solid #1f1f1f;
-">
-                    <img src="{% static "img/arr.png" %}" alt="Стрелка Вход-Изображение"
-                         style="width: 30px; height: auto;  transform: rotate(90deg) ">
+            <form id="tableForm" method="POST" action="">
+                {% csrf_token %}
+                <div class="results-scroll">
+                    <table class="results-table" id="resultsTable">
+                        <tr id="inputRow">
+                            <th>Точка</th>
+                        </tr>
+                        <tr id="outputRow">
+                            <th>Результат</th>
+                        </tr>
+                    </table>
                 </div>
 
+                <div class="empty-state">
+                    <p>📭 Начни проверять двигатель, чтобы собрать данные</p>
+                </div>
 
-            </div>
-        </div>
-        <div style="flex-direction: row">
-
-            <div class="output-box">
-                <label for="outputValue" class="output-label">Выход: {{ inout.1 }}</label>
-                <div id="outputValue" class="output-display">-</div>
-            </div>
-
-        </div>
-
-    </div>
-    <div id="mainContainer" class="box">
-        <div id="resultsSection" class="big-table">
-            <h3>Результаты измерений:</h3>
-            <form id="tableForm" method="POST" action=""
-                  style="align-items: center; justify-content: center; display: flex; flex-direction: column;">
-                {% csrf_token %}
-                <table id="resultsTable">
-                    <thead>
-                    <tr id="inputRow">
-                        <th>Вход:</th>
-                    </tr>
-                    <tr id="outputRow">
-                        <th>Выход:</th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <br>
-                <input required type="hidden" name="table_data" id="tableDataInput"/>
-                <br>
+                <input type="hidden" name="table_data" id="tableDataInput"/>
                 <input name="a" value="{{ abc.0 }}" type="hidden">
                 <input name="b" value="{{ abc.1 }}" type="hidden">
                 <input name="c" value="{{ abc.2 }}" type="hidden">
 
-                <p>Итоговый ответ<br> <input required name="number" type="number" step="0.01"/></p>
-                <button type="submit" id="submitBtn" style="border-radius: 20px">Построить график</button>
-                <br>
+                <div class="answer-section">
+                    <div style="flex: 1;">
+                        <label class="input-label">Твой ответ — оптимальное значение</label>
+                        <input required name="number" type="number" step="0.01" class="answer-input" placeholder="Введи число">
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        ✅ Стабилизировать
+                    </button>
+                </div>
             </form>
-
-            <script>
-                document.getElementById('tableForm').addEventListener('submit', function (event) {
-                    // Останавливаем отправку формы, чтобы сначала обработать данные
-                    event.preventDefault();
-
-                    let csv_data = [];
-
-                    let rows = document.getElementsByTagName('tr');
-                    for (let i = 0; i < rows.length; i++) {
-
-                        // Get each column data
-                        let cols = rows[i].querySelectorAll('td,th');
-
-                        // Stores each csv row data
-                        let csvrow = [];
-                        for (let j = 0; j < cols.length; j++) {
-
-                            // Get the text data of each cell
-                            // of a row and push it to csvrow
-                            csvrow.push(cols[j].innerHTML);
-                        }
-
-                        // Combine each column value with comma
-                        csv_data.push(csvrow.join(","));
-                    }
-
-                    // Combine each row data with new line character
-                    csv_data = csv_data.join('\n');
-                    console.log(csv_data)
-                    // Записываем данные в скрытое поле формы
-                    document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
-
-                    // После этого отправляем форму
-                    this.submit();
-                });
-            </script>
-
         </div>
-
-
     </div>
-
-
 {% endblock content %}

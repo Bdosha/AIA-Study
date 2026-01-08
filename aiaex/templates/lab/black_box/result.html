@@ -1,56 +1,322 @@
 {% extends "lab/base.html" %}
 {% load static %}
 
-
 {% block head %}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Результаты анализа — Чёрный ящик</title>
+    <style>
+        .results-hero {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(0, 212, 255, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static "styles/result.css" %}">
-    <script defer="" src="{% static "scripts/black_box.js" %}"></script>
-    <title>Результаты лабораторной работы</title>
+        .results-hero-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
 
+        .results-hero h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .results-hero p {
+            color: var(--text-secondary);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-panel img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .analysis-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .analysis-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 212, 255, 0.15));
+            border-radius: 12px;
+        }
+
+        .analysis-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .formula-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .formula-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        .data-panel {
+            grid-column: 1 / -1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .data-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .data-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(244, 63, 94, 0.15));
+            border-radius: 10px;
+        }
+
+        .data-scroll {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th:first-child,
+        .data-table td:first-child {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 1.25rem;
+            border-radius: 8px 0 0 8px;
+            position: sticky;
+            left: 0;
+        }
+
+        .data-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            border: none;
+        }
+
+        .action-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+            color: white;
+        }
+
+        .action-btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .action-btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+    </style>
 {% endblock head %}
+
 {% block content %}
+    <div class="results-hero">
+        <div class="results-hero-icon">✅</div>
+        <h1>Анализ завершён!</h1>
+        <p>Система успешно идентифицирована методом наименьших квадратов</p>
+    </div>
 
+    <div class="results-grid">
+        <!-- Chart -->
+        <div class="chart-panel">
+            <img src="{{ file }}" alt="График регрессии">
+        </div>
 
-    <div class="container my-4">
-        <div class="row featurette d-flex justify-content-center align-items-center">
-            <div class="col-md-7 order-md-2">
-                <h2 class="featurette-heading">А вот и итоговый график! <span class="text-muted">Построенный по вашим данным</span>
-                </h2>
-                <p class="lead">Итог работы метода наименьших квадратов</p>
-                <p class="lead">k = {{ k }} </p>
-                <p class="lead">b = {{ b }}</p>
-                <p class="lead">Или функция вида y = {{ k }} • x + {{ b }}</p>
-                <p class="lead">А средняя абсолютная погрешность составляет {{ mae }}</p>
-                <br>
-                <h3>Результаты измерений:</h3>
-                <div id="resultsSection" class="big-table">
+        <!-- Analysis -->
+        <div class="analysis-panel">
+            <div class="analysis-header">
+                <div class="analysis-icon">📐</div>
+                <div class="analysis-title">Найденная зависимость</div>
+            </div>
 
-                    <table id="resultsTable">
-                        <thead>
-                        <tr id="inputRow">
-                            <th>Вход:</th>
-                            {% for el in x %}
-                                <th>{{ el }}</th>
-                            {% endfor %}
-                        </tr>
-                        <tr id="outputRow">
-                            <th>Выход:</th>
-                            {% for el in y %}
-                                <th>{{ el }}</th>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="formula-box">
+                <div class="formula">y = {{ k }} · x + {{ b }}</div>
+                <div class="formula-label">Линейная функция</div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">{{ k }}</div>
+                    <div class="metric-label">Коэффициент k</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ b }}</div>
+                    <div class="metric-label">Смещение b</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ mae }}</div>
+                    <div class="metric-label">MAE</div>
                 </div>
             </div>
-            <div class="col-md-5 order-md-1">
-                <img class="img-fluid" src="{{ file }}" alt="График" height="1000" width="1000">
+        </div>
 
+        <!-- Data Table -->
+        <div class="data-panel">
+            <div class="data-header">
+                <div class="data-icon">📋</div>
+                <div class="analysis-title">Исходные данные измерений</div>
+            </div>
+
+            <div class="data-scroll">
+                <table class="data-table">
+                    <tr>
+                        <th>Вход</th>
+                        {% for el in x %}
+                            <td>{{ el }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Выход</th>
+                        {% for el in y %}
+                            <td>{{ el }}</td>
+                        {% endfor %}
+                    </tr>
+                </table>
             </div>
         </div>
+    </div>
+
+    <div class="actions">
+        <a href="/labkib/legacy/systems/" class="action-btn action-btn-secondary" onclick="if(window.top !== window.self) { window.top.location.href = this.href; return false; }">
+            ← Выбрать другую систему
+        </a>
+        <a href="/labkib/" class="action-btn action-btn-primary" onclick="if(window.top !== window.self) { window.top.location.href = this.href; return false; }">
+            🏠 К списку работ
+        </a>
     </div>
 {% endblock content %}

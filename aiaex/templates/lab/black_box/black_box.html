@@ -1,127 +1,589 @@
 {% extends "lab/base.html" %}
-
 {% load static %}
 
 {% block head %}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Лабораторная работа по кибернетике и теории систем № 1: Чёрный ящик</title>
+    <title>Чёрный ящик — {{ system|title }}</title>
+    <style>
+        .experiment-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лабораторная работа№ 1: чёрный ящик</title>
-    <link rel="stylesheet" href="{% static "styles/black_box.css" %}">
-    <script defer="" src="{% static "scripts/black_box.js" %}"></script>
+        @media (max-width: 900px) {
+            .experiment-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(168, 85, 247, 0.15));
+            border-radius: 12px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .panel-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Black Box Visualization */
+        .blackbox-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--accent-cyan);
+        }
+
+        .flow-arrow svg {
+            width: 24px;
+            height: 24px;
+            animation: pulse-arrow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.5; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(4px); }
+        }
+
+        .blackbox-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 4px solid var(--bg-secondary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .blackbox-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            padding: 0.5rem 0;
+        }
+
+        .slider-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            appearance: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slider-track::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 4px;
+        }
+
+        .slider-track::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 4px;
+        }
+
+        .slider-track::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+            margin-top: -8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slider-track::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+            border: none;
+        }
+
+        .slider-track::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-track::-moz-range-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-progress {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 4px 0 0 4px;
+            pointer-events: none;
+            z-index: 0;
+            transform: translateY(-50%);
+            transition: width 0.1s ease;
+        }
+
+        .slider-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-align: center;
+        }
+
+        /* Output Section */
+        .output-section {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .output-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            min-height: 3.5rem;
+        }
+
+        /* Transform Button */
+        .transform-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.7), rgba(168, 85, 247, 0.7));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.15);
+        }
+
+        .transform-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.25);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.8), rgba(168, 85, 247, 0.8));
+        }
+
+        .transform-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results Table */
+        .results-panel {
+            grid-column: 1 / -1;
+        }
+
+        .results-scroll {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .results-table {
+            width: 100%;
+            min-width: 400px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th:first-child,
+        .results-table td:first-child {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 1.25rem;
+            border-radius: 8px 0 0 8px;
+            position: sticky;
+            left: 0;
+        }
+
+        .results-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .results-table tr:hover td {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            border-radius: 12px;
+            color: rgba(0, 212, 255, 0.9);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.7);
+            color: var(--accent-cyan);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .submit-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+    <script>
+        function updateSliderValue() {
+            const slider = document.getElementById('inputSlider');
+            const display = document.getElementById('sliderValue');
+            const progress = document.getElementById('sliderProgress');
+            const value = parseFloat(slider.value);
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+            const percentage = ((value - min) / (max - min)) * 100;
+            
+            display.textContent = slider.value;
+            if (progress) {
+                progress.style.width = percentage + '%';
+            }
+        }
+
+        function saveTableData() {
+            const inputRow = document.getElementById('inputRow');
+            const outputRow = document.getElementById('outputRow');
+            const inputs = Array.from(inputRow.querySelectorAll('td')).map(td => td.textContent);
+            const outputs = Array.from(outputRow.querySelectorAll('td')).map(td => td.textContent);
+            const system = '{{ system }}';
+            localStorage.setItem('blackbox_' + system + '_data', JSON.stringify({ inputs, outputs }));
+        }
+
+        function loadTableData() {
+            const system = '{{ system }}';
+            const saved = localStorage.getItem('blackbox_' + system + '_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    const inputRow = document.getElementById('inputRow');
+                    const outputRow = document.getElementById('outputRow');
+                    
+                    // Clear existing cells (except header)
+                    Array.from(inputRow.querySelectorAll('td')).forEach(td => td.remove());
+                    Array.from(outputRow.querySelectorAll('td')).forEach(td => td.remove());
+                    
+                    // Restore data
+                    data.inputs.forEach(input => {
+                        const cell = document.createElement('td');
+                        cell.textContent = input;
+                        inputRow.appendChild(cell);
+                    });
+                    
+                    data.outputs.forEach(output => {
+                        const cell = document.createElement('td');
+                        cell.textContent = output;
+                        outputRow.appendChild(cell);
+                    });
+                    
+                    // Hide empty state if we have data
+                    if (data.inputs.length > 0) {
+                        const emptyState = document.querySelector('.empty-state');
+                        if (emptyState) emptyState.style.display = 'none';
+                    }
+                } catch (e) {
+                    console.error('Failed to load saved data:', e);
+                }
+            }
+        }
+
+        function applyInput(k, b, u) {
+            const input = parseFloat(document.getElementById('inputSlider').value);
+            const output = (parseFloat(k) * input + parseFloat(b) + (Math.random() - 0.5) * parseFloat(u)).toFixed(2);
+            
+            document.getElementById('outputValue').textContent = output;
+            
+            // Add to table
+            const inputRow = document.getElementById('inputRow');
+            const outputRow = document.getElementById('outputRow');
+            
+            const inputCell = document.createElement('td');
+            inputCell.textContent = input;
+            inputRow.appendChild(inputCell);
+            
+            const outputCell = document.createElement('td');
+            outputCell.textContent = output;
+            outputRow.appendChild(outputCell);
+            
+            // Update empty state
+            const emptyState = document.querySelector('.empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+            
+            // Save to localStorage
+            saveTableData();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSliderValue();
+            // Initialize progress bar
+            const slider = document.getElementById('inputSlider');
+            if (slider) {
+                slider.addEventListener('input', updateSliderValue);
+            }
+            // Load saved table data
+            loadTableData();
+            
+            document.getElementById('tableForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Check if table has data
+                const inputRow = document.getElementById('inputRow');
+                const outputRow = document.getElementById('outputRow');
+                const inputCells = inputRow.querySelectorAll('td');
+                const outputCells = outputRow.querySelectorAll('td');
+                
+                if (inputCells.length === 0 || outputCells.length === 0) {
+                    alert('Пожалуйста, проведите хотя бы одно измерение перед построением графика!');
+                    return false;
+                }
+                
+                let csv_data = [];
+                let rows = document.getElementsByTagName('tr');
+                
+                for (let i = 0; i < rows.length; i++) {
+                    let cols = rows[i].querySelectorAll('td,th');
+                    let csvrow = [];
+                    for (let j = 0; j < cols.length; j++) {
+                        csvrow.push(cols[j].innerHTML);
+                    }
+                    csv_data.push(csvrow.join(","));
+                }
+                
+                csv_data = csv_data.join('\n');
+                document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
+                
+                // Clear saved data after submission
+                const system = '{{ system }}';
+                localStorage.removeItem('blackbox_' + system + '_data');
+                
+                this.submit();
+            });
+        });
+    </script>
 {% endblock head %}
 
 {% block content %}
+    <div class="description-box" style="margin-bottom: 2rem;">
+        <h3>{{ text }}</h3>
+    </div>
 
+    <div class="experiment-container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon">📥</div>
+                <div>
+                    <div class="panel-title">Входные данные</div>
+                    <div class="panel-subtitle">Установите значение параметра</div>
+                </div>
+            </div>
 
-    <div id="mainContainer" class="box">
-        <div class="system-selection-container">
+            <div class="input-section">
+                <label class="input-label">{{ inout.0 }}</label>
+                <div class="slider-container">
+                    <div class="slider-wrapper">
+                        <div class="slider-progress" id="sliderProgress"></div>
+                        <input type="range" 
+                               id="inputSlider" 
+                               class="slider-track"
+                               min="{{ slider.0 }}" 
+                               max="{{ slider.1 }}" 
+                               step="{{ slider.2 }}"
+                               value="{{ slider.3 }}" 
+                               oninput="updateSliderValue()">
+                    </div>
+                    <div class="slider-value" id="sliderValue">{{ slider.3 }}</div>
+                </div>
+            </div>
 
-            <div id="description" class="description-box" style="display: block;">
-                <h3>{{ text }}</h3></div> <!-- Скрываем описание по умолчанию -->
+            <button class="transform-btn" onclick="applyInput('{{ kbu.0 }}', '{{ kbu.1 }}', '{{ kbu.2 }}')">
+                ⚡ Преобразовать
+            </button>
         </div>
 
-        <!-- Секция визуализации -->
-        <div style="display: flex;">
-            <div class="visualization-output-container" style="flex: auto">
-                <!-- Вход -->
-                <div class="input-container" style="width: 400px">
-                    <label for="inputSlider" class="input-label">Вход: {{ inout.0 }}</label>
-                    <input type="range" id="inputSlider" min='{{ slider.0 }}' max="{{ slider.1 }}" step="{{ slider.2 }}"
-                           value="{{ slider.3 }}" oninput="updateSliderValue()">
-                    <span id="sliderValue"></span>
-                    <button id="submitButton" onclick="applyInput('{{ kbu.0 }}', '{{ kbu.1 }}', '{{ kbu.2 }}')"
-                            style="border-radius: 20px">
-                        Преобразовать
-                    </button>
+        <!-- Black Box Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon">🔲</div>
+                <div>
+                    <div class="panel-title">Чёрный ящик</div>
+                    <div class="panel-subtitle">Неизвестная система</div>
+                </div>
+            </div>
 
-                    <img src="{% static "img/arr.png" %}" alt="Стрелка Вход-Изображение"
-                         style="width: 30px; height: auto;  transform: rotate(90deg) ">
-                    <img src="{{ photo }}" alt="Стрелка Вход-Изображение"
-                         style="width: 150px; height: auto; border-radius: 20px;border: 5px solid #1f1f1f;
-">
-                    <img src="{% static "img/arr.png" %}" alt="Стрелка Вход-Изображение"
-                         style="width: 30px; height: auto;  transform: rotate(90deg) ">
+            <div class="blackbox-visual">
+                <div class="flow-arrow">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                </div>
+                
+                <img src="{{ photo }}" alt="Система" class="blackbox-image">
+                
+                <div class="flow-arrow">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
                 </div>
 
-
+                <div class="output-section" style="width: 100%;">
+                    <label class="input-label">{{ inout.1 }}</label>
+                    <div class="output-value" id="outputValue">—</div>
+                </div>
             </div>
         </div>
-        <div style="flex-direction: row">
 
-            <div class="output-box">
-                <label for="outputValue" class="output-label">Выход: {{ inout.1 }}</label>
-                <div id="outputValue" class="output-display">-</div>
+        <!-- Results Panel -->
+        <div class="panel results-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📊</div>
+                <div>
+                    <div class="panel-title">Результаты измерений</div>
+                    <div class="panel-subtitle">Соберите данные для анализа</div>
+                </div>
             </div>
 
-        </div>
-
-    </div>
-    <div id="mainContainer" class="box">
-        <div id="resultsSection" class="big-table">
-            <h3>Результаты измерений:</h3>
-            <form id="tableForm" method="POST" action=""
-                  style="align-items: center; justify-content: center; display: flex; flex-direction: column;">
+            <form id="tableForm" method="POST" action="">
                 {% csrf_token %}
-                <table id="resultsTable">
-                    <thead>
-                    <tr id="inputRow">
-                        <th>Вход:</th>
-                    </tr>
-                    <tr id="outputRow">
-                        <th>Выход:</th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <br>
+                <div class="results-scroll">
+                    <table class="results-table" id="resultsTable">
+                        <tr id="inputRow">
+                            <th>Вход</th>
+                        </tr>
+                        <tr id="outputRow">
+                            <th>Выход</th>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>Пока нет данных. Проведите несколько экспериментов!</p>
+                </div>
+
                 <input type="hidden" name="table_data" id="tableDataInput"/>
-                <br>
-                <button type="submit" id="submitBtn" style="border-radius: 20px">Построить график</button>
-                <br>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button type="submit" class="submit-btn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Построить график
+                    </button>
+                </div>
             </form>
-
-            <script>
-                document.getElementById('tableForm').addEventListener('submit', function (event) {
-                    // Останавливаем отправку формы, чтобы сначала обработать данные
-                    event.preventDefault();
-
-                    // Собираем данные из таблицы
-                    let tableData = [];
-                    let csv_data = [];
-
-                    // Get each row data
-                    let rows = document.getElementsByTagName('tr');
-                    for (let i = 0; i < rows.length; i++) {
-
-                        // Get each column data
-                        let cols = rows[i].querySelectorAll('td,th');
-
-                        // Stores each csv row data
-                        let csvrow = [];
-                        for (let j = 0; j < cols.length; j++) {
-
-                            // Get the text data of each cell
-                            // of a row and push it to csvrow
-                            csvrow.push(cols[j].innerHTML);
-                        }
-
-                        // Combine each column value with comma
-                        csv_data.push(csvrow.join(","));
-                    }
-
-                    // Combine each row data with new line character
-                    csv_data = csv_data.join('\n');
-                    console.log(csv_data)
-                    // Записываем данные в скрытое поле формы
-                    document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
-
-                    // После этого отправляем форму
-                    this.submit();
-                });
-            </script>
         </div>
     </div>
-
 {% endblock content %}

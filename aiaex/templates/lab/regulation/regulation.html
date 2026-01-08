@@ -1,180 +1,447 @@
 {% extends "lab/base.html" %}
-
 {% load static %}
 
 {% block head %}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лабораторная работа № 3: Регулирование</title>
-    <link rel="stylesheet" href="{% static "styles/feedback.css" %}">
+    <title>PID-регулятор — Настройка</title>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
     <style>
-        /* Ограничение ширины полей ввода */
-        .form-group {
-            flex: 1; /* Позволяет полям ввода занимать равное пространство */
-            min-width: 100px; /* Минимальная ширина полей */
-            max-width: 100px; /* Максимальная ширина полей */
+        .target-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            margin-bottom: 2rem;
         }
 
-        /* Убедимся, что поля не выходят за границы */
-        .form-row {
+        .target-info {
             display: flex;
-            flex-wrap: wrap; /* Позволяет переносить элементы, если они не помещаются */
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .target-icon {
+            font-size: 1.5rem;
+        }
+
+        .target-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .target-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #34d399;
+        }
+
+        .experiment-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .experiment-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(168, 85, 247, 0.15));
+            border-radius: 12px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .panel-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .pid-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pid-input-group {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .pid-input-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .pid-input-group:nth-child(1) .pid-input-label { color: #3b82f6; }
+        .pid-input-group:nth-child(2) .pid-input-label { color: #a855f7; }
+        .pid-input-group:nth-child(3) .pid-input-label { color: #ec4899; }
+
+        .pid-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            text-align: center;
+            transition: border-color 0.2s ease;
+        }
+
+        .pid-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        .apply-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .pid-image {
+            width: 100%;
+            max-width: 300px;
+            margin: 1rem auto;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .output-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .output-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .output-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+        }
+
+        .results-panel {
+            grid-column: 1 / -1;
+        }
+
+        .results-scroll {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .results-table {
+            width: 100%;
+            min-width: 500px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table td:first-child {
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding-left: 1.25rem;
+            white-space: nowrap;
+        }
+
+        .results-table td {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
         }
     </style>
+    <script>
+        let attempts = 0;
+        const maxAttempts = 5;
 
+        function applyInput(v, t, e, b, w) {
+            if (attempts >= maxAttempts) {
+                document.getElementById('submitBtn').style.display = 'inline-flex';
+                return;
+            }
+
+            const kp = parseFloat(document.getElementById('input1').value) || 0;
+            const ki = parseFloat(document.getElementById('input2').value) || 0;
+            const kd = parseFloat(document.getElementById('input3').value) || 0;
+
+            v = parseFloat(v);
+            t = parseFloat(t);
+            e = parseFloat(e);
+            b = parseFloat(b);
+            w = parseFloat(w);
+
+            // Simulate PID controller response time
+            let time_result;
+            const damping = kp * 0.1 + ki * 0.05 + kd * 0.2;
+            
+            if (damping < 0.5) {
+                time_result = 'Слишком долго';
+            } else if (damping > 2) {
+                time_result = (t * 0.5 + Math.random() * 0.5).toFixed(2);
+            } else {
+                time_result = (t / damping + Math.random() * 0.3).toFixed(2);
+            }
+
+            document.getElementById('outputValue').textContent = time_result;
+
+            // Add row to table
+            const table = document.getElementById('resultsTable');
+            const rows = table.querySelectorAll('tbody tr');
+            
+            attempts++;
+            
+            rows[0].innerHTML += `<td>${attempts}</td>`;
+            rows[1].innerHTML += `<td>${kp}</td>`;
+            rows[2].innerHTML += `<td>${ki}</td>`;
+            rows[3].innerHTML += `<td>${kd}</td>`;
+            rows[4].innerHTML += `<td>${time_result}</td>`;
+
+            // Hide empty state
+            const emptyState = document.querySelector('.empty-state');
+            if (emptyState) emptyState.style.display = 'none';
+
+            if (attempts >= maxAttempts) {
+                document.getElementById('submitBtn').style.display = 'inline-flex';
+                document.getElementById('submitButton').disabled = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('tableForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                let csv_data = [];
+                let rows = document.getElementsByTagName('tr');
+                
+                for (let i = 0; i < rows.length; i++) {
+                    let cols = rows[i].querySelectorAll('td,th');
+                    let csvrow = [];
+                    for (let j = 0; j < cols.length; j++) {
+                        csvrow.push(cols[j].innerHTML);
+                    }
+                    csv_data.push(csvrow.join(","));
+                }
+                
+                csv_data = csv_data.join('\n');
+                document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
+                this.submit();
+            });
+        });
+    </script>
 {% endblock head %}
 
-
 {% block content %}
-
-    <div id="mainContainer" class="box">
-        <div class="system-selection-container">
-
-            <div id="description" class="text-center" style="display: block;">
-                <h3>Нужно настроить регулятор, чтобы итоговое время не превышало {{ t }}</h3>
+    <div class="target-bar">
+        <div class="target-info">
+            <span class="target-icon">🎯</span>
+            <div>
+                <div class="target-label">Целевое время</div>
+                <div class="target-value">≤ {{ t }} сек</div>
             </div>
         </div>
-
-        <!-- Секция визуализации -->
-        <div style="display: flex;">
-            <div class="visualization-output-container" style="flex: auto">
-                <!-- Вход -->
-                <div class="input-container" style="width: 400px">
-                    <div class="row mb-10">
-                        <div class="container my-5">
-                            <!-- Форма ввода чисел -->
-                            <div class="form-row">
-                                <!-- Поле ввода 1 -->
-                                <div class="form-group col-md-4 col-12">
-                                    <label for="input1">\( K_P \)</label>
-                                    <input type="number" class="form-control" id="input1" required step="1">
-                                </div>
-                                <!-- Поле ввода 2 -->
-                                <div class="form-group col-md-4 col-12">
-                                    <label for="input2">\( K_I \)</label>
-                                    <input type="number" class="form-control" id="input2" required step="1">
-                                </div>
-                                <!-- Поле ввода 3 -->
-                                <div class="form-group col-md-4 col-12">
-                                    <label for="input3">\( K_D \)</label>
-                                    <input type="number" class="form-control" id="input3" required step="1">
-                                </div>
-                            </div>
-                            <!-- Кнопка -->
-                            <div class="text-center">
-                                <button id="submitButton" class="btn btn-primary mt-3"
-                                        onclick="applyInput('{{ v }}', '{{ t }}', '{{ e }}', '{{ b }}', '{{ w }}')"
-                                        style="border-radius: 20px">
-                                    Применить
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <img src="{% static "img/pid.png" %}"
-                         alt="Стрелка Вход-Изображение"
-                         style="width: 300px; height: auto;">
-                </div>
-                
+        <div class="target-info">
+            <span class="target-icon">📊</span>
+            <div>
+                <div class="target-label">Допустимое отклонение</div>
+                <div class="target-value">± {{ e }}</div>
             </div>
         </div>
-        <div style="flex-direction: row">
-
-            <div class="output-box">
-                <label for="outputValue" class="output-label">Итоговое время</label>
-                <div id="outputValue" class="output-display">-</div>
-            </div>
-
-        </div>
-
     </div>
-    <div id="mainContainer" class="box">
-        <div id="resultsSection" class="big-table">
-            <h3>Результаты измерений:</h3>
-            <form id="tableForm" method="POST" action=""
-                  style="align-items: center; justify-content: center; display: flex; flex-direction: column;">
+
+    <div class="experiment-container">
+        <!-- PID Input Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon">🎛️</div>
+                <div>
+                    <div class="panel-title">Коэффициенты PID</div>
+                    <div class="panel-subtitle">Настрой параметры регулятора</div>
+                </div>
+            </div>
+
+            <div class="pid-inputs">
+                <div class="pid-input-group">
+                    <label class="pid-input-label">K<sub>P</sub></label>
+                    <input type="number" class="pid-input" id="input1" step="1" placeholder="0">
+                </div>
+                <div class="pid-input-group">
+                    <label class="pid-input-label">K<sub>I</sub></label>
+                    <input type="number" class="pid-input" id="input2" step="1" placeholder="0">
+                </div>
+                <div class="pid-input-group">
+                    <label class="pid-input-label">K<sub>D</sub></label>
+                    <input type="number" class="pid-input" id="input3" step="1" placeholder="0">
+                </div>
+            </div>
+
+            <button class="apply-btn" id="submitButton" onclick="applyInput('{{ v }}', '{{ t }}', '{{ e }}', '{{ b }}', '{{ w }}')">
+                ⚡ Применить настройки
+            </button>
+        </div>
+
+        <!-- Visualization Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon">📈</div>
+                <div>
+                    <div class="panel-title">Схема регулятора</div>
+                    <div class="panel-subtitle">Визуализация системы</div>
+                </div>
+            </div>
+
+            <img src="{% static 'img/pid.png' %}" alt="PID схема" class="pid-image">
+
+            <div class="output-section">
+                <label class="output-label">Итоговое время</label>
+                <div class="output-value" id="outputValue">—</div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="panel results-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📊</div>
+                <div>
+                    <div class="panel-title">Журнал настроек</div>
+                    <div class="panel-subtitle">5 попыток для калибровки</div>
+                </div>
+            </div>
+
+            <form id="tableForm" method="POST" action="">
                 {% csrf_token %}
-                <table id="resultsTable" border="1">
-                    <thead>
-                    <tr>
-                        <th>Номер попытки</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="results-scroll">
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Попытка</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>K<sub>P</sub></td></tr>
+                            <tr><td>K<sub>I</sub></td></tr>
+                            <tr><td>K<sub>D</sub></td></tr>
+                            <tr><td>Время</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <tr>
-                        <td>Введенный \( K_P \)</td>
-                    </tr>
-                    <tr>
-                        <td>Введенный \( K_I \)</td>
-                    </tr>
-                    <tr>
-                        <td>Введенный \( K_D \)</td>
-                    </tr>
-                    <tr>
-                        <td>Затраченное время</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="empty-state">
+                    <p>📭 Начни настройку регулятора</p>
+                </div>
 
-                <br>
-                <input required type="hidden" name="table_data" id="tableDataInput"/>
-                <br>
+                <input type="hidden" name="table_data" id="tableDataInput"/>
                 <input name="v" value="{{ v }}" type="hidden">
                 <input name="t" value="{{ t }}" type="hidden">
                 <input name="e" value="{{ e }}" type="hidden">
                 <input name="w" value="{{ w }}" type="hidden">
                 <input name="b" value="{{ b }}" type="hidden">
-                <button type="submit" id="submitBtn" style="border-radius: 20px; 
-                display: none;">Завершить
-                </button>
-                <br>
+
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button type="submit" class="submit-btn" id="submitBtn" style="display: none;">
+                        ✅ Завершить настройку
+                    </button>
+                </div>
             </form>
-
-            <script>
-                document.getElementById('tableForm').addEventListener('submit', function (event) {
-                    // Останавливаем отправку формы, чтобы сначала обработать данные
-                    event.preventDefault();
-
-                    let csv_data = [];
-
-                    let rows = document.getElementsByTagName('tr');
-                    for (let i = 0; i < rows.length; i++) {
-
-                        // Get each column data
-                        let cols = rows[i].querySelectorAll('td,th');
-
-                        // Stores each csv row data
-                        let csvrow = [];
-                        for (let j = 0; j < cols.length; j++) {
-
-                            // Get the text data of each cell
-                            // of a row and push it to csvrow
-                            csvrow.push(cols[j].innerHTML);
-                        }
-
-                        // Combine each column value with comma
-                        csv_data.push(csvrow.join(","));
-                    }
-
-                    // Combine each row data with new line character
-                    csv_data = csv_data.join('\n');
-                    console.log(csv_data)
-                    // Записываем данные в скрытое поле формы
-                    document.getElementById('tableDataInput').value = JSON.stringify(csv_data);
-
-                    // После этого отправляем форму
-                    this.submit();
-                });
-            </script>
-
         </div>
-
-
     </div>
-
-    <script defer="" src="{% static "scripts/regulation.js" %}"></script>
-
 {% endblock content %}

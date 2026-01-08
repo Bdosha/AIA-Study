@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моделирование потоков и запасов ресурсов</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body data-color-scheme="dark">
+    <div class="app-container">
+        <!-- Заголовок -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">Моделирование потоков и запасов ресурсов в системах жизнеобеспечения</h1>
+                <p class="app-subtitle">Системная динамика для анализа критических ситуаций на космическом корабле</p>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Основное содержание -->
+        <main class="app-main">
+            <!-- Панель управления -->
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h3 class="section-title">Сценарии</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="scenario">Выберите сценарий</label>
+                        <select class="form-control" id="scenario">
+                            <option value="normal">Нормальная работа</option>
+                            <option value="water_failure">Поломка фильтрации воды</option>
+                            <option value="oxygen_failure">Отказ системы кислорода</option>
+                            <option value="critical_failure">Критическая авария</option>
+                            <option value="custom">Пользовательский сценарий</option>
+                        </select>
+                    </div>
+                    <p class="scenario-description" id="scenarioDescription">Все системы работают в штатном режиме</p>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-title">Начальные условия</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="initialWater">Запасы воды: <span id="waterValue">1000</span> л</label>
+                        <input type="range" class="form-control range-input" id="initialWater" min="100" max="2000" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="initialOxygen">Запасы кислорода: <span id="oxygenValue">200</span> кг</label>
+                        <input type="range" class="form-control range-input" id="initialOxygen" min="50" max="500" value="200">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="crewSize">Экипаж: <span id="crewValue">4</span> чел.</label>
+                        <input type="range" class="form-control range-input" id="crewSize" min="1" max="10" value="4">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="duration">Длительность: <span id="durationValue">30</span> дней</label>
+                        <input type="range" class="form-control range-input" id="duration" min="1" max="365" value="30">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-title">Параметры потоков</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="waterConsumption">Потребление воды: <span id="waterConsValue">8</span> л/день/чел</label>
+                        <input type="range" class="form-control range-input" id="waterConsumption" min="2" max="20" step="0.1" value="8">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="oxygenConsumption">Потребление O₂: <span id="oxygenConsValue">0.84</span> кг/день/чел</label>
+                        <input type="range" class="form-control range-input" id="oxygenConsumption" min="0.5" max="2" step="0.01" value="0.84">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="waterEfficiency">Фильтрация воды: <span id="waterEffValue">80</span>%</label>
+                        <input type="range" class="form-control range-input" id="waterEfficiency" min="0" max="100" value="80">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="oxygenEfficiency">Регенерация O₂: <span id="oxygenEffValue">70</span>%</label>
+                        <input type="range" class="form-control range-input" id="oxygenEfficiency" min="0" max="100" value="70">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="section-title">Управление</h3>
+                    <div class="button-group">
+                        <button class="btn btn--primary btn--full-width" id="startBtn">Запустить симуляцию</button>
+                        <button class="btn btn--secondary btn--full-width" id="stopBtn" disabled>Остановить</button>
+                        <button class="btn btn--outline btn--full-width" id="resetBtn">Сбросить</button>
+                        <button class="btn btn--outline btn--full-width" id="exportBtn" disabled>Экспорт в CSV</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Visualization Area -->
+            <section class="visualization-area">
+                <!-- Status Indicators -->
+                <div class="status-panel">
+                    <div class="status-card">
+                        <div class="status-label">День симуляции</div>
+                        <div class="status-value" id="currentDay">0</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">Вода</div>
+                        <div class="status-value" id="currentWater">1000 л</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">Кислород</div>
+                        <div class="status-value" id="currentOxygen">200 кг</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">Статус</div>
+                        <div class="status-badge">
+                            <span class="status status--success" id="systemStatus">Норма</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3 class="chart-title">Запасы ресурсов</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="stocksChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3 class="chart-title">Потоки ресурсов</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="flowsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Log -->
+                <div class="log-panel">
+                    <h3 class="section-title">Журнал событий</h3>
+                    <div class="log-container" id="eventLog"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="js/simulation.js"></script>
+    <script src="js/scenarios.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>

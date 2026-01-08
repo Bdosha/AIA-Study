@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лабораторная работа: Методы системного анализа</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Добавляем html-to-image -->
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+</head>
+<body class="dark-theme">
+  <div class="container">
+    <!-- Вступительный экран -->
+    <div id="intro-screen" class="intro-screen">
+      <div class="intro-content">
+        <h1 class="title">Методы системного анализа</h1>
+        <h2 class="subtitle">Исследование неизвестного космического объекта</h2>
+        <p class="story">Ваш космический корабль столкнулся с неизвестным объектом. Проведите срочный анализ его структуры.</p>
+        <p class="warning">⚠️ У вас есть <strong>5 попыток сканирования</strong>. Сохраняйте устойчивость выше 20%.</p>
+        <button id="start-btn" class="start-btn">Начать исследование</button>
+      </div>
+    </div>
+
+    <!-- Основной интерфейс -->
+    <div id="main-interface" class="main-interface hidden">
+      <header>
+        <h1 class="header-title">Системный анализ: Объект-XXX</h1>
+        <div class="header-controls">
+          <button id="theme-toggle" class="theme-toggle-btn">Светлая тема</button>
+          <button id="reset-btn" class="reset-btn">🔄 Сбросить</button>
+        </div>
+      </header>
+
+      <main class="main-grid">
+        <!-- Левая панель: Управление -->
+        <aside class="control-panel">
+          <h3>Управление</h3>
+          <label for="config-select">Выберите конфигурацию:</label>
+          <select id="config-select" name="config-select">
+            <!-- Заполняется через JS -->
+          </select>
+
+          <div class="stability-indicator">
+            <h3>Уровень устойчивости</h3>
+            <div id="stability-gauge" class="gauge">
+              <span id="stability-value">100%</span>
+            </div>
+          </div>
+
+          <div class="instructions">
+            <h3>Как исследовать:</h3>
+            <ol>
+              <li>Выберите конфигурацию.</li>
+              <li>Выберите подсистему.</li>
+              <li>Кликните "Симулировать отказ".</li>
+              <li>Анализируйте SWOT и рекомендации.</li>
+            </ol>
+
+            <h3>Цель миссии:</h3>
+            <p>Сохранить устойчивость > 20% и удалить > 60% узлов.</p>
+          </div>
+
+          <div class="attempts">
+            <h3>Попытки: <span id="attempts-left">5</span></h3>
+          </div>
+        </aside>
+
+        <!-- Центральная область: Граф -->
+        <section class="main-content">
+          <div id="graph-container" class="graph-container"></div>
+        </section>
+
+        <!-- Правая панель: Результаты -->
+        <aside class="results-panel">
+          <h3>SWOT-анализ</h3>
+          <div id="swot-panel" class="swot-panel">
+            <!-- Заполняется через JS -->
+          </div>
+
+          <h3>Рекомендации</h3>
+          <div id="recommendations-panel" class="recommendations-panel">
+            <!-- Заполняется через JS -->
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+
+  <!-- Подключаем JS файлы -->
+  <script src="js/SystemModel.js"></script>
+  <script src="js/ConfigManager.js"></script>
+  <script src="js/Analyzer.js"></script>
+  <script src="js/GraphRenderer.js"></script>
+  <script src="js/ThemeController.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

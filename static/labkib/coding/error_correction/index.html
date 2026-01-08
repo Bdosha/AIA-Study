@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Информационные потоки и кодирование</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <div class="container">
+    <h1>Лабораторная работа<br>«Информационные потоки и кодирование»</h1>
+    <h1>Ввод данных</h1>
+    <form>
+      <label for="inputText">Передаваемое сообщение</label>
+      <textarea id="inputText" name="inputText" placeholder="Введите или вставьте текст"></textarea>
+      <div class="row">
+        <div class="col">
+          <label for="noiseType">Тип помех</label>
+          <select id="noiseType" name="noiseType">
+            <option>Случайные (равномерные)</option>
+            <option>Импульсные (блоковые)</option>
+          </select>
+        </div>        
+        <div class="col">
+          <label for="errorRate">Вероятность ошибки, %</label>
+          <input type="text" id="errorRate" name="errorRate" placeholder="От 0 до 100">
+        </div>
+      </div>
+      <label for="algorithm">Алгоритм кодирования и исправления ошибок</label>
+          <select id="algorithm" name="algorithm">
+            <option value="hamming">Код Хэмминга (7,4)</option>
+            <option value="reedSolomon">Код Рида-Соломона (255,239)</option>
+          </select>
+      <center><button type="button" id="action">Передать данные</button></center>
+    </form>
+  </div>
+  <div class="container" id="result" style="display:none;">
+    <h1>Результаты</h1>
+    <label for="originalData">Исходное сообщение</label>
+    <div class="resultblock" id="originalData">
+      <div id="originalText"></div>
+    </div>
+    <label for="errorData">Закодированное сообщение</label>
+    <div class="resultblock" id="errorData">
+      <div id="encodedText"></div>
+    </div>    
+    <label for="message">Закодированное сообщение с ошибками</label>
+    <div class="resultblock" id="message">
+      <div id="corruptedText"></div>
+    </div>
+    <label for="decodedData">Восстановленное сообщение</label>
+    <div class="resultblock" id="decodedData">
+      <div id="decodedText"></div>
+    </div>
+    <label for="decodedData">Оценка эффективности алгоритма<br>при вероятности ошибки в <span id="errorFreq"></span>%</label>
+    <div class="resultblock" id="stats">
+      <b>Эффективность кодирования:</b> <span id="efficiency"></span>%<br>
+      <b>Избыточность кодирования:</b> <span id="redundancy"></span><br>
+      <b>Кодовая скорость:</b> <span id="speed"></span><br>
+      <b>Вычислительная сложность:</b> <span id="complexity"></span>
+    </div>
+  </div>
+<button id="themeToggleCorner" title="Сменить тему" aria-label="Toggle theme" style="position: fixed; top: 12px; right: 12px; z-index: 9999;"></button>
+<script src="main.js"></script>
+<script src="theme.js"></script>
+<script src="distance.js"></script>
+<script src="hamming.js"></script>
+<script src="reedSolomon.js"></script>
+</body>
+</html>

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор Распределённой Сети Контроллеров</title>
+    <style>
+        :root {
+            --primary-dark: #0a0e27;
+            --surface: #151922;
+            --text: #e0e0e0;
+            --accent-green: #00ff41;
+            --accent-orange: #ffaa00;
+            --accent-red: #ff3333;
+            --accent-blue: #00aaff;
+            --border: #2a2e3a;
+        }
+
+        [data-theme="light"] {
+            --primary-dark: #ffffff;
+            --surface: #f5f5f5;
+            --text: #1a1a1a;
+            --accent-green: #28a745;
+            --accent-orange: #ffc107;
+            --accent-red: #dc3545;
+            --accent-blue: #0066cc;
+            --border: #cccccc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-dark);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Panel - Configuration */
+        .left-panel {
+            width: 300px;
+            background: var(--surface);
+            border-right: 2px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--accent-blue);
+        }
+
+        .config-group {
+            background: rgba(42, 46, 58, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .config-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--accent-blue);
+        }
+
+        .size-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .size-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0, 170, 255, 0.1);
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .size-btn:hover {
+            background: rgba(0, 170, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
+        }
+
+        .size-btn.active {
+            background: var(--accent-blue);
+            color: var(--primary-dark);
+            box-shadow: 0 0 20px var(--accent-blue);
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .slider-value {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 255, 65, 0.2);
+            outline: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-green);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-green);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-start {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .btn-start:hover:not(:disabled) {
+            box-shadow: 0 0 30px var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .btn-stop {
+            background: var(--accent-red);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            box-shadow: 0 0 30px var(--accent-red);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Center Canvas */
+        .center-canvas {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            background: var(--primary-dark);
+        }
+
+        /* Right Panel - Report */
+        .right-panel {
+            width: 320px;
+            background: var(--surface);
+            border-left: 2px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .report-section {
+            background: rgba(42, 46, 58, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .report-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-green);
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(42, 46, 58, 0.5);
+            font-size: 13px;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--text);
+        }
+
+        .stat-value {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 170, 255, 0.5);
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 15px var(--accent-red);
+        }
+
+        .modal-content {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .conflict-info {
+            background: rgba(255, 51, 51, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-red);
+            margin-bottom: 20px;
+        }
+
+        .conflict-nodes {
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
+        .algorithm-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .algo-btn {
+            padding: 12px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .algo-btn:hover {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            box-shadow: 0 0 20px var(--accent-green);
+        }
+
+        /* Final Report Modal */
+        .final-report {
+            max-width: 700px;
+        }
+
+        .final-report .modal-title {
+            color: var(--accent-green);
+            text-shadow: 0 0 15px var(--accent-green);
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-card {
+            background: rgba(0, 255, 65, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-green);
+        }
+
+        .report-card-title {
+            font-size: 12px;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .report-card-value {
+            font-size: 24px;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .close-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-blue);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            box-shadow: 0 0 20px var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .controller-stats {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .controller-card {
+            background: rgba(42, 46, 58, 0.5);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .controller-name {
+            color: var(--accent-blue);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .controller-stat {
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .left-panel, .right-panel {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+                height: auto;
+                max-height: 30vh;
+            }
+        }
+
+        .paused-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-orange);
+            color: var(--primary-dark);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 0 30px var(--accent-orange);
+        }
+
+        .paused-indicator.active {
+            display: block;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 200;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-blue);
+            color: var(--primary-dark);
+            box-shadow: 0 0 25px var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .feedback-message {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            display: none;
+            z-index: 150;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        .feedback-message.good {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            box-shadow: 0 0 30px var(--accent-green);
+        }
+
+        .feedback-message.poor {
+            background: var(--accent-red);
+            color: white;
+            box-shadow: 0 0 30px var(--accent-red);
+        }
+
+        .feedback-message.active {
+            display: block;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .decision-streak {
+            background: rgba(0, 170, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--accent-blue);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .streak-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .streak-label {
+            font-size: 11px;
+            color: var(--text);
+            margin-top: 4px;
+        }
+    </style>
+    <!-- NEW: Algorithm Help Button and Modal -->
+    <style>
+        .goal-banner {
+            background: rgba(0, 255, 65, 0.08);
+            color: #00ff41;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: center;
+            padding: 16px 0 12px 0;
+            border-bottom: 3px solid #00ff41;
+            letter-spacing: 0.01em;
+            box-shadow: 0 4px 16px rgba(0,255,65,0.13);
+            position: relative;
+        }
+        .algo-help-btn {
+            position: absolute;
+            right: 24px;
+            top: 10px;
+            background: #222;
+            color: #00aaff;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #00aaff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,170,255,0.25);
+            z-index: 30;
+            transition: all 0.2s;
+        }
+        .algo-help-btn:hover {
+            background: #00aaff;
+            color: #fff;
+        }
+        .algo-expl-modal {
+            background: var(--surface);
+            border: 3px solid #00aaff;
+            border-radius: 16px;
+            max-width: 540px;
+            width: 97vw;
+            padding: 30px 26px 22px 26px;
+            z-index: 1600;
+            position: fixed;
+            top: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 30px 7px rgba(0,170,255,.23);
+            color: var(--text);
+        }
+        .algo-expl-heading {
+            font-size: 24px;
+            color: #00aaff;
+            font-weight: bold;
+            margin-bottom: 18px;
+            text-align: center;
+            letter-spacing: 0.01em;
+        }
+        .algo-expl-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .algo-expl-li {
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid #2a2e3a;
+        }
+        .algo-expl-li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .algo-expl-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #00ff41;
+            margin-bottom: 4px;
+        }
+        .algo-expl-desc { font-size: 14.5px; color: #00aaff; }
+        .algo-expl-pros, .algo-expl-cons { color: #ffaa00; font-size: 13.4px; margin-top: 1px; }
+        .algo-expl-when {
+            color: #00aaff;
+            font-size: 12.9px;
+            margin-top: 6px;
+        }
+        .algo-expl-close {
+            display: block;
+            margin: 0 auto;
+            margin-top: 17px;
+            padding: 10px 28px;
+            border-radius: 8px;
+            border: none;
+            background: #00aaff;
+            font-weight: bold;
+            color: var(--primary-dark);
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 0 13px #00aaff66;
+            transition: background 0.2s;
+        }
+        .algo-expl-close:hover { background: #0090dd; color: #fff; }
+        /* Mission Status in Final Modal */
+        .mission-status {
+            font-size: 25px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 22px;
+            border-radius: 10px;
+            padding: 18px 0 14px 0;
+        }
+        .mission-success {
+            background: rgba(0,255,65,0.13);
+            color: #00ff41;
+            border: 2.5px solid #00ff41;
+        }
+        .mission-partial {
+            background: rgba(255,170,0,0.12);
+            color: #ffaa00;
+            border: 2.5px solid #ffaa00;
+        }
+        .mission-failed {
+            background: rgba(255,51,51,0.13);
+            color: #ff3333;
+            border: 2.5px solid #ff3333;
+        }
+        /* Progress Bar for 80% Goal */
+        .eff-progress-outer {
+            background: #222; border-radius: 14px;
+            height: 28px; margin: 16px 0 11px 0;
+            position: relative; width: 100%;
+            overflow: hidden;
+        }
+        .eff-progress-bar {
+            height: 100%; transition: width .7s cubic-bezier(.19,1,.22,1);
+            border-radius: 14px;
+            position: absolute; left: 0;
+            top: 0; z-index: 2;
+        }
+        .eff-progress-label {
+            position: absolute; left: 49%; top: 0;
+            width: 120px; text-align: center;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #fff;
+            z-index: 5;
+            text-shadow: 0 2px 7px #191;
+            pointer-events: none;
+        }
+        .eff-marker-target {
+            position: absolute;
+            left: 80%;
+            top: -10px;
+            width: 0;
+            height: 48px;
+            border-left: 2.7px dashed #ffaa00;
+            z-index: 3;
+        }
+        .eff-marker-label {
+            position: absolute;
+            left: 80%;
+            top: 35px;
+            color: #ffaa00;
+            font-weight: bold;
+            font-size: 13px;
+            transform: translateX(-30%);
+            z-index: 4;
+            text-shadow: 0 0px 6px #ffaa0044;
+        }
+    </style>
+</head>
+<body>
+    <!-- NEW: GOAL BANNER & ALGORITHM HELP BTN -->
+    <div class="goal-banner">
+        <span>ЦЕЛЬ: Достичь 80% эффективности</span>
+        <button class="algo-help-btn" id="algoHelpBtn" title="Как работают алгоритмы?">?</button>
+    </div>
+    <!-- Algorithm Explanation Modal -->
+    <div class="modal-overlay" id="algoExpModal" style="display:none;z-index:1600;">
+        <div class="algo-expl-modal">
+            <div class="algo-expl-heading">Как работают алгоритмы?</div>
+            <ul class="algo-expl-list">
+                <li class="algo-expl-li">
+                    <div class="algo-expl-title">ПРИОРИТЕТ (Priority-based)</div>
+                    <div class="algo-expl-desc">Даёт ресурс контроллеру с НАИБОЛЬШИМ приоритетом.</div>
+                    <div class="algo-expl-pros">Плюсы: ✓ Важные компоненты работают в первую очередь</div>
+                    <div class="algo-expl-cons">Минусы: ✗ Низкоприоритетные могут голодать</div>
+                    <div class="algo-expl-when"><b>Когда использовать:</b> Когда нужна срочная работа важной подсистемы</div>
+                </li>
+                <li class="algo-expl-li">
+                    <div class="algo-expl-title">ОЧЕРЕДЬ (FIFO Queue)</div>
+                    <div class="algo-expl-desc">Даёт ресурс контроллеру, который запросил его ПЕРВЫМ.</div>
+                    <div class="algo-expl-pros">Плюсы: ✓ Справедливо, никто не голодает</div>
+                    <div class="algo-expl-cons">Минусы: ✗ Может не отдать быстро ресурс критическим системам</div>
+                    <div class="algo-expl-when"><b>Когда использовать:</b> Когда все запросы примерно одинаково важны</div>
+                </li>
+                <li class="algo-expl-li" >
+                    <div class="algo-expl-title">СПРАВЕДЛИВОЕ (Random Fair)</div>
+                    <div class="algo-expl-desc">Выбирает СЛУЧАЙНОГО контроллера из претендентов.</div>
+                    <div class="algo-expl-pros">Плюсы: ✓ Беспристрастно, дает шанс всем</div>
+                    <div class="algo-expl-cons">Минусы: ✗ Может быть неудачно — критическая система может ждать</div>
+                    <div class="algo-expl-when"><b>Когда использовать:</b> Когда нет информации о приоритетах</div>
+                </li>
+            </ul>
+            <button class="algo-expl-close" id="algoExpModalClose">Закрыть</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Left Panel: Configuration -->
+        <div class="left-panel">
+            <div class="panel-title">⚙️ Конфигурация Системы</div>
+            
+            <div class="config-group">
+                <label class="config-label">Размер системы</label>
+                <div class="size-buttons">
+                    <button class="size-btn" data-size="small">Малая</button>
+                    <button class="size-btn active" data-size="medium">Средняя</button>
+                    <button class="size-btn" data-size="large">Большая</button>
+                </div>
+            </div>
+
+            <div class="config-group">
+                <label class="config-label">Параметры конфликтов</label>
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Вероятность конфликта</span>
+                        <span class="slider-value" id="probabilityValue">60%</span>
+                    </div>
+                    <input type="range" id="probabilitySlider" min="0" max="100" value="60">
+                </div>
+            </div>
+
+            <div class="config-group">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Длительность симуляции</span>
+                        <span class="slider-value" id="durationValue">45с</span>
+                    </div>
+                    <input type="range" id="durationSlider" min="10" max="100" value="45">
+                </div>
+            </div>
+
+            <div class="control-buttons">
+                <button class="btn btn-start" id="startBtn">▶ Запустить</button>
+                <button class="btn btn-stop" id="stopBtn" disabled>⏹ Остановить</button>
+            </div>
+
+            <div class="config-group">
+                <label class="config-label">Легенда состояний</label>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #666;"></div>
+                        <span>IDLE - Ожидание</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--accent-green);"></div>
+                        <span>EXECUTING - Работа</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--accent-red);"></div>
+                        <span>CONFLICT - Конфликт</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--accent-orange);"></div>
+                        <span>WAITING - Ожидание ресурса</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center: Canvas Visualization -->
+        <div class="center-canvas">
+            <button class="theme-toggle" id="themeToggle">🌙 Светлая тема</button>
+            <div class="paused-indicator" id="pausedIndicator">⏸ ПАУЗА</div>
+            <div class="feedback-message" id="feedbackMessage"></div>
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <!-- Right Panel: Real-time Report -->
+        <!-- Progress bar for 80% goal: positioned in right panel top -->
+        <div class="right-panel">
+            <div class="panel-title">📊 Отчёт в реальном времени</div>
+            
+            <!-- PROGRESS BAR FOR EFFICIENCY (80% goal) -->
+            <div style="margin-bottom: 15px;">
+                <div class="eff-progress-outer">
+                    <div id="effProgressBar" class="eff-progress-bar" style="background: #00ff41; width: 70%;"></div>
+                    <div class="eff-marker-target"></div>
+                    <span class="eff-progress-label" id="effProgressLabel">70.0%</span>
+                    <span class="eff-marker-label">Цель: 80%</span>
+                </div>
+            </div>
+            
+            <div class="report-section">
+                <div class="report-title">Общая статистика</div>
+                <div class="stat-row">
+                    <span class="stat-label">⏱ Прошло времени:</span>
+                    <span class="stat-value" id="elapsedTime">0.0с</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⚠️ Конфликтов обработано:</span>
+                    <span class="stat-value" id="conflictsProcessed">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎯 Успешных разрешений:</span>
+                    <span class="stat-value" id="successfulResolutions">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">✅ Операций завершено:</span>
+                    <span class="stat-value" id="operationsCompleted">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">📈 Эффективность:</span>
+                    <span class="stat-value" id="efficiency">70%</span>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">Решения</div>
+                <div class="decision-streak">
+                    <div class="streak-value" id="streakValue">0</div>
+                    <div class="streak-label" id="streakLabel">Подряд хороших решений</div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">История конфликтов</div>
+                <div id="conflictLog" style="max-height: 300px; overflow-y: auto; font-size: 12px;">
+                    <div style="color: #666; text-align: center; padding: 20px;">Конфликтов пока нет</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conflict Modal -->
+
+    <div class="modal-overlay" id="conflictModal">
+        <div class="modal">
+            <div class="modal-title">⚠️ ОБНАРУЖЕН КОНФЛИКТ!</div>
+            <div class="modal-content">
+                <div class="conflict-info">
+                    <div style="margin-bottom: 10px;">
+                        <strong>Конфликтующие узлы:</strong>
+                        <div class="conflict-nodes" id="conflictNodes">Node 1, Node 2</div>
+                    </div>
+                    <div>
+                        <strong>Ресурс:</strong> <span id="conflictResource" style="color: var(--accent-blue);">Resource X</span>
+                    </div>
+                </div>
+                <p style="margin-bottom: 15px;">Выберите алгоритм для разрешения конфликта:</p>
+                <div class="algorithm-buttons">
+                    <button class="algo-btn" data-algo="priority">🔢 Приоритетный алгоритм</button>
+                    <button class="algo-btn" data-algo="timestamp">⏰ Алгоритм временных меток</button>
+                    <button class="algo-btn" data-algo="token">🎫 Алгоритм передачи токена</button>
+                    <button class="algo-btn" data-algo="voting">🗳️ Алгоритм голосования</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Report Modal -->
+    <div class="modal-overlay" id="finalModal">
+            <!-- --- MISSION STATUS --- -->
+            <div id="missionStatusBanner" class="mission-status mission-failed" style="display:none;">МИССИЯ ПРОВАЛЕНА ✗</div>
+
+        <div class="modal final-report">
+            <div class="modal-title">📊 ФИНАЛЬНЫЙ ОТЧЁТ</div>
+            <div class="modal-content">
+                <div class="report-grid">
+                    <div class="report-card">
+                        <div class="report-card-title">Длительность симуляции</div>
+                        <div class="report-card-value" id="finalDuration">0с</div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-title">Всего конфликтов</div>
+                        <div class="report-card-value" id="finalConflicts">0</div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-title">Успешных разрешений</div>
+                        <div class="report-card-value" id="finalResolutions">0</div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-title">Операций завершено</div>
+                        <div class="report-card-value" id="finalOperations">0</div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-title">Эффективность</div>
+                        <div class="report-card-value" id="finalEfficiency">0%</div>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <div class="report-title">Статистика контроллеров</div>
+                    <div class="controller-stats" id="controllerStats"></div>
+                </div>
+
+                <button class="close-btn" id="closeFinalModal">Закрыть отчёт</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -8,6 +8,7 @@
 
 import json
 import os
+from pathlib import Path
 from random import choice, random, randint, uniform
 
 import numpy as np
@@ -15,6 +16,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
 
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.http import Http404
@@ -180,10 +182,10 @@ def get_table_data(data):
 
 
 def clear_data():
-    folder = 'static/graphics'
-    if os.path.exists(folder):
+    folder = settings.BASE_DIR / "static" / "graphics"
+    if folder.exists():
         for filename in os.listdir(folder):
-            os.remove(os.path.join(folder, filename))
+            os.remove(folder / filename)
 
 
 def get_linear_regression(x, y):
@@ -226,8 +228,9 @@ def get_linear_regression(x, y):
     plt.grid(True, alpha=0.2, color='#71717a')
     file = randint(10000, 1000000)
     
-    os.makedirs('static/graphics', exist_ok=True)
-    plt.savefig(f"static/graphics/{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
+    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    os.makedirs(graphics_dir, mode=0o755, exist_ok=True)
+    plt.savefig(graphics_dir / f"{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
 
     y_pred = model.predict(x_train)
     mae = mean_absolute_error(y_train, y_pred)
@@ -412,9 +415,10 @@ def make_parabola(a, b, c, xes, number):
     plt.xlim(-33, 33)
     plt.title('Полный график', color='#f4f4f5')
     
-    os.makedirs('static/graphics', exist_ok=True)
+    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    os.makedirs(graphics_dir, mode=0o755, exist_ok=True)
     filee = randint(1000, 10000000)
-    plt.savefig(f"static/graphics/{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
+    plt.savefig(graphics_dir / f"{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
     plt.gcf().clear()
 
     # Second plot
@@ -436,7 +440,8 @@ def make_parabola(a, b, c, xes, number):
     plt.axvline(x=x0 + 0.7, color='#f87171', linewidth=2, linestyle=':', alpha=0.7)
     plt.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
 
-    plt.savefig(f"static/graphics/{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
+    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    plt.savefig(graphics_dir / f"{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
 
     return x0, round(abs(number - x0), 2), file, filee, cool
 
@@ -561,9 +566,10 @@ def graphic(v, t, e, b, w, last_t):
     ax.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
     ax.grid(True, alpha=0.2, color='#71717a')
     
-    os.makedirs('static/graphics', exist_ok=True)
+    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    os.makedirs(graphics_dir, mode=0o755, exist_ok=True)
     filee = randint(1000, 10000000)
-    plt.savefig(f"static/graphics/{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
+    plt.savefig(graphics_dir / f"{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
     return filee
 
 
@@ -741,8 +747,9 @@ def get_control(request):
         + Заключение
         Вывод: в ходе лабораторной работы было изучено понятие "управление" в области кибернетики. После использования 5 доступных попыток наилучший результат составил {con['mx']} очков.'''
 
-        os.makedirs('static/works', exist_ok=True)
-        with open(f'static/works/{d}.txt', "w") as f:
+        works_dir = settings.BASE_DIR / "static" / "works"
+        os.makedirs(works_dir, mode=0o755, exist_ok=True)
+        with open(works_dir / f"{d}.txt", "w") as f:
             f.write(text)
             f.close()
         con['tx'] = text

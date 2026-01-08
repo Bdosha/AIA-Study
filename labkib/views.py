@@ -182,7 +182,8 @@ def get_table_data(data):
 
 
 def clear_data():
-    folder = settings.BASE_DIR / "static" / "graphics"
+    # Use STATIC_ROOT for graphics so nginx can serve them
+    folder = settings.STATIC_ROOT / "graphics"
     if folder.exists():
         for filename in os.listdir(folder):
             os.remove(folder / filename)
@@ -228,7 +229,8 @@ def get_linear_regression(x, y):
     plt.grid(True, alpha=0.2, color='#71717a')
     file = randint(10000, 1000000)
     
-    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    # Use STATIC_ROOT for graphics so nginx can serve them
+    graphics_dir = settings.STATIC_ROOT / "graphics"
     os.makedirs(graphics_dir, mode=0o755, exist_ok=True)
     plt.savefig(graphics_dir / f"{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
 
@@ -415,7 +417,8 @@ def make_parabola(a, b, c, xes, number):
     plt.xlim(-33, 33)
     plt.title('Полный график', color='#f4f4f5')
     
-    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    # Use STATIC_ROOT for graphics so nginx can serve them
+    graphics_dir = settings.STATIC_ROOT / "graphics"
     os.makedirs(graphics_dir, mode=0o755, exist_ok=True)
     filee = randint(1000, 10000000)
     plt.savefig(graphics_dir / f"{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
@@ -440,7 +443,8 @@ def make_parabola(a, b, c, xes, number):
     plt.axvline(x=x0 + 0.7, color='#f87171', linewidth=2, linestyle=':', alpha=0.7)
     plt.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
 
-    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    # Use STATIC_ROOT for graphics so nginx can serve them
+    graphics_dir = settings.STATIC_ROOT / "graphics"
     plt.savefig(graphics_dir / f"{file}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')
 
     return x0, round(abs(number - x0), 2), file, filee, cool
@@ -566,7 +570,8 @@ def graphic(v, t, e, b, w, last_t):
     ax.legend(framealpha=0.2, facecolor='#16161f', edgecolor='#71717a')
     ax.grid(True, alpha=0.2, color='#71717a')
     
-    graphics_dir = settings.BASE_DIR / "static" / "graphics"
+    # Use STATIC_ROOT for graphics so nginx can serve them
+    graphics_dir = settings.STATIC_ROOT / "graphics"
     os.makedirs(graphics_dir, mode=0o755, exist_ok=True)
     filee = randint(1000, 10000000)
     plt.savefig(graphics_dir / f"{filee}.jpg", facecolor='#0f0f14', edgecolor='none', dpi=100, bbox_inches='tight')

@@ -97,9 +97,8 @@ STATICFILES_DIRS = [
     "static",
 ]
 
-# Note: Dynamically generated files (graphs) are saved to BASE_DIR / "static" / "graphics"
-# These files must be served directly by the web server (nginx) from the source directory,
-# not from STATIC_ROOT, as they are created at runtime and not collected by collectstatic.
+# Note: Dynamically generated files (graphs) are saved to STATIC_ROOT / "graphics"
+# This allows nginx to serve them directly from the staticfiles directory.
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

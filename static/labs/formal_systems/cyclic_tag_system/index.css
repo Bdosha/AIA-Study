@@ -1,0 +1,397 @@
+:root {
+    --bg-color: #111827;
+    --card-bg-color: #1F2937;
+    --text-color: #E5E7EB;
+    --text-color-secondary: #9CA3AF;
+    --border-color: #374151;
+    --accent-color-1: #4F46E5;
+    --accent-color-2: #7C3AED;
+    --button-secondary-bg: #374151;
+    --button-secondary-hover-bg: #4B5563;
+    --danger-color: #EF4444;
+    --danger-hover-color: #F87171;
+    --deleted-color: #FCA5A5;
+    --deleted-bg: #991B1B;
+    --added-color: #86EFAC;
+    --added-bg: #166534;
+    --status-paused-color: #FCD34D;
+    --status-running-color: #4ADE80;
+    --status-stopped-color: #F87171;
+
+    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family-mono: 'Courier New', Courier, monospace;
+}
+
+.light-theme {
+    --bg-color: #F3F4F6;
+    --card-bg-color: #FFFFFF;
+    --text-color: #1F2937;
+    --text-color-secondary: #4B5563;
+    --border-color: #D1D5DB;
+    --button-secondary-bg: #E5E7EB;
+    --button-secondary-hover-bg: #D1D5DB;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+header p {
+    color: var(--text-color-secondary);
+    font-size: 1.1rem;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.card {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: background-color 0.3s;
+}
+
+.card h2, .card h3 {
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+
+.rule-explanation {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-color-1);
+}
+
+.preset-description {
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+    background-color: var(--bg-color);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    min-height: 60px;
+    line-height: 1.5;
+}
+
+.button-group, .button-group-io {
+    display: flex;
+    gap: 1rem;
+}
+
+.button-group-io {
+    flex-wrap: wrap;
+}
+
+.button-group-io > button {
+    flex-grow: 1;
+}
+
+.button-group-io svg {
+    width: 16px;
+    height: 16px;
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s, background-image 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+
+.button-primary {
+    background-image: linear-gradient(to right, var(--accent-color-1), var(--accent-color-2));
+    color: white;
+}
+
+.button-primary:hover {
+    filter: brightness(1.2);
+}
+
+.button-secondary {
+    background-color: var(--button-secondary-bg);
+    color: var(--text-color);
+}
+
+.button-secondary:hover {
+    background-color: var(--button-secondary-hover-bg);
+}
+
+.icon-button {
+    background: none;
+    color: var(--text-color-secondary);
+    padding: 0.5rem;
+}
+.icon-button:hover {
+    color: var(--text-color);
+}
+
+.production-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.production-rule input {
+    flex: 1;
+    min-width: 50px;
+}
+.production-rule span {
+    color: var(--text-color-secondary);
+}
+.delete-rule-btn {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 0.5rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    line-height: 1;
+}
+.delete-rule-btn:hover {
+    background-color: var(--danger-hover-color);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--button-secondary-bg);
+    border-radius: 5px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--accent-color-1);
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--accent-color-1);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+}
+
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.status-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+}
+
+.status-paused { color: var(--status-paused-color); }
+.status-running { color: var(--status-running-color); }
+.status-stopped { color: var(--status-stopped-color); }
+
+
+.current-string-container {
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.current-string-container h4 {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.mono {
+    font-family: var(--font-family-mono);
+    line-height: 1.8;
+    word-break: break-all;
+}
+
+#current-string {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.deleted {
+    background-color: var(--deleted-bg);
+    color: var(--deleted-color);
+    padding: 0.2em 0.1em;
+    border-radius: 3px;
+    margin-right: 0.2em;
+}
+
+.added {
+    background-color: var(--added-bg);
+    color: var(--added-color);
+    padding: 0.2em 0.1em;
+    border-radius: 3px;
+    margin-left: 0.2em;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-color-secondary);
+}
+
+.legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.deleted-dot { background-color: var(--deleted-bg); }
+.rest-dot { background-color: var(--button-secondary-bg); }
+.added-dot { background-color: var(--added-bg); }
+
+
+.history-card {
+    flex-grow: 1;
+}
+
+#history {
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 8px;
+    height: 300px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+}
+
+#history .placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color-secondary);
+}
+#history div {
+    padding-bottom: 0.25rem;
+}
+#history span {
+    display: inline-block;
+    min-width: 50px;
+    text-align: right;
+    margin-right: 1rem;
+    color: var(--text-color);
+}

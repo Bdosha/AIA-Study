@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор Циклической тег-системы</title>
+    <link rel="stylesheet" href="index.css">
+    <script type="module" src="index.js"></script>
+</head>
+<body class="dark-theme">
+    <div class="container">
+        <header>
+            <div>
+                <h1>Циклическая тег-система</h1>
+                <p>Симуляция и исследование автоматов</p>
+            </div>
+            <button id="theme-toggle" class="icon-button" aria-label="Переключить тему">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.59 1.59a.75.75 0 010 1.061zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM5.106 17.894a.75.75 0 010-1.06l1.59-1.59a.75.75 0 111.06 1.06l-1.59 1.59a.75.75 0 01-1.06 0zM2.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3a.75.75 0 01-.75-.75zM6.106 5.106a.75.75 0 011.06 0l1.592 1.591a.75.75 0 11-1.06 1.06L5.106 6.167a.75.75 0 010-1.06z" />
+                </svg>
+            </button>
+        </header>
+
+        <main class="main-grid">
+            <aside class="control-panel">
+                <section class="card">
+                    <h2>1. Конфигурация</h2>
+                    <div class="form-group">
+                        <label for="presets">Предустановленные конфигурации</label>
+                        <select id="presets">
+                            <option value="oscillator">Осциллятор</option>
+                            <option value="chaotic">Хаотичное поведение</option>
+                            <option value="fast_decay">Быстрое затухание</option>
+                        </select>
+                        <div id="preset-description" class="preset-description"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="initial-string">Начальная строка (алфавит '0' и '1')</label>
+                        <input type="text" id="initial-string" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Список правил продукции (P)</label>
+                        <p class="rule-explanation">Правила применяются, если первый символ — '1'.<br>Если '0' — ничего не добавляется.</p>
+                        <div id="production-rules">
+                        </div>
+                        <button id="add-rule" class="button-secondary">Добавить правило</button>
+                    </div>
+                    <div class="button-group-io">
+                        <button id="export-json" class="button-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" /><path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" /></svg>
+                            Экспорт (JSON)
+                        </button>
+                        <button id="import-json" class="button-secondary">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9.25 1.75a.75.75 0 011.5 0v8.614l2.955-3.129a.75.75 0 011.09 1.03l-4.25 4.5a.75.75 0 01-1.09 0l-4.25-4.5a.75.75 0 011.09-1.03L9.25 10.364V1.75z" /><path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" /></svg>
+                            Импорт (JSON)
+                        </button>
+                        <input type="file" id="import-file" style="display: none;" accept="application/json">
+                    </div>
+                </section>
+                <section class="card">
+                    <h2>2. Управление симуляцией</h2>
+                    <div class="button-group">
+                        <button id="start-stop" class="button-primary">Старт</button>
+                        <button id="step" class="button-primary">Пошагово</button>
+                        <button id="reset" class="button-secondary">Сброс</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="delay-slider">Задержка между шагами (<span id="delay-label">2</span> оп/с)</label>
+                        <input type="range" id="delay-slider" min="1" max="100" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-steps">Максимальное кол-во шагов</label>
+                        <input type="number" id="max-steps" value="1000" min="1">
+                    </div>
+                </section>
+            </aside>
+
+            <div class="simulation-panel">
+                <section class="card simulation-status-card">
+                    <h3>Симуляция</h3>
+                    <div class="status-grid">
+                        <div>
+                            <div class="status-label">Шаг</div>
+                            <div id="step-counter" class="status-value">0</div>
+                        </div>
+                        <div>
+                            <div class="status-label">Длина строки</div>
+                            <div id="string-length" class="status-value">2</div>
+                        </div>
+                         <div>
+                            <div class="status-label">Время</div>
+                            <div id="timer" class="status-value">0.00 с</div>
+                        </div>
+                        <div>
+                            <div class="status-label">Статус</div>
+                            <div id="status" class="status-value status-paused">Пауза</div>
+                        </div>
+                    </div>
+                    <div class="current-string-container">
+                        <h4>Текущая строка</h4>
+                        <div id="current-string" class="mono"></div>
+                        <div class="legend">
+                            <span><span class="color-dot deleted-dot"></span> Удаляемый символ</span>
+                            <span><span class="color-dot rest-dot"></span> Остальная часть</span>
+                            <span><span class="color-dot added-dot"></span> Добавляемая продукция</span>
+                        </div>
+                    </div>
+                </section>
+                <section class="card history-card">
+                    <h3>История</h3>
+                    <div id="history" class="mono">
+                        <p class="placeholder">История симуляции появится здесь.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

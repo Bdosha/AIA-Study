@@ -152,6 +152,11 @@
           "repo": "SMoorphic/billiard-computer",
           "title": "Бильярдный компьютер",
           "description": "Вычисления на основе бильярдной динамики"
+        },
+        "cyclic_tag_system": {
+          "repo": "local/cyclic_tag-system-master.zip",
+          "title": "Циклическая тег-система",
+          "description": "Симулятор циклической тег-системы (CTS)"
         }
       }
     },

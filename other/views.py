@@ -163,6 +163,10 @@ LABS_REGISTRY = {
                 'title': 'Бильярдный компьютер',
                 'description': 'Вычисления на основе бильярдной динамики',
             },
+            'cyclic_tag_system': {
+                'title': 'Циклическая тег-система',
+                'description': 'Симулятор циклической тег-системы (CTS)',
+            },
         }
     },
     'intelligent_systems': {

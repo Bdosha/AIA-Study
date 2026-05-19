@@ -40,6 +40,7 @@ secrets.json
 *.tmp
 *.temp
 *.bak
+*.zip
 
 static/works
 

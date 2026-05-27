@@ -217,6 +217,12 @@ OTHER_CARDS = [
         'url': 'differential-games'
     },
     {
+        'name': 'Позиционные игры',
+        'emojy': '🎲',
+        'description': 'Интерактивная лабораторная по позиционным играм',
+        'url': 'positional-games'
+    },
+    {
         'name': 'Задача коммивояжёра',
         'emojy': '🗺️',
         'description': 'Решение задачи коммивояжёра',
@@ -257,6 +263,15 @@ def differential_games(request):
         request,
         'Дифференциальные игры',
         '/static/other/differential_games/di-5-differential-games/index.html'
+    )
+
+
+# ===== ПОЗИЦИОННЫЕ ИГРЫ =====
+def positional_games(request):
+    return wrap_view(
+        request,
+        'Позиционные игры',
+        '/static/other/positional_games/positional-games-main/index.html'
     )
 
 

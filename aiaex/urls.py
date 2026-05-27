@@ -29,6 +29,9 @@ url_other = [
 
     # Дифференциальные игры
     path('differential-games/', views.differential_games),
+
+    # Позиционные игры
+    path('positional-games/', views.positional_games),
     
     # Задача коммивояжёра
     path('komi/', views.komi),

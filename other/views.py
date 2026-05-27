@@ -211,6 +211,12 @@ OTHER_CARDS = [
         'url': 'nash'
     },
     {
+        'name': 'Дифференциальные игры',
+        'emojy': '⚔️',
+        'description': 'Интерактивная лабораторная по дифференциальным играм',
+        'url': 'differential-games'
+    },
+    {
         'name': 'Задача коммивояжёра',
         'emojy': '🗺️',
         'description': 'Решение задачи коммивояжёра',
@@ -243,6 +249,15 @@ def nash(request):
 
 def nash_raw(request):
     return render(request, 'NESH.html')
+
+
+# ===== ДИФФЕРЕНЦИАЛЬНЫЕ ИГРЫ =====
+def differential_games(request):
+    return wrap_view(
+        request,
+        'Дифференциальные игры',
+        '/static/other/differential_games/di-5-differential-games/index.html'
+    )
 
 
 # ===== ГЛАВНАЯ =====

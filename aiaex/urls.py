@@ -26,6 +26,9 @@ url_other = [
     # Теория игр
     path('nash/', views.nash),
     path('nash/raw/', views.nash_raw),
+
+    # Дифференциальные игры
+    path('differential-games/', views.differential_games),
     
     # Задача коммивояжёра
     path('komi/', views.komi),

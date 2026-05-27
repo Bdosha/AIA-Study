@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дифференциальные игры— НИЯУ МИФИ</title>
+
+  <!-- Plotly.js — должен бытфь загружен ДО ui.js, будет в window.Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+  <!-- KaTeX — рендеринг формул. defer — загружается после HTML -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+  ></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- ── ШАПКА ─────────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <div>
+      <h1>Дифференциальные игры</h1>
+      <span class="subtitle">Преследование на финансовом рынке · НИЯУ МИФИ</span>
+    </div>
+
+    <!-- Переключатель темы (id="theme-checkbox" — читается в ui.js) -->
+    <label class="theme-toggle" title="Переключить тему">
+      <span>Светлая</span>
+      <input type="checkbox" id="theme-checkbox" />
+      <div class="theme-toggle-track">
+        <div class="theme-toggle-thumb"></div>
+      </div>
+      <span>Тёмная</span>
+    </label>
+  </header>
+
+  <!-- ── ОСНОВНОЙ LAYOUT ───────────────────────────────────────────────────── -->
+  <div class="app-body">
+
+    <!-- ═══ ЛЕВАЯ ПАНЕЛЬ УПРАВЛЕНИЯ ════════════════════════════════════════ -->
+    <aside class="control-panel">
+
+      <!-- Выбор конфигурации -->
+      <div class="card">
+        <div class="card-title">Конфигурация</div>
+
+        <!-- id="preset-select" — читается в ui.js -->
+        <select id="preset-select">
+          <option value="1">1. Преследование на прямой</option>
+          <option value="2">2. Асимметричное преследование</option>
+          <option value="3">3. Игра двух инвесторов</option>
+          <option value="4">4. Рекламная конкуренция</option>
+          <option value="5">5. Задача уклонения</option>
+          <option value="0">— Ручной ввод —</option>
+        </select>
+
+        <!-- id="preset-desc" — описание пресета, заполняется в ui.js -->
+        <div id="preset-desc" class="preset-desc"></div>
+      </div>
+
+      <!-- Уравнения движения -->
+      <div class="card">
+        <div class="card-title">Уравнения движения</div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span>dx₁/dt =</span>
+            <!-- id="f1-formula" — KaTeX рендер формулы пресета -->
+            <span id="f1-formula" class="formula-display"></span>
+          </div>
+          <!-- id="f1-input" — поле ввода выражения f1 -->
+          <input
+            type="text"
+            id="f1-input"
+            class="text-input"
+            placeholder="например: u"
+            autocomplete="off"
+          />
+          <!-- id="f1-error" — сообщение об ошибке валидации -->
+          <div id="f1-error" class="input-error-msg"></div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span>dx₂/dt =</span>
+            <!-- id="f2-formula" — KaTeX рендер формулы пресета -->
+            <span id="f2-formula" class="formula-display"></span>
+          </div>
+          <!-- id="f2-input" — поле ввода выражения f2 -->
+          <input
+            type="text"
+            id="f2-input"
+            class="text-input"
+            placeholder="например: v"
+            autocomplete="off"
+          />
+          <!-- id="f2-error" — сообщение об ошибке валидации -->
+          <div id="f2-error" class="input-error-msg"></div>
+        </div>
+      </div>
+
+      <!-- Начальные условия -->
+      <div class="card">
+        <div class="card-title">Начальные условия</div>
+
+        <div class="slider-row">
+          <div class="slider-label">x₁(0)</div>
+          <!-- id="x10-slider" / id="x10-value" — читаются в ui.js -->
+          <input type="range" id="x10-slider" class="slider"
+            min="-10" max="10" step="0.1" value="0" />
+          <span id="x10-value" class="slider-value">0.00</span>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">x₂(0)</div>
+          <input type="range" id="x20-slider" class="slider"
+            min="-10" max="10" step="0.1" value="3" />
+          <span id="x20-value" class="slider-value">3.00</span>
+        </div>
+      </div>
+
+      <!-- Ограничения управлений -->
+      <div class="card">
+        <div class="card-title">Ограничения управлений</div>
+
+        <!-- Диапазон [-5, 5] у всех ползунков — чтобы пресет 4 (uMin=0) не блокировался -->
+        <div class="slider-row">
+          <div class="slider-label">u_min</div>
+          <input type="range" id="umin-slider" class="slider"
+            min="-5" max="5" step="0.1" value="-1" />
+          <span id="umin-value" class="slider-value">-1.00</span>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">u_max</div>
+          <input type="range" id="umax-slider" class="slider"
+            min="-5" max="5" step="0.1" value="1" />
+          <span id="umax-value" class="slider-value">1.00</span>
+        </div>
+
+        <div class="divider mt-4"></div>
+
+        <div class="slider-row mt-4">
+          <div class="slider-label">v_min</div>
+          <input type="range" id="vmin-slider" class="slider"
+            min="-5" max="5" step="0.1" value="-1" />
+          <span id="vmin-value" class="slider-value">-1.00</span>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">v_max</div>
+          <input type="range" id="vmax-slider" class="slider"
+            min="-5" max="5" step="0.1" value="1" />
+          <span id="vmax-value" class="slider-value">1.00</span>
+        </div>
+      </div>
+
+      <!-- Тип функционала -->
+      <div class="card">
+        <div class="card-title">Функционал выигрыша</div>
+
+        <!-- .functional-tab + data-type — читаются в ui.js через querySelectorAll -->
+        <div class="functional-tabs">
+          <button class="functional-tab active" data-type="terminal">Терминальный</button>
+          <button class="functional-tab"        data-type="integral">Интегральный</button>
+          <button class="functional-tab"        data-type="mixed">Смешанный</button>
+        </div>
+
+        <!-- id="j-formula" — KaTeX рендер формулы функционала пресета -->
+        <div id="j-formula" class="formula-display mt-4"></div>
+      </div>
+
+      <!-- Параметры численного метода (ПЗ таблица 3) -->
+      <div class="card">
+        <div class="card-title">Параметры метода (ПЗ табл. 3)</div>
+
+        <div class="param-grid">
+          <div class="param-item">
+            <div class="param-label">Шаг h [0.0001; 0.1]</div>
+            <!-- id="h-input" — читается в ui.js -->
+            <input type="number" id="h-input" class="param-input"
+              value="0.01" min="0.0001" max="0.1" step="0.001" />
+          </div>
+
+          <div class="param-item">
+            <div class="param-label">Горизонт T [0.1; 100]</div>
+            <input type="number" id="T-input" class="param-input"
+              value="10" min="0.1" max="100" step="0.5" />
+          </div>
+
+          <div class="param-item">
+            <div class="param-label">Итераций N_max</div>
+            <input type="number" id="nmax-input" class="param-input"
+              value="500" min="1" max="1000" step="10" />
+          </div>
+
+          <div class="param-item">
+            <div class="param-label">Порог δ</div>
+            <input type="number" id="delta-input" class="param-input"
+              value="0.0001" min="0.000001" max="0.01" step="0.0001" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопки управления -->
+      <div class="card">
+        <div class="card-title">Управление</div>
+
+        <div class="buttons-grid">
+          <button class="btn btn-run"   id="btn-run">Решить</button>
+          <button class="btn btn-stop"  id="btn-stop"  disabled>Стоп</button>
+          <button class="btn btn-step"  id="btn-step"  disabled>Пошагово</button>
+          <button class="btn btn-reset" id="btn-reset" disabled>Сброс</button>
+        </div>
+
+        <!-- Прогресс-бар (id="progress-bar" — читается в ui.js) -->
+        <div class="progress-bar-wrap mt-8">
+          <div id="progress-bar" class="progress-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Панель результатов -->
+      <div class="info-panel">
+        <div class="card-title">Результаты</div>
+
+        <div class="info-row">
+          <span class="info-key">Время захвата / T_exit</span>
+          <!-- id="info-capture" — заполняется в ui.js -->
+          <span id="info-capture" class="info-value">—</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-key">Функционал J</span>
+          <span id="info-J" class="info-value highlight">—</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-key">Итераций</span>
+          <span id="info-iters" class="info-value">—</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-key">Сходимость</span>
+          <span id="info-converged" class="info-value">—</span>
+        </div>
+
+        <!-- id="status-message" — статусное сообщение (захват/несходимость/верификация) -->
+        <div id="status-message" class="status-message hidden"></div>
+      </div>
+
+      <!-- Экспорт -->
+      <div class="card">
+        <div class="card-title">Экспорт</div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-export" id="btn-export-png" disabled>PNG</button>
+          <button class="btn btn-export" id="btn-export-csv" disabled>CSV</button>
+        </div>
+      </div>
+
+    </aside>
+    <!-- ═══ конец левой панели ═══════════════════════════════════════════ -->
+
+    <!-- ═══ ПРАВАЯ ПАНЕЛЬ — ГРАФИКИ ════════════════════════════════════════ -->
+    <main class="plots-panel">
+
+      <!-- График 1: траектории x1(t), x2(t) -->
+      <!-- id="plot-time" — читается в ui.js при создании Visualizer -->
+      <div class="plot-container">
+        <div id="plot-time" class="plot-div"></div>
+      </div>
+
+      <!-- График 2: фазовый портрет x1 vs x2 -->
+      <div class="plot-container">
+        <div id="plot-phase" class="plot-div"></div>
+      </div>
+
+      <!-- График 3: управления u(t), v(t) -->
+      <div class="plot-container">
+        <div id="plot-control" class="plot-div"></div>
+      </div>
+
+    </main>
+    <!-- ═══ конец правой панели ═══════════════════════════════════════════ -->
+
+  </div>
+  <!-- конец app-body -->
+
+  <!-- ui.js — подключаем последним, type="module" обязателен для ES imports -->
+  <script type="module" src="js/ui.js"></script>
+
+</body>
+</html>

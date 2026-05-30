@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Бесконечные игры: Игра снайпера и наблюдателя</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="safeEval.js"></script>
+  <script defer src="grid.js"></script>
+  <script defer src="presets.js"></script>
+  <script defer src="validation.js"></script>
+  <script defer src="solver.js"></script>
+  <script defer src="visualization.js"></script>
+  <script defer src="main.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Бесконечные игры: Игра снайпера и наблюдателя</h1>
+      <p>Интерактивный модуль для анализа седловых точек, цены игры и минимаксных сечений</p>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="card config-card">
+      <div class="preset-row preset-highlight">
+        <label for="presetSelect">Предустановленная конфигурация:</label>
+        <select id="presetSelect"></select>
+        <span id="manualBadge" class="manual-badge" hidden>Конфигурация изменена вручную</span>
+      </div>
+
+      <div class="field full-width">
+        <label for="funcInput">Функция выигрыша \(K(x,y)\):</label>
+        <textarea id="funcInput" rows="3" spellcheck="false"></textarea>
+      </div>
+
+      <div id="formulaBlock" class="formula-block">
+        \[
+          K(x^*, y) \le K(x^*, y^*) \le K(x, y^*), \qquad
+          v = K(x^*, y^*)
+        \]
+        \[
+          v_{lower}=\max_y \min_x K(x,y), \qquad
+          v_{upper}=\min_x \max_y K(x,y), \qquad
+          \Delta=v_{upper}-v_{lower}
+        \]
+      </div>
+
+      <div class="section-title">Область стратегий</div>
+      <div class="grid-4">
+        <div class="field"><label for="xMin">x min</label><input id="xMin" type="number" step="any" /></div>
+        <div class="field"><label for="xMax">x max</label><input id="xMax" type="number" step="any" /></div>
+        <div class="field"><label for="yMin">y min</label><input id="yMin" type="number" step="any" /></div>
+        <div class="field"><label for="yMax">y max</label><input id="yMax" type="number" step="any" /></div>
+      </div>
+
+      <div class="section-title">Численный метод</div>
+      <div class="grid-3">
+        <div class="field"><label for="x0">x₀</label><input id="x0" type="number" step="any" /></div>
+        <div class="field"><label for="y0">y₀</label><input id="y0" type="number" step="any" /></div>
+        <div class="field"><label for="alpha">Шаг α</label><input id="alpha" type="number" step="any" /></div>
+        <div class="field"><label for="eps">Точность ε</label><input id="eps" type="number" step="any" /></div>
+        <div class="field"><label for="maxIter">Макс. итераций</label><input id="maxIter" type="number" step="1" /></div>
+        <div class="field"><label for="gridDensity">Плотность сетки</label><input id="gridDensity" type="number" step="1" /></div>
+      </div>
+
+      <div class="actions">
+        <button id="resetBtn" type="button" class="secondary">Сброс</button>
+        <button id="stepBtn" type="button" class="secondary">Пошагово</button>
+        <button id="solveBtn" type="button" class="primary">Решить</button>
+        <button id="stopBtn" type="button" class="danger" disabled>Стоп</button>
+        <label class="theme-toggle"><input id="themeToggle" type="checkbox" /> Светлая тема</label>
+      </div>
+    </section>
+
+    <section class="card result-card">
+      <div id="statusText" class="status">Готов к расчётам</div>
+      <div class="metrics">
+        <div><span>Седловая точка</span><strong id="pointOut">—</strong></div>
+        <div><span>Цена игры</span><strong id="valueOut">—</strong></div>
+        <div><span>Итерации</span><strong id="iterOut">—</strong></div>
+        <div><span>Остаток</span><strong id="residualOut">—</strong></div>
+      </div>
+      <div class="diagnostics" id="diagnosticsOut">—</div>
+    </section>
+
+    <section class="card plot-card">
+      <div class="plot-header">
+        <h2>Поверхность выигрыша \(K(x,y)\)</h2>
+        <span>3D + траектория</span>
+      </div>
+      <div id="surfacePlot" class="plot"></div>
+    </section>
+
+    <section class="card plot-card">
+      <div class="plot-header">
+        <h2>Минимаксные сечения</h2>
+        <span>\(\psi(x)=\max_y K(x,y),\; \varphi(y)=\min_x K(x,y)\)</span>
+      </div>
+      <p class="plot-note">Обе функции показаны на общей оси аргумента: для синей кривой аргументом является \(x\), для второй кривой - \(y\).</p>
+      <div id="sectionsPlot" class="plot small"></div>
+    </section>
+
+    <section class="card plot-card">
+      <div class="plot-header">
+        <h2>Сходимость</h2>
+        <span>остаток по итерациям</span>
+      </div>
+      <div id="convergencePlot" class="plot small"></div>
+    </section>
+  </main>
+</body>
+</html>

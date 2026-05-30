@@ -32,6 +32,9 @@ url_other = [
 
     # Позиционные игры
     path('positional-games/', views.positional_games),
+
+    # Бесконечные игры
+    path('infinite-games/', views.infinite_games),
     
     # Задача коммивояжёра
     path('komi/', views.komi),

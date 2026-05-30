@@ -1,0 +1,328 @@
+:root {
+  color-scheme: dark;
+  --bg: #070b16;
+  --bg-soft: #111827;
+  --card: #172238;
+  --card-2: #1f2b45;
+  --border: #30415f;
+  --text: #f8fafc;
+  --muted: #a8c0ff;
+  --accent: #68a4ff;
+  --accent-2: #86efdc;
+  --danger: #ef4444;
+  --warning: #facc15;
+  --shadow: rgba(0, 0, 0, 0.35);
+}
+
+body.light-theme {
+  color-scheme: light;
+  --bg: #eff6ff;
+  --bg-soft: #ffffff;
+  --card: #ffffff;
+  --card-2: #eaf2ff;
+  --border: #b9c7dc;
+  --text: #111827;
+  --muted: #315584;
+  --accent: #2563eb;
+  --accent-2: #0f766e;
+  --shadow: rgba(30, 64, 175, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(104, 164, 255, 0.18), transparent 28rem),
+    radial-gradient(circle at top right, rgba(134, 239, 220, 0.10), transparent 26rem),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+.app-header {
+  padding: 32px 24px 18px;
+  text-align: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 42px);
+  letter-spacing: -0.03em;
+  text-shadow: 0 3px 16px rgba(0,0,0,.22);
+}
+
+.app-header p {
+  margin: 10px auto 0;
+  max-width: 880px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.app-shell {
+  width: min(1240px, calc(100% - 32px));
+  margin: 0 auto 40px;
+  display: grid;
+  gap: 22px;
+}
+
+.card {
+  background: linear-gradient(180deg, var(--card), var(--bg-soft));
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  box-shadow: 0 18px 60px var(--shadow);
+  padding: 24px;
+}
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.preset-row label,
+.field label,
+.section-title {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.preset-highlight select {
+  min-width: min(100%, 390px);
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  border: 1px solid rgba(255,255,255,.35);
+  font-weight: 800;
+}
+
+.preset-highlight select option {
+  background: #1f2b45;
+  color: #fff;
+}
+
+body.light-theme .preset-highlight select option {
+  background: #ffffff;
+  color: #111827;
+}
+
+.manual-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #111827;
+  background: var(--warning);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.full-width { margin-bottom: 18px; }
+
+textarea,
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  color: var(--text);
+  background: var(--card-2);
+  padding: 13px 16px;
+  font: inherit;
+  font-weight: 650;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(104, 164, 255, .18);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 74px;
+  line-height: 1.55;
+}
+
+.formula-block {
+  border: 1px solid var(--border);
+  background: rgba(104,164,255,.08);
+  color: var(--muted);
+  border-radius: 22px;
+  padding: 12px 16px;
+  margin: 12px 0 24px;
+  overflow-x: auto;
+}
+
+.section-title {
+  margin: 22px 0 12px;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.grid-4,
+.grid-3 {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr)) auto;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+button {
+  border: 0;
+  border-radius: 20px;
+  padding: 14px 18px;
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .15s, filter .15s, opacity .15s;
+}
+
+button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.07); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #05101f; }
+.secondary { background: #263653; }
+.danger { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+
+.theme-toggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.result-card .status {
+  color: var(--text);
+  font-weight: 900;
+  font-size: 22px;
+  margin-bottom: 18px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metrics > div {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--card-2);
+  padding: 18px;
+  min-height: 92px;
+}
+
+.metrics span {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.metrics strong {
+  display: block;
+  font-size: 24px;
+  word-break: break-word;
+}
+
+.diagnostics {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  margin-top: 18px;
+  padding: 16px 18px;
+  color: var(--muted);
+  line-height: 1.6;
+  background: rgba(104,164,255,.07);
+}
+
+.warning-line { color: var(--warning); font-weight: 800; }
+
+.plot-card { overflow: hidden; }
+
+.plot-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.plot-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.plot-header span,
+.plot-note {
+  color: var(--muted);
+}
+
+.plot-note {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.plot {
+  width: 100%;
+  height: 560px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+
+.plot.small { height: 430px; }
+
+.plot-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .grid-4,
+  .grid-3,
+  .metrics,
+  .actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .actions .theme-toggle { grid-column: 1 / -1; }
+}
+
+@media (max-width: 620px) {
+  .grid-4,
+  .grid-3,
+  .metrics,
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .card { border-radius: 22px; padding: 16px; }
+  .plot { height: 420px; }
+  .plot.small { height: 360px; }
+}

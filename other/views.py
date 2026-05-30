@@ -223,6 +223,12 @@ OTHER_CARDS = [
         'url': 'positional-games'
     },
     {
+        'name': 'Бесконечные игры',
+        'emojy': '♾️',
+        'description': 'Интерактивная лабораторная по бесконечным играм',
+        'url': 'infinite-games'
+    },
+    {
         'name': 'Задача коммивояжёра',
         'emojy': '🗺️',
         'description': 'Решение задачи коммивояжёра',
@@ -272,6 +278,15 @@ def positional_games(request):
         request,
         'Позиционные игры',
         '/static/other/positional_games/positional-games-main/index.html'
+    )
+
+
+# ===== БЕСКОНЕЧНЫЕ ИГРЫ =====
+def infinite_games(request):
+    return wrap_view(
+        request,
+        'Бесконечные игры',
+        '/static/other/infinite_games/index.html'
     )
 
 

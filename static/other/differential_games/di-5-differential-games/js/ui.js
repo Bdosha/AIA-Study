@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
   const verif = runVerification();
   if (!verif.test1.passed || !verif.test2.passed) {
-    _showStatus('Верификация RK4 не прошла. Проверьте консоль (F12).', 'no-capture');
+    _showStatus('Верификация RK4 не прошла. Проверьте консоль (F12).', '', 'no-capture');
   }
 }, 100);
 
@@ -213,10 +213,10 @@ async function _handleRun() {
     // 2. Если не сошёлся — показываем предупреждение (ПЗ 3.2.4)
     if (!optimizeResult.converged) {
       _showStatus(
-        `Оптимизатор не сошёлся за ${optimizeResult.iterations} итераций. ` +
-        `Результат может быть субоптимальным.`,
-        'suboptimal'
-      );
+  `Оптимизатор не сошёлся за ${optimizeResult.iterations} итераций. Результат может быть субоптимальным.`,
+  'Попробуйте увеличить N_max, уменьшить порог δ или увеличить шаг h.',
+  'suboptimal'
+);
     }
 
     // 3. Обновляем информационную панель
@@ -383,20 +383,29 @@ function _updateInfoPanel(sr, or_) {
   if (sr.captureTime !== null) {
     captureEl.textContent = `${sr.captureTime.toFixed(4)} с`;
     captureEl.className   = 'info-value success';
-    _showStatus(`Захват достигнут в момент T* = ${sr.captureTime.toFixed(4)}`, 'capture');
+    _showStatus(
+  `Захват достигнут в момент T* = ${sr.captureTime.toFixed(4)}`,
+  'Изучите графики: посмотрите где линии x₁ и x₂ пересеклись и как менялась стратегия управления.',
+  'capture'
+);
   } else if (sr.exitTime !== null) {
     captureEl.textContent = `T_exit = ${sr.exitTime.toFixed(4)} с`;
     captureEl.className   = 'info-value success';
-    _showStatus(`Убегающий вышел из области в момент T_exit = ${sr.exitTime.toFixed(4)}`, 'capture');
+   _showStatus(
+  `Убегающий вышел из области в момент T_exit = ${sr.exitTime.toFixed(4)}`,
+  'Игрок x₂ покинул допустимую область. Посмотрите фазовый портрет.',
+  'capture'
+);
   } else {
     captureEl.textContent = 'Не достигнут';
     captureEl.className   = 'info-value error';
     // Сообщение из ПЗ раздел 3.1.4
     const T = sr.t[sr.N - 1];
     _showStatus(
-      `Захват не достигнут за горизонт интегрирования T = ${T.toFixed(2)}`,
-      'no-capture'
-    );
+  `Захват не достигнут за горизонт интегрирования T = ${T.toFixed(2)}`,
+  'Попробуйте: увеличить горизонт T, увеличить u_max, уменьшить v_max или сократить начальное расстояние x₂(0) − x₁(0).',
+  'no-capture'
+);
   }
 
   jEl.textContent         = typeof sr.J === 'number' ? sr.J.toFixed(6) : '—';
@@ -410,14 +419,24 @@ function _clearInfoPanel() {
     const el = document.getElementById(id);
     if (el) { el.textContent = '—'; el.className = 'info-value'; }
   });
+    const hintEl = document.getElementById('info-hint');
+    if (hintEl) hintEl.innerHTML = '';
 }
 
-function _showStatus(message, type) {
+function _showStatus(message, hint, type) {
   const el = document.getElementById('status-message');
   if (!el) return;
-  el.textContent = message;
-  el.className   = `status-message ${type}`;
-  el.classList.remove('hidden');
+  el.className = 'hidden';
+
+  // Показываем основное сообщение как строку результатов
+  let hintEl = document.getElementById('info-hint');
+  if (!hintEl) {
+    hintEl = document.createElement('div');
+    hintEl.id = 'info-hint';
+    document.getElementById('info-converged').closest('.info-panel').appendChild(hintEl);
+  }
+  hintEl.style.cssText = 'padding: 10px 0; font-size: 13px; color: var(--text-secondary); text-align: left;';
+  hintEl.innerHTML = `<span class="info-value ${type === 'capture' ? 'success' : type === 'suboptimal' ? 'warning' : 'error'}" style="font-size:15px;font-weight:700;display:block;text-align:center">${message}</span>${hint ? `<br><span style="margin-top:4px;display:block">${hint}</span>` : ''}`;
 }
 
 function _clearStatus() {

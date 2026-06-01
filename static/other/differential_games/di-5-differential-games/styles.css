@@ -152,23 +152,35 @@ h1 {
   color: var(--text-secondary);
 }
 
+/* ==================== SLIDERS ==================== */
 .slider {
   flex: 1;
   appearance: none;
-  height: 6px;
+  height: 7px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.18);        /* Тёмная тема */
+  outline: none;
+  cursor: pointer;
+}
+
+[data-theme="light"] .slider {
+  background: #cbd5e1;                       /* Светлая тема — хорошо видимый трек */
 }
 
 .slider::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
   background: var(--accent);
   cursor: pointer;
-  border: none;
+  border: 2.5px solid white;
   box-shadow: 0 4px 12px rgba(124,58,237,0.5);
+}
+
+[data-theme="light"] .slider::-webkit-slider-thumb {
+  border-color: #e2e8f0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
 .slider-value {
@@ -181,6 +193,7 @@ h1 {
 .functional-tabs {
   display: flex;
   gap: 8px;
+  margin-bottom: 12px;
 }
 
 .functional-tab {
@@ -189,14 +202,27 @@ h1 {
   border-radius: 12px;
   background: rgba(255,255,255,0.05);
   color: var(--text-secondary);
-  padding: 12px;
+  padding: 11px 8px;           /* уменьшили padding */
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s ease;
+  font-size: 13.8px;           /* чуть уменьшили шрифт */
+  white-space: nowrap;         /* предотвращает перенос */
+  overflow: hidden;
+  text-overflow: ellipsis;     /* если всё равно не влезет — многоточие */
+}
+
+[data-theme="light"] .functional-tab {
+  background: #e2e8f0;
+  color: #475569;
 }
 
 .functional-tab:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.12);
+}
+
+[data-theme="light"] .functional-tab:hover {
+  background: #cbd5e1;
 }
 
 .functional-tab.active {
@@ -441,6 +467,99 @@ h1 {
   }
 }
 
+
+/* ==================== WELCOME CARD ==================== */
+.welcome-card {
+  background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.06));
+  border: 1px solid rgba(124,58,237,0.35);
+  margin-bottom: 20px;
+}
+
+.welcome-title {
+  font-size: 17.5px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+  letter-spacing: -0.015em;
+}
+
+.welcome-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Светлая тема */
+[data-theme="light"] .welcome-card {
+  background: linear-gradient(135deg, rgba(109,40,217,0.09), rgba(109,40,217,0.04));
+  border-color: rgba(109,40,217,0.25);
+}
+
+[data-theme="light"] .welcome-title {
+  color: #6d28d9;
+}
+
+/* ==================== FUNCTIONAL TABS (Светлая тема) ==================== */
+.functional-tab {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  padding: 12px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+[data-theme="light"] .functional-tab {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.functional-tab:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+[data-theme="light"] .functional-tab:hover {
+  background: #cbd5e1;
+}
+
+.functional-tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* ==================== КНОПКИ (Экспорт, Сброс и т.д.) ==================== */
+.btn-export {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+[data-theme="light"] .btn-export {
+  background: #f1f5f9;
+  color: #1e2937;
+  border-color: #cbd5e1;
+}
+
+.btn-reset {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+[data-theme="light"] .btn-reset {
+  background: #f1f5f9;
+  color: #1e2937;
+  border-color: #cbd5e1;
+}
+
+
+
+
 @media (max-width: 640px) {
   body {
     padding: 14px;
@@ -456,4 +575,189 @@ h1 {
   .buttons-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ==================== INFO ICON ==================== */
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(124,58,237,0.15);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 8px;
+  border: 1px solid rgba(124,58,237,0.3);
+  transition: all 0.2s ease;
+}
+
+.info-icon:hover {
+  background: var(--accent);
+  color: white;
+  transform: scale(1.1);
+}
+
+[data-theme="light"] .info-icon {
+  background: rgba(109,40,217,0.15);
+  color: #6d28d9;
+  border-color: rgba(109,40,217,0.3);
+}
+
+/* Улучшение select */
+.preset-select {
+  font-size: 15px;
+  font-weight: 500;
+  padding: 13px 14px;
+}
+
+/* Описание пресета */
+.preset-desc {
+  margin-top: 12px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  padding: 12px 14px;
+  background: var(--card);
+  border-radius: 12px;
+  border-left: 3px solid var(--accent);
+}
+
+/* ==================== LIGHT THEME IMPROVEMENTS ==================== */
+
+/* Переключатель темы — лучше видно в светлой теме */
+.theme-toggle {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .theme-toggle-track {
+  background: #e2e8f0;
+}
+
+[data-theme="light"] .theme-toggle-thumb {
+  background: #4f46e5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Кнопки в светлой теме */
+.btn-stop {
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+[data-theme="light"] .btn-stop {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-step {
+  background: rgba(59,130,246,0.12);
+  color: #3b82f6;
+  border: 1px solid rgba(59,130,246,0.2);
+}
+
+[data-theme="light"] .btn-step {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.btn-reset, .btn-export {
+  border: 1px solid #cbd5e1;
+}
+
+[data-theme="light"] .btn-reset,
+[data-theme="light"] .btn-export {
+  background: #f8fafc;
+  color: #1e2937;
+}
+
+/* Разделительные линии в блоке "Результаты" */
+.info-row {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+[data-theme="light"] .info-row {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+/* Улучшение читаемости статус-сообщений в светлой теме */
+.status-message.capture {
+  background: #ecfdf5;
+  color: #0f766e;
+}
+
+.status-message.suboptimal {
+  background: #fefce8;
+  color: #854d0e;
+}
+
+.status-message.no-capture {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* ==================== PLOT HEADERS ==================== */
+.plot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px 16px;
+  border-bottom: 1px solid var(--panel-border);
+  margin-bottom: 4px;
+  flex-shrink: 0;           /* Важно! */
+}
+
+.plot-title {
+  font-weight: 600;
+  font-size: 15.5px;
+  color: var(--text);
+}
+
+.plot-container {
+  display: flex;
+  flex-direction: column;
+   height: 400px;
+}
+
+.plot-div {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ==================== ФИНАЛЬНЫЕ УЛУЧШЕНИЯ ==================== */
+
+/* Лучшая читаемость card-title */
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15.5px;
+}
+
+/* Улучшение info-icon в светлой теме */
+[data-theme="light"] .info-icon {
+  background: rgba(109,40,217,0.2);
+  color: #6d28d9;
+}
+
+/* Увеличение контраста для статус-сообщений */
+.status-message {
+  font-weight: 500;
+}
+
+/* Небольшое улучшение отступов в plot-container */
+.plot-container {
+  padding: 16px;
+}
+
+.plot-header {
+  padding: 8px 4px 12px 4px;
 }

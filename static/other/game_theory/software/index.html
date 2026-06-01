@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Лабораторная работа — Анализ неантагонистической игры</title>
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem('gtlab-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (error) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:," />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero__text">
+        <span class="eyebrow">Теория игр · лабораторная работа</span>
+        <h1>Неантагонистические игры: Дилемма двух кафе</h1>
+        <p>
+          Всё важное видно сразу: ввод биматрицы, запуск анализа, найденные равновесия,
+          Pareto-эффективные исходы, смешанная стратегия и график выигрышей.
+        </p>
+      </div>
+
+      <div class="hero__side">
+        <div class="hero-status" id="statusBadge">Готово к работе</div>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
+          <span class="theme-toggle__icon">◐</span>
+          <span>Тема</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="summary-strip">
+      <article class="metric-card">
+        <span class="metric-card__label">Размер</span>
+        <strong class="metric-card__value" id="matrixSizeLabel">2 × 2</strong>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Исходов</span>
+        <strong class="metric-card__value" id="outcomesCount">4</strong>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Нэш</span>
+        <strong class="metric-card__value" id="nashCount">0</strong>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Pareto</span>
+        <strong class="metric-card__value" id="paretoCount">0</strong>
+      </article>
+    </div>
+
+    <main class="workspace">
+      <aside class="column column--left">
+        <section class="panel panel--sticky">
+          <div class="panel__header">
+            <h2>Быстрый старт</h2>
+            <p>Настройка игры без лишних переходов по странице.</p>
+          </div>
+
+          <div class="field-grid">
+            <label class="field field--full">
+              <span class="field__label">Готовый пример</span>
+              <select id="presetSelect" class="control control--select"></select>
+            </label>
+
+            <button id="loadPreset" class="btn btn--secondary" type="button">Загрузить пример</button>
+            <button id="randomFillBtn" class="btn btn--ghost" type="button">Случайно заполнить</button>
+
+            <label class="field">
+              <span class="field__label">Строк</span>
+              <input id="rowsInput" class="control" type="number" min="1" max="6" value="2" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Столбцов</span>
+              <input id="colsInput" class="control" type="number" min="1" max="6" value="2" />
+            </label>
+
+            <button id="applySizeBtn" class="btn btn--secondary" type="button">Применить размер</button>
+            <button id="clearMatrixBtn" class="btn btn--ghost" type="button">Очистить матрицу</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__header">
+            <h2>Управление анализом</h2>
+            <p>Основные действия всегда под рукой.</p>
+          </div>
+
+          <div class="action-grid">
+            <button id="calculateBtn" class="btn btn--primary btn--large" type="button">Рассчитать</button>
+            <button id="stepBtn" class="btn btn--secondary" type="button">Следующий шаг</button>
+            <button id="autoBtn" class="btn btn--secondary" type="button">Автопроигрывание</button>
+            <button id="stopBtn" class="btn btn--ghost" type="button">Стоп</button>
+            <button id="resetBtn" class="btn btn--ghost" type="button">Сбросить анализ</button>
+          </div>
+
+          <div class="status-box">
+            <span class="status-box__label">Статус</span>
+            <p id="statusText">Задайте биматрицу и запустите расчёт.</p>
+          </div>
+
+          <div class="legend">
+            <div class="legend__item"><span class="legend__mark legend__mark--p1"></span>Лучший ответ игрока 1</div>
+            <div class="legend__item"><span class="legend__mark legend__mark--p2"></span>Лучший ответ игрока 2</div>
+            <div class="legend__item"><span class="legend__mark legend__mark--nash"></span>Равновесие Нэша</div>
+            <div class="legend__item"><span class="legend__mark legend__mark--pareto"></span>Pareto-эффективный исход</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__header">
+            <h2>Экспорт</h2>
+            <p>Чтобы удобно приложить результаты к отчёту.</p>
+          </div>
+
+          <div class="action-grid action-grid--stack">
+            <button id="copyReportBtn" class="btn btn--secondary" type="button">Копировать отчёт</button>
+            <button id="saveMatrixBtn" class="btn btn--ghost" type="button">Сохранить JSON</button>
+            <label class="btn btn--ghost upload-btn">
+              Загрузить JSON
+              <input id="loadMatrixInput" type="file" accept="application/json" hidden />
+            </label>
+          </div>
+        </section>
+      </aside>
+
+      <section class="column column--main">
+        <div class="main-stack main-stack--left">
+          <article class="panel panel--matrix">
+            <div class="panel__header panel__header--matrix">
+              <div>
+                <h2>Биматрица игры</h2>
+                <p>
+                  В каждой ячейке верхнее значение — <strong>u₁</strong>, нижнее — <strong>u₂</strong>.
+                </p>
+              </div>
+              <div class="panel__chips">
+                <span class="chip">Редактирование прямо в таблице</span>
+                <span class="chip">Подсветка без переключений</span>
+              </div>
+            </div>
+
+            <div class="matrix-toolbar">
+              <span class="matrix-toolbar__title">Текущее поле</span>
+              <div class="matrix-toolbar__actions">
+                <button id="zeroFillBtn" class="btn btn--ghost btn--small" type="button">Все нули</button>
+                <button id="diagonalPresetBtn" class="btn btn--ghost btn--small" type="button">Координационная</button>
+              </div>
+            </div>
+
+            <div class="matrix-wrap" id="matrixWrap">
+              <div id="matrixContainer"></div>
+            </div>
+          </article>
+
+          <section class="panel">
+            <div class="panel__header">
+              <h2>График выигрышей</h2>
+              <p>Точки исходов, Pareto-граница и равновесия Нэша.</p>
+            </div>
+            <div class="chart-frame">
+              <svg id="payoffChart" viewBox="0 0 700 460" role="img" aria-label="График выигрышей"></svg>
+            </div>
+          </section>
+        </div>
+
+        <div class="main-stack main-stack--right">
+          <article class="panel panel--process">
+            <div class="panel__header">
+              <h2>Ход решения</h2>
+              <p>Можно идти по шагам или смотреть сразу итог.</p>
+            </div>
+            <ol id="processLog" class="process-log"></ol>
+          </article>
+
+          <section class="panel">
+            <div class="panel__header">
+              <h2>Итоги анализа</h2>
+              <p>Все ключевые результаты собраны в одном месте.</p>
+            </div>
+
+            <div class="result-block">
+              <h3>Равновесия Нэша</h3>
+              <ul id="nashList" class="result-list"></ul>
+            </div>
+
+            <div class="result-block">
+              <h3>Pareto-эффективные исходы</h3>
+              <ul id="paretoList" class="result-list"></ul>
+            </div>
+
+            <div class="result-block">
+              <h3>Признак дилеммы заключённого</h3>
+              <div id="dilemmaIndicator" class="callout callout--neutral">Ещё не вычислено.</div>
+            </div>
+
+            <div class="result-block">
+              <h3>Смешанное равновесие</h3>
+              <div id="mixedInfo" class="callout callout--neutral">
+                Доступно для игр размера 2 × 2 после расчёта.
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script defer src="src/core/analysis.js"></script>
+  <script defer src="src/data/presets.js"></script>
+  <script defer src="src/state/store.js"></script>
+  <script defer src="src/ui/matrix-ui.js"></script>
+  <script defer src="src/ui/chart-ui.js"></script>
+  <script defer src="src/ui/theme.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>

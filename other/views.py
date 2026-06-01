@@ -211,6 +211,12 @@ OTHER_CARDS = [
         'url': 'nash'
     },
     {
+        'name': 'Неантагонистические игры',
+        'emojy': '☕',
+        'description': 'Анализ неантагонистической игры «Дилемма двух кафе»',
+        'url': 'non-antagonistic-games'
+    },
+    {
         'name': 'Дифференциальные игры',
         'emojy': '⚔️',
         'description': 'Интерактивная лабораторная по дифференциальным играм',
@@ -261,6 +267,15 @@ def nash(request):
 
 def nash_raw(request):
     return render(request, 'NESH.html')
+
+
+# ===== НЕАНТАГОНИСТИЧЕСКИЕ ИГРЫ =====
+def non_antagonistic_games(request):
+    return wrap_view(
+        request,
+        'Неантагонистические игры',
+        '/static/other/game_theory/software/index.html'
+    )
 
 
 # ===== ДИФФЕРЕНЦИАЛЬНЫЕ ИГРЫ =====

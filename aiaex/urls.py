@@ -27,6 +27,9 @@ url_other = [
     path('nash/', views.nash),
     path('nash/raw/', views.nash_raw),
 
+    # Неантагонистические игры
+    path('non-antagonistic-games/', views.non_antagonistic_games),
+
     # Дифференциальные игры
     path('differential-games/', views.differential_games),
 

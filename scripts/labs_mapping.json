@@ -4,8 +4,8 @@
       "title": "Конечные автоматы и методы управления состояниями",
       "labs": {
         "dfa_simulator": {
-          "title": "Statecraft",
-          "description": "Онлайн-симулятор детерминированных конечных автоматов"
+          "title": "Симулятор ДКА",
+          "description": "Детерминированный конечный автомат"
         },
         "smart_automata": {
           "repo": "GorSerGitVerse/DM3_Automaton_System",

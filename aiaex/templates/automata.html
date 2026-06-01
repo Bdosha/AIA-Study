@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
-{% load static %}
+{% load static %} 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statecraft — онлайн-симулятор детерминированных конечных автоматов</title>
-    <link rel="stylesheet" href="{% static 'labs/finite_automata/dfa_simulator/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/dfa.css' %}">
 </head>
 <body>
     <div class="container">
@@ -14,6 +14,7 @@
         </header>
 
         <main class="workspace">
+            <!-- Секция создания матрицы переходов -->
             <section class="matrix-section">
                 <h2>Матрица переходов</h2>
                 <div class="matrix-controls">
@@ -21,17 +22,18 @@
                     <button id="add-symbol" class="btn btn-primary">Добавить символ</button>
                     <button id="check-btn" class="btn btn-success">🔍 Проверить автомат</button>
                 </div>
-
+                
                 <div id="matrix-container">
                     <table id="transition-matrix">
                         <thead id="matrix-header"></thead>
                         <tbody id="matrix-body"></tbody>
                     </table>
                 </div>
-
+                
                 <div id="validation-errors" class="error-container" style="display: none;"></div>
             </section>
 
+            <!-- Секция визуализации автомата -->
             <section class="visualization-section">
                 <h2>Диаграмма автомата</h2>
                 <div class="canvas-container">
@@ -39,9 +41,10 @@
                 </div>
             </section>
 
+            <!-- Секция симуляции -->
             <section class="simulation-section">
                 <h2>Симуляция выполнения</h2>
-
+                
                 <div class="input-section">
                     <label for="input-string">Входная строка:</label>
                     <input type="text" id="input-string" placeholder="Введите строку для проверки">
@@ -67,10 +70,11 @@
         </main>
     </div>
 
-    <script src="{% static 'labs/finite_automata/dfa_simulator/dfa.js' %}"></script>
-    <script src="{% static 'labs/finite_automata/dfa_simulator/matrix-editor.js' %}"></script>
-    <script src="{% static 'labs/finite_automata/dfa_simulator/visualizer.js' %}"></script>
-    <script src="{% static 'labs/finite_automata/dfa_simulator/simulator.js' %}"></script>
-    <script src="{% static 'labs/finite_automata/dfa_simulator/app.js' %}"></script>
+    <!-- Подключение JavaScript файлов -->
+    <script src="{% static 'scripts/dfa/dfa.js' %}"></script>
+    <script src="{% static 'scripts/dfa/matrix-editor.js' %}"></script>
+    <script src="{% static 'scripts/dfa/visualizer.js' %}"></script>
+    <script src="{% static 'scripts/dfa/simulator.js' %}"></script>
+    <script src="{% static 'scripts/dfa/app.js' %}"></script>
 </body>
 </html>

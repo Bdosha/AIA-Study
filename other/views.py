@@ -15,8 +15,8 @@ LABS_REGISTRY = {
         'icon': '🔄',
         'labs': {
             'dfa_simulator': {
-                'title': 'Statecraft',
-                'description': 'Онлайн-симулятор детерминированных конечных автоматов',
+                'title': 'Симулятор ДКА',
+                'description': 'Детерминированный конечный автомат',
             },
             'smart_automata': {
                 'title': 'Умная система автоматов',
@@ -429,7 +429,7 @@ def phase_portrait_raw(request):
 
 # ===== КОНЕЧНЫЕ АВТОМАТЫ (DFA) =====
 def dfa(request):
-    return wrap_view(request, 'Statecraft', '/dfa/raw/')
+    return wrap_view(request, 'Симулятор ДКА', '/dfa/raw/')
 
 
 def dfa_raw(request):

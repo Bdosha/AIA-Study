@@ -15,8 +15,12 @@ LABS_REGISTRY = {
         'icon': '🔄',
         'labs': {
             'dfa_simulator': {
-                'title': 'Симулятор ДКА',
-                'description': 'Детерминированный конечный автомат',
+                'title': 'Statecraft',
+                'description': 'Онлайн-симулятор детерминированных конечных автоматов',
+            },
+            'smart_automata': {
+                'title': 'Умная система автоматов',
+                'description': 'Визуальное моделирование и симуляция недетерминированных автоматных систем',
             },
             'nfa_simulator': {
                 'title': 'Симулятор НКА',
@@ -41,10 +45,6 @@ LABS_REGISTRY = {
             'probabilistic_automata': {
                 'title': 'Вероятностные автоматы',
                 'description': 'Автоматы с вероятностными переходами',
-            },
-            'statecraft': {
-                'title': 'Statecraft',
-                'description': 'Онлайн-симулятор детерминированных конечных автоматов',
             },
         }
     },
@@ -429,7 +429,7 @@ def phase_portrait_raw(request):
 
 # ===== КОНЕЧНЫЕ АВТОМАТЫ (DFA) =====
 def dfa(request):
-    return wrap_view(request, 'Конечные автоматы', '/dfa/raw/')
+    return wrap_view(request, 'Statecraft', '/dfa/raw/')
 
 
 def dfa_raw(request):
@@ -483,9 +483,11 @@ def lab_detail(request, section, lab):
         raise Http404("Лабораторная работа не найдена")
     
     lab_data = LABS_REGISTRY[section]['labs'][lab]
-    
-    # iframe указывает на статику
-    iframe_src = f'/static/labs/{section}/{lab}/index.html'
+
+    if section == 'finite_automata' and lab == 'dfa_simulator':
+        iframe_src = '/dfa/raw/'
+    else:
+        iframe_src = f'/static/labs/{section}/{lab}/index.html'
     
     return render(request, 'labs/lab_detail.html', {
         'section_id': section,

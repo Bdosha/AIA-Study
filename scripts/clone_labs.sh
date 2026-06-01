@@ -20,7 +20,7 @@ echo ""
 # Список репозиториев (формат: repo|section|lab_id|название)
 REPOS=(
     # Конечные автоматы
-    "GorSerGitVerse/DM3_Automaton_System|finite_automata|dfa_simulator|Симулятор ДКА"
+    "GorSerGitVerse/DM3_Automaton_System|finite_automata|smart_automata|Умная система автоматов"
     "mynill/NFA-simulator|finite_automata|nfa_simulator|Симулятор НКА"
     "nik_yak/Minimization_of_deterministic_finite_state_machines|finite_automata|dfa_minimization|Минимизация ДКА"
     "kemarrik/NFA_to_DFA|finite_automata|nfa_to_dfa|НКА в ДКА"

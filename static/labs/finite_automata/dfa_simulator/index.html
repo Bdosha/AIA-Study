@@ -1,173 +1,80 @@
-<!-- index.html - ИСПРАВЛЕННАЯ ВЕРСИЯ -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 Умная система автоматов (NFA)</title>
+    <title>Statecraft — онлайн-симулятор детерминированных конечных автоматов</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div class="app-container">
-        <div class="header">
-            <h1>🤖 Умная система автоматов (NFA)</h1>
-            <p>Визуальное моделирование и симуляция недетерминированных автоматных систем</p>
-        </div>
+    <div class="container">
+        <header>
+            <h1>Statecraft — онлайн-симулятор детерминированных конечных автоматов</h1>
+        </header>
 
-        <div class="page-navigation">
-            <button class="nav-btn active" data-page="constructor">🏗️ Конструктор</button>
-            <button class="nav-btn" data-page="visualization">📊 Визуализация</button>
-        </div>
-
-        <!-- Страница конструктора -->
-        <div id="constructor-page" class="page active">
-        <div id="preset-buttons" class="preset-buttons"></div>
-        
-        <div class="section">
-                <h2>🔤 Настройки алфавита</h2>
-                <div class="alphabet-controls">
-                    <div class="form-group checkbox-group" style="display: flex; align-items: center;">
-                        <label for="use-custom-alphabet" style="margin: 0;">Использовать пользовательский алфавит</label>
-                        <input type="checkbox" id="use-custom-alphabet" style="margin: 0; margin-right: 900px;">
-                    </div>
-                    <div id="custom-alphabet-input" style="display: none;">
-                        <div class="form-group">
-                            <input type="text" id="custom-alphabet-text" placeholder="Введите символы через пробел (a b c)">
-                        </div>
-                        <button id="apply-custom-alphabet" class="btn-secondary">Применить алфавит</button>
-                    </div>
+        <main class="workspace">
+            <!-- Секция создания матрицы переходов -->
+            <section class="matrix-section">
+                <h2>Матрица переходов</h2>
+                <div class="matrix-controls">
+                    <button id="add-state" class="btn btn-primary">Добавить состояние</button>
+                    <button id="add-symbol" class="btn btn-primary">Добавить символ</button>
+                    <button id="check-btn" class="btn btn-success">🔍 Проверить автомат</button>
                 </div>
-            </div>
-            
-            <div class="section">
-                <h2>🏗️ Конструктор автоматов</h2>
-                <div id="automaton-form"></div>
-            </div>
-
-            <div class="section">
-                <h2>🔗 Создание связей между автоматами</h2>
-                <div class="connection-controls">
-                    <div class="form-group">
-                        <label>📤 Из автомата:</label>
-                        <select id="connection-from-automaton">
-                            <option value="">-- Выберите автомат --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>🏷️ Из состояния:</label>
-                        <select id="connection-from-state">
-                            <option value="">-- Сначала выберите автомат --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>📥 В автомат:</label>
-                        <select id="connection-to-automaton">
-                            <option value="">-- Выберите автомат --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>🎯 В состояние:</label>
-                        <select id="connection-to-state">
-                            <option value="">-- Сначала выберите автомат --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>🔤 Символ-триггер (опционально):</label>
-                        <input type="text" id="connection-trigger" placeholder="a, b, c или оставьте пустым">
-                    </div>
-                    <button id="create-connection-btn" class="btn-primary">🔗 Создать связь</button>
-                    <button id="clear-connections" class="btn-secondary">🗑️ Очистить все связи</button>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>🤖 Автоматы системы</h2>
-                <div id="automata-list"></div>
-                <div id="connections-list"></div>
-                <div id="alphabet-display"></div>
-            </div>
-
-            <div class="section">
-                <h2>💾 Управление системой</h2>
-                <div class="system-controls">
-                    <button id="save-system" class="btn-primary">💾 Сохранить систему</button>
-                    <button id="load-system" class="btn-secondary">📂 Загрузить систему</button>
-                    <input type="file" id="system-file-input" accept=".json" style="display: none;">
-                    <button id="clear-system" class="btn-danger">🗑️ Очистить систему</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Страница визуализации -->
-        <div id="visualization-page" class="page">
-            <div class="section">
-                <h2>📊 Визуализация системы</h2>
                 
-                <div class="visualization-controls">
-                    <div class="compact-controls">
-                        <input type="text" id="vis-input-string" placeholder="Введите символы через пробел (a b c)" value="">
-                        <button id="vis-run-simulation" class="btn-primary">▶️ Запустить</button>
-                        <button id="vis-reset-simulation" class="btn-secondary">🔄 Сбросить</button>
-                        <button id="step-by-step" class="btn-info">🔍 Пошагово</button>
-                        <button id="export-graph" class="btn-success">💾 Экспорт графа</button>
-                    </div>
+                <div id="matrix-container">
+                    <table id="transition-matrix">
+                        <thead id="matrix-header"></thead>
+                        <tbody id="matrix-body"></tbody>
+                    </table>
+                </div>
+                
+                <div id="validation-errors" class="error-container" style="display: none;"></div>
+            </section>
+
+            <!-- Секция визуализации автомата -->
+            <section class="visualization-section">
+                <h2>Диаграмма автомата</h2>
+                <div class="canvas-container">
+                    <canvas id="automaton-canvas" width="600" height="400"></canvas>
+                </div>
+            </section>
+
+            <!-- Секция симуляции -->
+            <section class="simulation-section">
+                <h2>Симуляция выполнения</h2>
+                
+                <div class="input-section">
+                    <label for="input-string">Входная строка:</label>
+                    <input type="text" id="input-string" placeholder="Введите строку для проверки">
+                    <div id="input-display" class="input-display"></div>
                 </div>
 
-                <div id="network-container">
-                    <div id="network"></div>
+                <div class="controls">
+                    <button id="play-btn" class="btn btn-success">▶ Запуск</button>
+                    <button id="pause-btn" class="btn btn-warning" disabled>⏸ Пауза</button>
+                    <button id="step-btn" class="btn btn-info">⏭ Шаг</button>
+                    <button id="reset-btn" class="btn btn-danger">🔄 Сброс</button>
                 </div>
 
-                <div class="graph-legend">
-                    <div class="legend-item">
-                        <div class="legend-color start-state"></div>
-                        <span>Начальное состояние</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color final-state"></div>
-                        <span>Конечное состояние</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color current-state"></div>
-                        <span>Текущее состояние</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-line internal-transition"></div>
-                        <span>Переход (синий)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-line system-connection"></div>
-                        <span>Связь между автоматами (розовый)</span>
-                    </div>
+                <div class="speed-control">
+                    <label for="speed-slider">Скорость:</label>
+                    <input type="range" id="speed-slider" min="100" max="1900" value="1000">
+                    <span>Медленно ← → Быстро</span>
                 </div>
 
-                <div class="step-navigation">
-                    <button id="first-step" class="btn-nav">⏮️</button>
-                    <button id="prev-step" class="btn-nav">◀️</button>
-                    <span id="step-counter">Шаг 0/0</span>
-                    <button id="next-step" class="btn-nav">▶️</button>
-                    <button id="last-step" class="btn-nav">⏭️</button>
-                </div>
-
-                <div class="simulation-status">
-                    <h3>🎯 Текущее состояние системы</h3>
-                    <div id="current-states-display"></div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2>📋 Результат симуляции</h2>
-                <div id="simulation-result" class="simulation-result"></div>
-            </div>
-        </div>
+                <div id="status" class="status-info"></div>
+                <div id="result" class="result-info"></div>
+            </section>
+        </main>
     </div>
 
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <script src="automata.js"></script>
-    <script src="system.js"></script>
-    <script src="examples.js"></script>
-    <script src="sequential.js"></script>
-    <script src="ui.js"></script>
+    <!-- Подключение JavaScript файлов -->
+    <script src="dfa.js"></script>
+    <script src="matrix-editor.js"></script>
+    <script src="visualizer.js"></script>
+    <script src="simulator.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
+
